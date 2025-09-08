@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Text to Image</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+        }
+        .container {
+            text-align: center;
+        }
+        input, button {
+            padding: 10px;
+            margin: 5px;
+            font-size: 16px;
+        }
+        button {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        img {
+            max-width: 100%;
+            margin-top: 20px;
+            border: 1px solid #ddd;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text to Image Generator</h1>
+        <div>
+            <input type="text" id="textInput" placeholder="Enter text" style="width: 300px;" />
+            <button id="getBtn">Generate Image</button>
+        </div>
+        <img id="resultImg" style="margin-top:20px;" />
+    </div>
+
+    <script>
+        document.getElementById('getBtn').onclick = async function() {
+            const text = encodeURIComponent(document.getElementById('textInput').value || 'Hello, world!');
+            const url = `/render?text=${text}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const blob = await response.blob();
+                document.getElementById('resultImg').src = URL.createObjectURL(blob);
+            } catch (err) {
+                alert('Error fetching image: ' + err.message);
+            }
+        };
+    </script>
+</body>
+</html>
