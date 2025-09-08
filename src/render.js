@@ -1,7 +1,11 @@
 const express = require('express');
 const sharp = require('sharp');
+const path = require('path');
 
 const app = express();
+
+// Serve static files from the src directory
+app.use(express.static(path.join(__dirname)));
 
 app.get('/render', async (req, res) => {
     const text = req.query.text || 'Hello, world!';
