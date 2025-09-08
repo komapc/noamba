@@ -11,6 +11,7 @@ app.get('/render', async (req, res) => {
     const text = req.query.text || 'Hello, world!';
     const width = parseInt(req.query.width) || 800;
     const height = parseInt(req.query.height) || 200;
+    const font = req.query.font || 'Arial';
     
     try {
         const svg = `
@@ -19,7 +20,7 @@ app.get('/render', async (req, res) => {
                 <text 
                     x="50%" 
                     y="50%" 
-                    font-family="Arial" 
+                    font-family="${font}" 
                     font-size="48" 
                     text-anchor="middle" 
                     dominant-baseline="middle"
