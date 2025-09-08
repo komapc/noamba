@@ -2,6 +2,16 @@
 <html>
 <head>
     <title>Text to Image</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Handlee&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Gochi+Hand&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
+    <style>
+    </style>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -39,12 +49,14 @@
         <div>
             <input type="text" id="textInput" placeholder="Enter text" style="width: 300px;" ></div>
             <select id="fontSelect" style="padding:10px; font-size:16px;">
-                <option value="Noto Sans Hebrew" selected>Noto Sans Hebrew</option>
-                <option value="Arial">Arial</option>
-                <option value="Times New Roman">Times New Roman</option>
-                <option value="Courier New">Courier New</option>
-                <!-- Add more fonts as needed -->
+                <option value="Kalam" selected>כתב יד קלאם</option>
+                <option value="Gochi Hand">כתב יד גוצ׳י</option>
+                <option value="Handlee">כתב יד הנדלי</option>
+                <option value="Amatic SC">כתב יד עמטיק</option>
+                <option value="Caveat">כתב יד קאביט</option>
+                <option value="Sriracha">כתב יד סיראצ׳ה</option>
             </select>
+            <input type="number" id="sizeInput" value="24" min="8" max="144" style="width: 60px; padding:10px;" />
             <button id="getBtn">Generate Image</button>
         </div>
         <img id="resultImg" style="margin-top:20px;" />
@@ -60,7 +72,8 @@
         document.getElementById('getBtn').addEventListener('click', async function() {
             const text = encodeURIComponent(document.getElementById('textInput').value);
             const font = encodeURIComponent(document.getElementById('fontSelect').value);
-            const url = `/render?text=${text}&font=${font}`;
+            const size = document.getElementById('sizeInput').value || 24;
+            const url = `/render?text=${text}&font=${font}&size=${size}`;
             try {
                 const response = await fetch(url);
                 if (!response.ok) throw new Error('Network response was not ok');

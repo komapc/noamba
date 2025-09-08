@@ -1,30 +1,93 @@
 const express = require('express');
 const sharp = require('sharp');
 const path = require('path');
+const fs = require('fs');
+const https = require('https');
 
 const app = express();
 
 // Serve static files from the src directory
 app.use(express.static(path.join(__dirname)));
 
+// Function to download and cache fonts
+async function downloadFont(url, filename) {
+    const filepath = path.join(__dirname, 'fonts', filename);
+    
+    // Return cached font if it exists
+    if (fs.existsSync(filepath)) {
+        return filepath;
+    }
+
+    return new Promise((resolve, reject) => {
+        https.get(url, (response) => {
+            if (response.statusCode !== 200) {
+                reject(new Error(`Failed to download font: ${response.statusCode}`));
+                return;
+            }
+
+            const fileStream = fs.createWriteStream(filepath);
+            response.pipe(fileStream);
+
+            fileStream.on('finish', () => {
+                fileStream.close();
+                resolve(filepath);
+            });
+
+            fileStream.on('error', (err) => {
+                fs.unlink(filepath, () => reject(err));
+            });
+        }).on('error', reject);
+    });
+}
+
+function escapeXml(unsafe) {
+    return unsafe.replace(/[<>&'"]/g, function (c) {
+        switch (c) {
+            case '<': return '&lt;';
+            case '>': return '&gt;';
+            case '&': return '&amp;';
+            case '\'': return '&apos;';
+            case '"': return '&quot;';
+        }
+    });
+}
+
 app.get('/render', async (req, res) => {
-    const text = req.query.text || 'Hello, world!';
+    const text = escapeXml(req.query.text || 'Hello, world!');
     const width = parseInt(req.query.width) || 800;
     const height = parseInt(req.query.height) || 200;
-    const font = req.query.font || 'Arial';
+    const font = escapeXml(req.query.font || 'Caveat');
+    const fontSize = parseInt(req.query.size) || 24;
     
     try {
-        const svg = `
-            <svg width="${width}" height="${height}">
+        // Download and cache the font
+        const fontUrl = 'https://fonts.gstatic.com/s/caveat/v19/WnzgHAc5bAfYB2QRah7pcpNvOx-pjRV6SIAjLw.woff2';
+        await downloadFont(fontUrl, 'caveat-bold.woff2');
+        
+        const svg = `<?xml version="1.0" encoding="UTF-8"?>
+            <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+                <defs>
+                    <style type="text/css">
+                        @font-face {
+                            font-family: 'Caveat';
+                            src: url('${path.relative(process.cwd(), path.join(__dirname, 'fonts', 'caveat-bold.woff2'))}') format('woff2');
+                            font-weight: bold;
+                            font-style: normal;
+                            size-adjust: 120%;
+                        }
+                    </style>
+                </defs>
                 <rect width="100%" height="100%" fill="white"/>
                 <text 
                     x="50%" 
                     y="50%" 
-                    font-family="${font}" 
-                    font-size="48" 
+                    font-family="${font}, Caveat" 
+                    font-size="${fontSize}" 
                     text-anchor="middle" 
                     dominant-baseline="middle"
                     fill="black"
+                    direction="rtl"
+                    xml:lang="he"
                 >
                     ${text}
                 </text>
