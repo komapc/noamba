@@ -1,12 +1,42 @@
 const express = require('express');
+const sharp = require('sharp');
 
 const app = express();
 
 app.get('/render', async (req, res) => {
     const text = req.query.text || 'Hello, world!';
+    const width = parseInt(req.query.width) || 800;
+    const height = parseInt(req.query.height) || 200;
     
-    res.setHeader('Content-Type', 'text/plain');
-    res.send(text);
+    try {
+        const svg = `
+            <svg width="${width}" height="${height}">
+                <rect width="100%" height="100%" fill="white"/>
+                <text 
+                    x="50%" 
+                    y="50%" 
+                    font-family="Arial" 
+                    font-size="48" 
+                    text-anchor="middle" 
+                    dominant-baseline="middle"
+                    fill="black"
+                >
+                    ${text}
+                </text>
+            </svg>
+        `;
+
+        const buffer = await sharp(Buffer.from(svg))
+            .png()
+            .toBuffer();
+
+        res.setHeader('Content-Type', 'image/png');
+        res.setHeader('Content-Disposition', 'attachment; filename="rendered-text.png"');
+        res.send(buffer);
+    } catch (error) {
+        console.error('Error generating image:', error);
+        res.status(500).send('Error generating image');
+    }
 });
 
 const port = process.env.PORT || 3000;
