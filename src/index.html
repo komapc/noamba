@@ -149,13 +149,14 @@
 
         // Set default text and initial render
         document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('textInput').value = 'הללו וורלד';
-            generateImage();
-            // Initialize theme from prefers-color-scheme/localStorage
+            // Initialize theme from prefers-color-scheme/localStorage BEFORE first render
             const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
             const saved = localStorage.getItem('theme');
             const isDark = saved ? saved === 'dark' : prefersDark;
             document.body.classList.toggle('dark', isDark);
+
+            document.getElementById('textInput').value = 'הללו וורלד';
+            generateImage();
         });
 
         // Real-time updates
@@ -168,6 +169,8 @@
             const nextIsDark = !document.body.classList.contains('dark');
             document.body.classList.toggle('dark', nextIsDark);
             localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
+            // Refresh image immediately to apply new colors
+            generateImage();
         });
     </script>
     </body>
