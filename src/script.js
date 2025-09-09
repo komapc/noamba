@@ -11,8 +11,22 @@ const CanvasRenderer = {
         // Check if MultiGender font is available and load it
         const ensureMultiGenderFont = async () => {
             try {
-                // Try to load the font
-                await document.fonts.load('32px "AlefMultiGenderHebrew"');
+                // Check current protocol and adjust font loading accordingly
+                const isFileProtocol = window.location.protocol === 'file:';
+                console.log('Current protocol:', window.location.protocol);
+                
+                if (isFileProtocol) {
+                    console.log('File protocol detected - using different font loading approach');
+                    // For file:// protocol, try to load font directly
+                    const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
+                    await fontFace.load();
+                    document.fonts.add(fontFace);
+                    console.log('Loaded font via FontFace API for file protocol');
+                } else {
+                    // For http:// protocol, use standard loading
+                    await document.fonts.load('32px "AlefMultiGenderHebrew"');
+                    console.log('Loaded font via document.fonts.load for HTTP protocol');
+                }
                 
                 // Check if font is actually available
                 const testCanvas = document.createElement('canvas');
@@ -24,12 +38,13 @@ const CanvasRenderer = {
                 console.log('MultiGender font test:', {
                     font: testCtx.font,
                     metrics: metrics,
-                    width: metrics.width
+                    width: metrics.width,
+                    protocol: window.location.protocol
                 });
                 
                 // If width is 0 or very small, font might not be loaded
                 if (metrics.width < 10) {
-                    console.warn('MultiGender font may not be loaded properly');
+                    console.warn('MultiGender font may not be loaded properly, trying TTF fallback');
                     // Try loading TTF as fallback
                     const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
                     await fontFace.load();
@@ -50,11 +65,28 @@ const CanvasRenderer = {
                 // Force reload the MultiGender font specifically for canvas
                 const reloadFont = async () => {
                     try {
-                        // Try to reload the font with explicit loading
-                        const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
-                        await fontFace.load();
-                        document.fonts.add(fontFace);
-                        console.log('Reloaded MultiGender font for canvas');
+                        const isFileProtocol = window.location.protocol === 'file:';
+                        console.log('Reloading font for protocol:', window.location.protocol);
+                        
+                        if (isFileProtocol) {
+                            // For file protocol, try both WOFF and TTF
+                            try {
+                                const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
+                                await fontFace.load();
+                                document.fonts.add(fontFace);
+                                console.log('Reloaded WOFF font for file protocol');
+                            } catch (woffError) {
+                                console.log('WOFF failed, trying TTF:', woffError);
+                                const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
+                                await fontFace.load();
+                                document.fonts.add(fontFace);
+                                console.log('Reloaded TTF font for file protocol');
+                            }
+                        } else {
+                            // For HTTP protocol, use standard approach
+                            await document.fonts.load('32px "AlefMultiGenderHebrew"');
+                            console.log('Reloaded font via document.fonts.load for HTTP protocol');
+                        }
                     } catch (e) {
                         console.log('Font reload error:', e);
                     }
