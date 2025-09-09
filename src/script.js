@@ -219,37 +219,17 @@ const CanvasRenderer = {
 
     calculateDimensions(ctx, lines, size) {
         const lineHeight = Math.round(size * 1.3);
-        const padding = Math.round(size * 0.8); // Increased padding for better spacing
+        const padding = Math.round(size * 0.5);
         
         let maxWidth = 0;
         lines.forEach(line => {
             const metrics = ctx.measureText(line);
-            // Add extra width for special characters and RTL text
-            const extraWidth = line.includes(/[׭׬׌׎׫׊׏׋׉׮׍׈]/) ? size * 0.5 : 0;
-            maxWidth = Math.max(maxWidth, metrics.width + extraWidth);
-        });
-        
-        // Ensure minimum width and add more padding for special characters
-        const minWidth = 400;
-        const maxWidthLimit = 1200;
-        const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + padding * 2));
-        
-        // Ensure minimum height and add extra height for special characters
-        const minHeight = 120; // Increased minimum height
-        const calculatedHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
-        
-        console.log('Canvas dimensions calculation:', {
-            maxWidth,
-            lines: lines.length,
-            lineHeight,
-            padding,
-            calculatedWidth,
-            calculatedHeight
+            maxWidth = Math.max(maxWidth, metrics.width);
         });
         
         return {
-            width: calculatedWidth,
-            height: calculatedHeight,
+            width: Math.max(400, Math.min(1200, maxWidth + padding * 2)),
+            height: Math.max(100, lines.length * lineHeight + padding * 2),
             lineHeight,
             padding
         };
@@ -312,29 +292,19 @@ const CanvasRenderer = {
         
         // Draw multi-line text centered
         const totalTextHeight = lines.length * dimensions.lineHeight;
-        const startY = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
-        let y = startY;
-        
-        console.log('Text positioning:', {
-            canvasHeight: ctx.canvas.height,
-            totalTextHeight,
-            startY,
-            lineHeight: dimensions.lineHeight
-        });
+        let y = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
         
         for (const line of lines) {
-            console.log('Drawing line:', line, 'at y:', y, 'with font:', ctx.font);
+            console.log('Drawing line:', line, 'with font:', ctx.font);
             
             // Test drawing individual characters
             if (hasSpecialChars) {
                 console.log('Testing individual character rendering...');
-                const testY = Math.max(20, y - 50); // Draw test above main text, but not off canvas
+                const testY = y - 50; // Draw test above main text
                 ctx.fillText('Test: ׭׬׌', ctx.canvas.width / 2, testY);
             }
             
-            // Ensure text is within canvas bounds
-            const textY = Math.max(size, Math.min(y, ctx.canvas.height - 10));
-            ctx.fillText(line, ctx.canvas.width / 2, textY);
+            ctx.fillText(line, ctx.canvas.width / 2, y);
             y += dimensions.lineHeight;
         }
     }
