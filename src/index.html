@@ -115,8 +115,11 @@
             const font = encodeURIComponent(document.getElementById('fontSelect').value);
             const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
             const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 24;
+            const isDark = document.body.classList.contains('dark');
+            const fg = encodeURIComponent(isDark ? '#e5e7eb' : '#111827');
+            const bg = encodeURIComponent(isDark ? '#0b0f14' : '#ffffff');
             const ts = Date.now();
-            const url = `/render?text=${text}&font=${font}&size=${size}&ts=${ts}`;
+            const url = `/render?text=${text}&font=${font}&size=${size}&fg=${fg}&bg=${bg}&ts=${ts}`;
             try {
                 const requestId = ++lastRequestId;
                 const response = await fetch(url, { cache: 'no-store' });
