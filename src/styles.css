@@ -183,8 +183,20 @@ body.dark canvas {
 
 @font-face {
     font-family: "AlefMultiGenderHebrew";
-    src: url("fonts/AlefMultiGndr-Regular.woff");
+    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
+         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
     font-display: swap;
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "AlefMultiGndr";
+    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
+         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
+    font-display: swap;
+    font-weight: normal;
+    font-style: normal;
 }
 
 /* Special character keyboard */
