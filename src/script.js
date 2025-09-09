@@ -11,18 +11,38 @@ const CanvasRenderer = {
         // Wait for fonts to load, especially the MultiGender font
         const loadFont = async () => {
             try {
-                await document.fonts.load(`${size}px "${font}"`);
+                // Load the specific font with proper family name
+                const fontMap = {
+                    'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
+                    'Amatic SC': 'Amatic SC',
+                    'Caveat': 'Caveat',
+                    'Noto Rashi Hebrew': 'Noto Rashi Hebrew',
+                    'Rubik Scribble': 'Rubik Scribble',
+                    'Satisfy': 'Satisfy',
+                    'Varela Round': 'Varela Round',
+                    'Dana Yad': 'Dana Yad'
+                };
+                const actualFont = fontMap[font] || font;
+                await document.fonts.load(`${size}px "${actualFont}"`);
+                
+                // Also try to load the MultiGender font specifically for special characters
+                if (actualFont !== 'AlefMultiGenderHebrew') {
+                    await document.fonts.load(`${size}px "AlefMultiGenderHebrew"`);
+                }
             } catch (e) {
                 console.log('Font loading error:', e);
             }
         };
         
         loadFont().then(() => {
-            this.setupCanvas(ctx, font, size);
-            const lines = this.prepareText(text);
-            const dimensions = this.calculateDimensions(ctx, lines, size);
-            this.resizeCanvas(canvas, dimensions);
-            this.drawText(ctx, lines, size, dimensions);
+            // Add a small delay to ensure font is fully loaded
+            setTimeout(() => {
+                this.setupCanvas(ctx, font, size);
+                const lines = this.prepareText(text);
+                const dimensions = this.calculateDimensions(ctx, lines, size);
+                this.resizeCanvas(canvas, dimensions);
+                this.drawText(ctx, lines, size, dimensions);
+            }, 100);
         });
     },
 
@@ -40,8 +60,13 @@ const CanvasRenderer = {
         };
         
         const actualFont = fontMap[font] || font;
-        // Add fallback fonts for better special character support
-        const fontString = `${size}px "${actualFont}", "AlefMultiGenderHebrew", "Noto Rashi Hebrew", sans-serif`;
+        
+        // For special characters, always use MultiGender font as primary
+        const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(document.getElementById('textInput').value);
+        const fontString = hasSpecialChars 
+            ? `${size}px "AlefMultiGenderHebrew", "${actualFont}", "Noto Rashi Hebrew", sans-serif`
+            : `${size}px "${actualFont}", "AlefMultiGenderHebrew", "Noto Rashi Hebrew", sans-serif`;
+            
         ctx.font = fontString;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
