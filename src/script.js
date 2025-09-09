@@ -373,12 +373,8 @@ const CanvasRenderer = {
         for (const line of lines) {
             console.log('Drawing line:', line, 'at y:', y, 'with font:', ctx.font);
             
-            // Debug: Test special character rendering (only in development)
-            if (hasSpecialChars && lines.indexOf(line) === 0 && false) { // Disabled for production
-                console.log('Testing individual character rendering...');
-                const testY = Math.max(20, y - 50);
-                ctx.fillText('Test: ׭׬׌', ctx.canvas.width / 2, testY);
-            }
+            // Debug: Test special character rendering (completely removed)
+            // This was causing "Test:" to appear in the rendered image
             
             // Ensure line is not empty or corrupted and is within canvas bounds
             if (line && line.trim()) {
