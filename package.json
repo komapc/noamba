@@ -1,23 +1,15 @@
 {
-  "name": "render-text",
+  "name": "multigender-hebrew-text-designer",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/render.js",
+  "description": "Client-side MultiGender Hebrew text-to-image generator with special character keyboard",
+  "main": "src/index.html",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "echo \"no build for static deploy\"",
-    "start": "node src/render.js"
+    "start": "echo \"Open src/index.html in your browser - no server required!\"",
+    "serve": "npx http-server src -p 8000 -o",
+    "build": "echo \"Static site - no build required\""
   },
-  "keywords": [],
+  "keywords": ["hebrew", "multigender", "text", "image", "canvas", "client-side"],
   "author": "",
   "license": "ISC",
-  "type": "commonjs",
-  "dependencies": {
-    "express": "^4.18.2",
-    "sharp": "^0.34.3"
-  },
-  "devDependencies": {
-    "@types/node": "^24.3.1",
-    "typescript": "^5.9.2"
-  }
+  "type": "commonjs"
 }
