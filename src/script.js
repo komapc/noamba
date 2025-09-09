@@ -70,7 +70,7 @@ const CanvasRenderer = {
             console.log('Initial lines:', initialLines);
             
             // Apply line wrapping to each line
-            const maxLineWidth = 400; // Further reduced for Hebrew text
+            const maxLineWidth = 300; // Reduced for better text wrapping
             const wrappedLines = [];
             initialLines.forEach(line => {
                 const wrapped = this.wrapText(line, maxLineWidth, ctx);
@@ -267,8 +267,16 @@ const CanvasRenderer = {
         
         // More intelligent width calculation
         const minWidth = 200;
-        const maxWidthLimit = 800; // Reduced max width for better proportions
+        const maxWidthLimit = 600; // Reduced max width for better proportions
         const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
+        
+        console.log('Width calculation details:', {
+            maxWidth,
+            extraWidth,
+            padding,
+            calculatedWidth,
+            maxWidthLimit
+        });
         
         // Better height calculation - add extra space for text positioning
         const minHeight = 120;
@@ -351,7 +359,7 @@ const CanvasRenderer = {
         
         // Draw multi-line text centered with proper positioning
         const totalTextHeight = lines.length * dimensions.lineHeight;
-        const startY = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
+        const startY = Math.round((ctx.canvas.height - totalTextHeight) / 2) + dimensions.lineHeight;
         let y = startY;
         
         console.log('Text positioning details:', {
@@ -365,10 +373,10 @@ const CanvasRenderer = {
         for (const line of lines) {
             console.log('Drawing line:', line, 'at y:', y, 'with font:', ctx.font);
             
-            // Test drawing individual characters (only once, not for every line)
-            if (hasSpecialChars && lines.indexOf(line) === 0) {
+            // Debug: Test special character rendering (only in development)
+            if (hasSpecialChars && lines.indexOf(line) === 0 && false) { // Disabled for production
                 console.log('Testing individual character rendering...');
-                const testY = Math.max(20, y - 50); // Draw test above main text, but not off canvas
+                const testY = Math.max(20, y - 50);
                 ctx.fillText('Test: ׭׬׌', ctx.canvas.width / 2, testY);
             }
             
