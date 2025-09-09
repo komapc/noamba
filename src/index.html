@@ -57,19 +57,13 @@
                 <option value="Sriracha">כתב יד סיראצ׳ה</option>
             </select>
             <input type="number" id="sizeInput" value="24" min="8" max="144" style="width: 60px; padding:10px;" />
-            <button id="getBtn">Generate Image</button>
         </div>
         <img id="resultImg" style="margin-top:20px;" />
     </div>
 
     <script>
-        // Set default text
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('textInput').value = 'הללו וורלד';
-        });
-
-        // Generate image logic
-        document.getElementById('getBtn').addEventListener('click', async function() {
+        // Generate image logic (auto on input changes)
+        async function generateImage() {
             const text = encodeURIComponent(document.getElementById('textInput').value);
             const font = encodeURIComponent(document.getElementById('fontSelect').value);
             const size = document.getElementById('sizeInput').value || 24;
@@ -82,7 +76,18 @@
             } catch (err) {
                 alert('Error fetching image: ' + err.message);
             }
+        }
+
+        // Set default text and initial render
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('textInput').value = 'הללו וורלד';
+            generateImage();
         });
+
+        // Real-time updates
+        document.getElementById('textInput').addEventListener('input', generateImage);
+        document.getElementById('fontSelect').addEventListener('change', generateImage);
+        document.getElementById('sizeInput').addEventListener('input', generateImage);
     </script>
     </body>
     </html>
