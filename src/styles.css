@@ -112,6 +112,14 @@ body.dark .text-input {
     background: var(--control-bg-light);
     color: var(--text-light);
     font-family: inherit;
+    text-align: center;
+    -moz-appearance: textfield;
+}
+
+.size-input::-webkit-outer-spin-button,
+.size-input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
 }
 
 body.dark .font-select,
@@ -250,8 +258,9 @@ body.dark .keyboard-label {
     }
     
     .controls-row {
-        flex-direction: row;
+        flex-direction: row !important;
         align-items: center;
+        gap: 8px;
     }
     
     .font-select {
@@ -279,8 +288,9 @@ body.dark .keyboard-label {
     }
     
     .controls-row {
-        flex-direction: row;
+        flex-direction: row !important;
         align-items: center;
+        gap: 6px;
     }
     
     .font-select {
