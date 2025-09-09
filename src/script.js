@@ -46,14 +46,30 @@ const CanvasRenderer = {
             // Wait for all fonts to be ready
             document.fonts.ready.then(() => {
                 console.log('Starting canvas rendering...');
-                this.setupCanvas(ctx, font, size);
-                const lines = this.prepareText(text);
-                console.log('Prepared lines:', lines);
-                const dimensions = this.calculateDimensions(ctx, lines, size);
-                console.log('Canvas dimensions:', dimensions);
-                this.resizeCanvas(canvas, dimensions);
-                this.drawText(ctx, lines, size, dimensions);
-                console.log('Canvas rendering completed');
+                
+                // Force reload the MultiGender font specifically for canvas
+                const reloadFont = async () => {
+                    try {
+                        // Try to reload the font with explicit loading
+                        const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
+                        await fontFace.load();
+                        document.fonts.add(fontFace);
+                        console.log('Reloaded MultiGender font for canvas');
+                    } catch (e) {
+                        console.log('Font reload error:', e);
+                    }
+                };
+                
+                reloadFont().then(() => {
+                    this.setupCanvas(ctx, font, size);
+                    const lines = this.prepareText(text);
+                    console.log('Prepared lines:', lines);
+                    const dimensions = this.calculateDimensions(ctx, lines, size);
+                    console.log('Canvas dimensions:', dimensions);
+                    this.resizeCanvas(canvas, dimensions);
+                    this.drawText(ctx, lines, size, dimensions);
+                    console.log('Canvas rendering completed');
+                });
             });
         });
     },
@@ -63,23 +79,30 @@ const CanvasRenderer = {
         const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(document.getElementById('textInput').value);
         
         if (hasSpecialChars) {
-            // Force MultiGender font for special characters
+            // Force MultiGender font for special characters - use exact same approach as HTML
             ctx.font = `${size}px "AlefMultiGenderHebrew"`;
-            console.log('Using MultiGender font for special characters');
+            console.log('Canvas using MultiGender font:', ctx.font);
             
             // Test if font is actually loaded and working
             const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
             const metrics = ctx.measureText(testText);
-            console.log('Font metrics for special chars:', metrics);
+            console.log('Canvas font metrics for special chars:', metrics);
             
-            // If font doesn't seem to be working, try alternative approaches
-            if (metrics.width < 10) {
-                console.warn('MultiGender font not working, trying alternatives');
-                // Try with different font family names
-                ctx.font = `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`;
-                const metrics2 = ctx.measureText(testText);
-                console.log('Alternative font metrics:', metrics2);
-            }
+            // Force the font to be exactly the same as the keyboard buttons
+            const testElement = document.createElement('div');
+            testElement.style.fontFamily = 'AlefMultiGenderHebrew';
+            testElement.style.fontSize = `${size}px`;
+            testElement.textContent = testText;
+            document.body.appendChild(testElement);
+            
+            // Get computed style to see what font is actually being used
+            const computedStyle = window.getComputedStyle(testElement);
+            console.log('HTML element font family:', computedStyle.fontFamily);
+            console.log('HTML element font size:', computedStyle.fontSize);
+            
+            // Remove test element
+            document.body.removeChild(testElement);
+            
         } else {
             // Use selected font with MultiGender as fallback
             const fontMap = {
