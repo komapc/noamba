@@ -8,8 +8,16 @@ const CanvasRenderer = {
         const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
 
-        // Wait for fonts to load
-        document.fonts.ready.then(() => {
+        // Wait for fonts to load, especially the MultiGender font
+        const loadFont = async () => {
+            try {
+                await document.fonts.load(`${size}px "${font}"`);
+            } catch (e) {
+                console.log('Font loading error:', e);
+            }
+        };
+        
+        loadFont().then(() => {
             this.setupCanvas(ctx, font, size);
             const lines = this.prepareText(text);
             const dimensions = this.calculateDimensions(ctx, lines, size);
@@ -19,7 +27,21 @@ const CanvasRenderer = {
     },
 
     setupCanvas(ctx, font, size) {
-        const fontString = `${size}px "${font}"`;
+        // Map font names to actual font families
+        const fontMap = {
+            'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
+            'Amatic SC': 'Amatic SC',
+            'Caveat': 'Caveat',
+            'Noto Rashi Hebrew': 'Noto Rashi Hebrew',
+            'Rubik Scribble': 'Rubik Scribble',
+            'Satisfy': 'Satisfy',
+            'Varela Round': 'Varela Round',
+            'Dana Yad': 'Dana Yad'
+        };
+        
+        const actualFont = fontMap[font] || font;
+        // Add fallback fonts for better special character support
+        const fontString = `${size}px "${actualFont}", "AlefMultiGenderHebrew", "Noto Rashi Hebrew", sans-serif`;
         ctx.font = fontString;
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
