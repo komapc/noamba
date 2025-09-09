@@ -111,23 +111,52 @@ const CanvasRenderer = {
         const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(document.getElementById('textInput').value);
         
         if (hasSpecialChars) {
-            // Force MultiGender font for special characters - use exact same approach as HTML
+            // Try multiple font approaches
+            console.log('Attempting multiple font loading approaches...');
+            
+            // Approach 1: Direct font setting
             ctx.font = `${size}px "AlefMultiGenderHebrew"`;
-            console.log('Canvas using MultiGender font:', ctx.font);
+            console.log('Approach 1 - Canvas font:', ctx.font);
             
-            // Test if font is actually loaded and working
+            // Approach 2: Try with fallback
+            ctx.font = `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`;
+            console.log('Approach 2 - Canvas font with fallback:', ctx.font);
+            
+            // Approach 3: Force reload and retry
             const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
-            const metrics = ctx.measureText(testText);
-            console.log('Canvas font metrics for special chars:', metrics);
             
-            // Force the font to be exactly the same as the keyboard buttons
+            // Test each approach
+            const approaches = [
+                `${size}px "AlefMultiGenderHebrew"`,
+                `${size}px "AlefMultiGndr"`,
+                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`,
+                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", "Arial Unicode MS", sans-serif`
+            ];
+            
+            for (let i = 0; i < approaches.length; i++) {
+                ctx.font = approaches[i];
+                const metrics = ctx.measureText(testText);
+                console.log(`Approach ${i + 1} (${approaches[i]}): width=${metrics.width}`);
+                
+                if (metrics.width > 10) {
+                    console.log(`Using approach ${i + 1} - font working!`);
+                    break;
+                }
+            }
+            
+            // Final test
+            const finalMetrics = ctx.measureText(testText);
+            console.log('Final canvas font metrics:', finalMetrics);
+            
+            // Compare with HTML element
             const testElement = document.createElement('div');
             testElement.style.fontFamily = 'AlefMultiGenderHebrew';
             testElement.style.fontSize = `${size}px`;
             testElement.textContent = testText;
+            testElement.style.position = 'absolute';
+            testElement.style.left = '-9999px';
             document.body.appendChild(testElement);
             
-            // Get computed style to see what font is actually being used
             const computedStyle = window.getComputedStyle(testElement);
             console.log('HTML element font family:', computedStyle.fontFamily);
             console.log('HTML element font size:', computedStyle.fontSize);
