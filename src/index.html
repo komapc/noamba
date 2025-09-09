@@ -133,7 +133,11 @@
                 if (lastObjectUrl) {
                     URL.revokeObjectURL(lastObjectUrl);
                 }
-                img.src = nextUrl;
+                // Force refresh by clearing src before setting the new URL
+                img.src = '';
+                requestAnimationFrame(() => {
+                    img.src = nextUrl;
+                });
                 lastObjectUrl = nextUrl;
             } catch (err) {
                 alert('Error fetching image: ' + err.message);
