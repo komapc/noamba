@@ -248,6 +248,21 @@ body.dark .keyboard-label {
         font-size: 14px;
         min-height: 32px;
     }
+    
+    .controls-row {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .font-select {
+        flex: 1;
+        min-width: 150px;
+    }
+    
+    .size-input {
+        width: 80px;
+        flex-shrink: 0;
+    }
 }
 
 @media (max-width: 480px) {
@@ -261,6 +276,21 @@ body.dark .keyboard-label {
         padding: 5px 2px;
         font-size: 12px;
         min-height: 28px;
+    }
+    
+    .controls-row {
+        flex-direction: row;
+        align-items: center;
+    }
+    
+    .font-select {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .size-input {
+        width: 70px;
+        flex-shrink: 0;
     }
 }
 
