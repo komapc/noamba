@@ -39,6 +39,13 @@ h1 {
     font-weight: 600;
 }
 
+.version {
+    font-size: 0.6em;
+    font-weight: 400;
+    opacity: 0.7;
+    margin-left: 0.5rem;
+}
+
 .theme-toggle {
     position: fixed;
     top: 16px;

@@ -1,3 +1,14 @@
+// Version information
+const APP_VERSION = '1.2.0';
+const BUILD_TIME = new Date().toISOString();
+
+// Log version information
+console.log('🚀 MultiGender Hebrew Text Designer');
+console.log('📦 Version:', APP_VERSION);
+console.log('🕒 Build Time:', BUILD_TIME);
+console.log('🌐 Protocol:', window.location.protocol);
+console.log('📍 URL:', window.location.href);
+
 // Canvas renderer module
 const CanvasRenderer = {
     generate() {
