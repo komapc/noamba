@@ -10,90 +10,89 @@ const CanvasRenderer = {
 
         // Wait for fonts to load
         document.fonts.ready.then(() => {
-            // Set up text measurement
-            ctx.font = `${size}px "${font}"`;
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'alphabetic';
-            ctx.direction = 'rtl';
-            ctx.textRendering = 'optimizeLegibility';
-            
-            // Enable advanced text features
-            ctx.fontKerning = 'normal';
-            if (font === 'Ezra SIL SR') {
-                ctx.mozTextStyle = `${size}px "${font}"`;
-                ctx.webkitFontSmoothing = 'antialiased';
-                ctx.fontVariantLigatures = 'normal';
-            }
-            
-            try {
-                // Enable all OpenType features
-                const features = {
-                    'kern': 'normal',
-                    'liga': 'normal',
-                    'hlig': 'normal',
-                    'calt': 'normal',
-                    'dlig': 'normal',
-                    'ccmp': 'normal',
-                    'rlig': 'normal',
-                    'locl': 'normal',
-                    'mark': 'normal',
-                    'mkmk': 'normal'
-                };
-                
-                const fontString = `${size}px "${font}"`;
-                const featureString = Object.entries(features)
-                    .map(([feature, value]) => `"${feature}" ${value}`)
-                    .join(', ');
-                
-                ctx.font = fontString;
-                if (ctx.fontFeatureSettings !== undefined) {
-                    ctx.fontFeatureSettings = featureString;
-                }
-            } catch (e) {
-                console.log('OpenType features not fully supported:', e);
-            }
-
-            // Calculate text dimensions
-            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-            if (lines.length === 0) {
-                lines.push(''); // At least one line for empty text
-            }
-            
-            const lineHeight = Math.round(size * 1.3);
-            const padding = Math.round(size * 0.5);
-            
-            // Measure text width for each line
-            let maxWidth = 0;
-            lines.forEach(line => {
-                const metrics = ctx.measureText(line);
-                maxWidth = Math.max(maxWidth, metrics.width);
-            });
-            
-            // Calculate canvas dimensions
-            const canvasWidth = Math.max(400, Math.min(1200, maxWidth + padding * 2));
-            const canvasHeight = Math.max(100, lines.length * lineHeight + padding * 2);
-            
-            // Resize canvas
-            canvas.width = canvasWidth;
-            canvas.height = canvasHeight;
-            
-            // Clear canvas with theme-aware background
-            const isDark = document.body.classList.contains('dark');
-            ctx.fillStyle = isDark ? '#0b0f14' : 'white';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            // Set text color based on theme for contrast
-            ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
-            
-            // Draw multi-line text centered
-            const totalTextHeight = lines.length * lineHeight;
-            let y = Math.round((canvas.height - totalTextHeight) / 2) + size;
-            
-            for (const line of lines) {
-                ctx.fillText(line, canvas.width / 2, y);
-                y += lineHeight;
-            }
+            this.setupCanvas(ctx, font, size);
+            const lines = this.prepareText(text);
+            const dimensions = this.calculateDimensions(ctx, lines, size);
+            this.resizeCanvas(canvas, dimensions);
+            this.drawText(ctx, lines, size, dimensions);
         });
+    },
+
+    setupCanvas(ctx, font, size) {
+        const fontString = `${size}px "${font}"`;
+        ctx.font = fontString;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.direction = 'rtl';
+        ctx.textRendering = 'optimizeLegibility';
+        ctx.fontKerning = 'normal';
+        
+        // Enable OpenType features
+        try {
+            const features = {
+                'kern': 'normal', 'liga': 'normal', 'hlig': 'normal',
+                'calt': 'normal', 'dlig': 'normal', 'ccmp': 'normal',
+                'rlig': 'normal', 'locl': 'normal', 'mark': 'normal', 'mkmk': 'normal'
+            };
+            
+            const featureString = Object.entries(features)
+                .map(([feature, value]) => `"${feature}" ${value}`)
+                .join(', ');
+            
+            if (ctx.fontFeatureSettings !== undefined) {
+                ctx.fontFeatureSettings = featureString;
+            }
+        } catch (e) {
+            console.log('OpenType features not fully supported:', e);
+        }
+    },
+
+    prepareText(text) {
+        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        return lines.length === 0 ? [''] : lines;
+    },
+
+    calculateDimensions(ctx, lines, size) {
+        const lineHeight = Math.round(size * 1.3);
+        const padding = Math.round(size * 0.5);
+        
+        let maxWidth = 0;
+        lines.forEach(line => {
+            const metrics = ctx.measureText(line);
+            maxWidth = Math.max(maxWidth, metrics.width);
+        });
+        
+        return {
+            width: Math.max(400, Math.min(1200, maxWidth + padding * 2)),
+            height: Math.max(100, lines.length * lineHeight + padding * 2),
+            lineHeight,
+            padding
+        };
+    },
+
+    resizeCanvas(canvas, dimensions) {
+        canvas.width = dimensions.width;
+        canvas.height = dimensions.height;
+    },
+
+    drawText(ctx, lines, size, dimensions) {
+        const isDark = document.body.classList.contains('dark');
+        
+        // Clear canvas with theme-aware background
+        ctx.fillStyle = isDark ? '#0b0f14' : 'white';
+        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        
+        // Set text color based on theme
+        ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
+        
+        // Draw multi-line text centered
+        const totalTextHeight = lines.length * dimensions.lineHeight;
+        let y = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
+        
+        for (const line of lines) {
+            ctx.fillText(line, ctx.canvas.width / 2, y);
+            y += dimensions.lineHeight;
+        }
     }
 };
 
