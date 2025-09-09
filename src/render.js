@@ -61,6 +61,10 @@ app.get('/render', async (req, res) => {
     const sizeVal = parseInt(req.query.size);
     const fontSize = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
     const lineHeight = Math.round(fontSize * 1.3);
+    // Colors (sanitize to simple hex)
+    const hexColorRe = /^#([0-9a-fA-F]{3}|[0-9a-fA-F]{6})$/;
+    const fg = typeof req.query.fg === 'string' && hexColorRe.test(req.query.fg) ? req.query.fg : '#111827';
+    const bg = typeof req.query.bg === 'string' && hexColorRe.test(req.query.bg) ? req.query.bg : '#ffffff';
     
     try {
         // Download and cache the font
@@ -87,13 +91,13 @@ app.get('/render', async (req, res) => {
       }
     </style>
   </defs>
-  <rect width="100%" height="100%" fill="white"/>
+  <rect width="100%" height="100%" fill="${bg}"/>
   <text
     x="50%"
     font-family="${font}, Caveat"
     font-size="${fontSize}"
     text-anchor="middle"
-    fill="black"
+    fill="${fg}"
     direction="rtl"
     xml:lang="he"
   >

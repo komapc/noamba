@@ -127,14 +127,15 @@
             const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
             const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 72;
 
-            // Clear canvas
-            ctx.fillStyle = 'white';
+            // Clear canvas with theme-aware background
+            const isDark = document.body.classList.contains('dark');
+            ctx.fillStyle = isDark ? '#0b0f14' : 'white';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             // Wait for fonts to load
             document.fonts.ready.then(() => {
-                // Set text properties (canvas is white, keep high-contrast text)
-                ctx.fillStyle = 'black';
+                // Set text color based on theme for contrast
+                ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
                 ctx.font = `${size}px "${font}"`;
                 ctx.textAlign = 'center';
                 ctx.textBaseline = 'alphabetic';
