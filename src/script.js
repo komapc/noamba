@@ -270,9 +270,10 @@ const CanvasRenderer = {
         const maxWidthLimit = 800; // Reduced max width for better proportions
         const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
         
-        // Better height calculation
-        const minHeight = 80;
-        const calculatedHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
+        // Better height calculation - add extra space for text positioning
+        const minHeight = 120;
+        const textHeight = lines.length * lineHeight;
+        const calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + size); // Add font size for better spacing
         
         console.log('Canvas sizing details:', {
             maxWidth,
@@ -348,23 +349,35 @@ const CanvasRenderer = {
             }
         }
         
-        // Draw multi-line text centered
+        // Draw multi-line text centered with proper positioning
         const totalTextHeight = lines.length * dimensions.lineHeight;
-        let y = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
+        const startY = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
+        let y = startY;
+        
+        console.log('Text positioning details:', {
+            canvasHeight: ctx.canvas.height,
+            totalTextHeight,
+            startY,
+            lineHeight: dimensions.lineHeight,
+            lines: lines.length
+        });
         
         for (const line of lines) {
-            console.log('Drawing line:', line, 'with font:', ctx.font);
+            console.log('Drawing line:', line, 'at y:', y, 'with font:', ctx.font);
             
             // Test drawing individual characters (only once, not for every line)
             if (hasSpecialChars && lines.indexOf(line) === 0) {
                 console.log('Testing individual character rendering...');
-                const testY = y - 50; // Draw test above main text
+                const testY = Math.max(20, y - 50); // Draw test above main text, but not off canvas
                 ctx.fillText('Test: ׭׬׌', ctx.canvas.width / 2, testY);
             }
             
-            // Ensure line is not empty or corrupted
+            // Ensure line is not empty or corrupted and is within canvas bounds
             if (line && line.trim()) {
-                ctx.fillText(line, ctx.canvas.width / 2, y);
+                // Ensure text is within canvas bounds
+                const textY = Math.max(size, Math.min(y, ctx.canvas.height - 10));
+                ctx.fillText(line, ctx.canvas.width / 2, textY);
+                console.log('Drew line at y:', textY);
             }
             y += dimensions.lineHeight;
         }
