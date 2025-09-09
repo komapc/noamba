@@ -133,6 +133,7 @@ const CanvasRenderer = {
                 `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", "Arial Unicode MS", sans-serif`
             ];
             
+            let workingApproach = 0;
             for (let i = 0; i < approaches.length; i++) {
                 ctx.font = approaches[i];
                 const metrics = ctx.measureText(testText);
@@ -140,9 +141,14 @@ const CanvasRenderer = {
                 
                 if (metrics.width > 10) {
                     console.log(`Using approach ${i + 1} - font working!`);
+                    workingApproach = i;
                     break;
                 }
             }
+            
+            // Force the working approach
+            ctx.font = approaches[workingApproach];
+            console.log('Final working font:', ctx.font);
             
             // Final test
             const finalMetrics = ctx.measureText(testText);
@@ -251,7 +257,27 @@ const CanvasRenderer = {
         console.log('Has special chars:', hasSpecialChars);
         
         if (hasSpecialChars) {
-            ctx.font = `${size}px "AlefMultiGenderHebrew"`;
+            // Use the same font approach that worked in setupCanvas
+            const approaches = [
+                `${size}px "AlefMultiGenderHebrew"`,
+                `${size}px "AlefMultiGndr"`,
+                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`,
+                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", "Arial Unicode MS", sans-serif`
+            ];
+            
+            // Test which approach works
+            let workingFont = approaches[0];
+            for (let i = 0; i < approaches.length; i++) {
+                ctx.font = approaches[i];
+                const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
+                const metrics = ctx.measureText(testText);
+                if (metrics.width > 10) {
+                    workingFont = approaches[i];
+                    break;
+                }
+            }
+            
+            ctx.font = workingFont;
             console.log('Drawing with font:', ctx.font);
             
             // Test individual special characters
