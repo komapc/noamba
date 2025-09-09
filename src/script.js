@@ -8,66 +8,61 @@ const CanvasRenderer = {
         const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
 
-        // Wait for fonts to load, especially the MultiGender font
-        const loadFont = async () => {
+        // Force load the MultiGender font first
+        const loadMultiGenderFont = async () => {
             try {
-                // Load the specific font with proper family name
-                const fontMap = {
-                    'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
-                    'Amatic SC': 'Amatic SC',
-                    'Caveat': 'Caveat',
-                    'Noto Rashi Hebrew': 'Noto Rashi Hebrew',
-                    'Rubik Scribble': 'Rubik Scribble',
-                    'Satisfy': 'Satisfy',
-                    'Varela Round': 'Varela Round',
-                    'Dana Yad': 'Dana Yad'
-                };
-                const actualFont = fontMap[font] || font;
-                await document.fonts.load(`${size}px "${actualFont}"`);
-                
-                // Also try to load the MultiGender font specifically for special characters
-                if (actualFont !== 'AlefMultiGenderHebrew') {
-                    await document.fonts.load(`${size}px "AlefMultiGenderHebrew"`);
-                }
+                // Load the MultiGender font with different sizes to ensure it's available
+                await document.fonts.load('16px "AlefMultiGenderHebrew"');
+                await document.fonts.load('32px "AlefMultiGenderHebrew"');
+                await document.fonts.load('64px "AlefMultiGenderHebrew"');
+                console.log('MultiGender font loaded successfully');
             } catch (e) {
-                console.log('Font loading error:', e);
+                console.log('MultiGender font loading error:', e);
             }
         };
-        
-        loadFont().then(() => {
-            // Add a small delay to ensure font is fully loaded
-            setTimeout(() => {
+
+        // Load fonts and render
+        loadMultiGenderFont().then(() => {
+            // Wait for all fonts to be ready
+            document.fonts.ready.then(() => {
                 this.setupCanvas(ctx, font, size);
                 const lines = this.prepareText(text);
                 const dimensions = this.calculateDimensions(ctx, lines, size);
                 this.resizeCanvas(canvas, dimensions);
                 this.drawText(ctx, lines, size, dimensions);
-            }, 100);
+            });
         });
     },
 
     setupCanvas(ctx, font, size) {
-        // Map font names to actual font families
-        const fontMap = {
-            'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
-            'Amatic SC': 'Amatic SC',
-            'Caveat': 'Caveat',
-            'Noto Rashi Hebrew': 'Noto Rashi Hebrew',
-            'Rubik Scribble': 'Rubik Scribble',
-            'Satisfy': 'Satisfy',
-            'Varela Round': 'Varela Round',
-            'Dana Yad': 'Dana Yad'
-        };
-        
-        const actualFont = fontMap[font] || font;
-        
-        // For special characters, always use MultiGender font as primary
+        // Always use MultiGender font for special characters, fallback to selected font for regular text
         const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(document.getElementById('textInput').value);
-        const fontString = hasSpecialChars 
-            ? `${size}px "AlefMultiGenderHebrew", "${actualFont}", "Noto Rashi Hebrew", sans-serif`
-            : `${size}px "${actualFont}", "AlefMultiGenderHebrew", "Noto Rashi Hebrew", sans-serif`;
+        
+        if (hasSpecialChars) {
+            // Force MultiGender font for special characters
+            ctx.font = `${size}px "AlefMultiGenderHebrew"`;
+            console.log('Using MultiGender font for special characters');
             
-        ctx.font = fontString;
+            // Test if font is actually loaded
+            const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
+            const metrics = ctx.measureText(testText);
+            console.log('Font metrics for special chars:', metrics);
+        } else {
+            // Use selected font with MultiGender as fallback
+            const fontMap = {
+                'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
+                'Amatic SC': 'Amatic SC',
+                'Caveat': 'Caveat',
+                'Noto Rashi Hebrew': 'Noto Rashi Hebrew',
+                'Rubik Scribble': 'Rubik Scribble',
+                'Satisfy': 'Satisfy',
+                'Varela Round': 'Varela Round',
+                'Dana Yad': 'Dana Yad'
+            };
+            const actualFont = fontMap[font] || font;
+            ctx.font = `${size}px "${actualFont}", "AlefMultiGenderHebrew", sans-serif`;
+        }
+        
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
         ctx.direction = 'rtl';
