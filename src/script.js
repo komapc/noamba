@@ -8,15 +8,9 @@ const CanvasRenderer = {
         const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
 
-        // Clear canvas with theme-aware background
-        const isDark = document.body.classList.contains('dark');
-        ctx.fillStyle = isDark ? '#0b0f14' : 'white';
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-
         // Wait for fonts to load
         document.fonts.ready.then(() => {
-            // Set text color based on theme for contrast
-            ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
+            // Set up text measurement
             ctx.font = `${size}px "${font}"`;
             ctx.textAlign = 'center';
             ctx.textBaseline = 'alphabetic';
@@ -46,7 +40,6 @@ const CanvasRenderer = {
                     'mkmk': 'normal'
                 };
                 
-                ctx.textAlign = 'center';
                 const fontString = `${size}px "${font}"`;
                 const featureString = Object.entries(features)
                     .map(([feature, value]) => `"${feature}" ${value}`)
@@ -60,11 +53,42 @@ const CanvasRenderer = {
                 console.log('OpenType features not fully supported:', e);
             }
 
-            // Draw multi-line text centered
-            const lines = text.split(/\r?\n/);
+            // Calculate text dimensions
+            const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+            if (lines.length === 0) {
+                lines.push(''); // At least one line for empty text
+            }
+            
             const lineHeight = Math.round(size * 1.3);
-            const totalHeight = lineHeight * Math.max(lines.length, 1);
-            let y = Math.round((canvas.height - totalHeight) / 2) + size;
+            const padding = Math.round(size * 0.5);
+            
+            // Measure text width for each line
+            let maxWidth = 0;
+            lines.forEach(line => {
+                const metrics = ctx.measureText(line);
+                maxWidth = Math.max(maxWidth, metrics.width);
+            });
+            
+            // Calculate canvas dimensions
+            const canvasWidth = Math.max(400, Math.min(1200, maxWidth + padding * 2));
+            const canvasHeight = Math.max(100, lines.length * lineHeight + padding * 2);
+            
+            // Resize canvas
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+            
+            // Clear canvas with theme-aware background
+            const isDark = document.body.classList.contains('dark');
+            ctx.fillStyle = isDark ? '#0b0f14' : 'white';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Set text color based on theme for contrast
+            ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
+            
+            // Draw multi-line text centered
+            const totalTextHeight = lines.length * lineHeight;
+            let y = Math.round((canvas.height - totalTextHeight) / 2) + size;
+            
             for (const line of lines) {
                 ctx.fillText(line, canvas.width / 2, y);
                 y += lineHeight;
