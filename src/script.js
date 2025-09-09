@@ -45,11 +45,15 @@ const CanvasRenderer = {
         ensureMultiGenderFont().then(() => {
             // Wait for all fonts to be ready
             document.fonts.ready.then(() => {
+                console.log('Starting canvas rendering...');
                 this.setupCanvas(ctx, font, size);
                 const lines = this.prepareText(text);
+                console.log('Prepared lines:', lines);
                 const dimensions = this.calculateDimensions(ctx, lines, size);
+                console.log('Canvas dimensions:', dimensions);
                 this.resizeCanvas(canvas, dimensions);
                 this.drawText(ctx, lines, size, dimensions);
+                console.log('Canvas rendering completed');
             });
         });
     },
@@ -182,6 +186,14 @@ const CanvasRenderer = {
         
         for (const line of lines) {
             console.log('Drawing line:', line, 'with font:', ctx.font);
+            
+            // Test drawing individual characters
+            if (hasSpecialChars) {
+                console.log('Testing individual character rendering...');
+                const testY = y - 50; // Draw test above main text
+                ctx.fillText('Test: ׭׬׌', ctx.canvas.width / 2, testY);
+            }
+            
             ctx.fillText(line, ctx.canvas.width / 2, y);
             y += dimensions.lineHeight;
         }
