@@ -8,21 +8,41 @@ const CanvasRenderer = {
         const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
 
-        // Force load the MultiGender font first
-        const loadMultiGenderFont = async () => {
+        // Check if MultiGender font is available and load it
+        const ensureMultiGenderFont = async () => {
             try {
-                // Load the MultiGender font with different sizes to ensure it's available
-                await document.fonts.load('16px "AlefMultiGenderHebrew"');
+                // Try to load the font
                 await document.fonts.load('32px "AlefMultiGenderHebrew"');
-                await document.fonts.load('64px "AlefMultiGenderHebrew"');
-                console.log('MultiGender font loaded successfully');
+                
+                // Check if font is actually available
+                const testCanvas = document.createElement('canvas');
+                const testCtx = testCanvas.getContext('2d');
+                testCtx.font = '32px "AlefMultiGenderHebrew"';
+                const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
+                const metrics = testCtx.measureText(testText);
+                
+                console.log('MultiGender font test:', {
+                    font: testCtx.font,
+                    metrics: metrics,
+                    width: metrics.width
+                });
+                
+                // If width is 0 or very small, font might not be loaded
+                if (metrics.width < 10) {
+                    console.warn('MultiGender font may not be loaded properly');
+                    // Try loading TTF as fallback
+                    const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
+                    await fontFace.load();
+                    document.fonts.add(fontFace);
+                    console.log('Loaded TTF fallback');
+                }
             } catch (e) {
-                console.log('MultiGender font loading error:', e);
+                console.error('Font loading error:', e);
             }
         };
 
         // Load fonts and render
-        loadMultiGenderFont().then(() => {
+        ensureMultiGenderFont().then(() => {
             // Wait for all fonts to be ready
             document.fonts.ready.then(() => {
                 this.setupCanvas(ctx, font, size);
@@ -43,10 +63,19 @@ const CanvasRenderer = {
             ctx.font = `${size}px "AlefMultiGenderHebrew"`;
             console.log('Using MultiGender font for special characters');
             
-            // Test if font is actually loaded
+            // Test if font is actually loaded and working
             const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
             const metrics = ctx.measureText(testText);
             console.log('Font metrics for special chars:', metrics);
+            
+            // If font doesn't seem to be working, try alternative approaches
+            if (metrics.width < 10) {
+                console.warn('MultiGender font not working, trying alternatives');
+                // Try with different font family names
+                ctx.font = `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`;
+                const metrics2 = ctx.measureText(testText);
+                console.log('Alternative font metrics:', metrics2);
+            }
         } else {
             // Use selected font with MultiGender as fallback
             const fontMap = {
