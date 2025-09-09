@@ -2,23 +2,29 @@
 <html>
 <head>
     <title>Text to Image Generator (Client-side)</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link rel="preload" href="fonts/AlefMultiGndr-Regular.woff" as="font" type="font/woff2" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Amatic+SC:wght@700&family=Caveat:wght@700&family=Rubik+Scribble&family=Satisfy&family=Varela+Round&family=Noto+Rashi+Hebrew:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        :root { color-scheme: light dark; }
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f8;
+            color: #111827;
         }
+        body.dark { background: #0b0f14; color: #e5e7eb; }
         .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 16px 48px;
             text-align: center;
         }
-        input, button, select {
+        input, button, select, textarea {
             padding: 10px;
-            margin: 5px;
             font-size: 16px;
         }
         button {
@@ -36,10 +42,40 @@
         img, canvas {
             max-width: 100%;
             margin-top: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
         }
+        body.dark img, body.dark canvas { border-color: #1f2937; box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
         #canvas {
             background: white;
+        }
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 12px;
+        }
+        #controls textarea,
+        #controls select,
+        #controls input[type="number"] {
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #111827;
+        }
+        body.dark #controls textarea,
+        body.dark #controls select,
+        body.dark #controls input[type="number"] { background: #0f172a; color: #e5e7eb; border-color: #1f2937; }
+        #controls textarea { width: min(100%, 640px); }
+        #controls select,
+        #controls input[type="number"] { width: 180px; }
+        @media (max-width: 640px) {
+            #controls { flex-direction: column; align-items: stretch; }
+            #controls select,
+            #controls input[type="number"] { width: 100%; }
         }
     @font-face {
     font-family: "AlefMultiGenderHebrew";
@@ -53,8 +89,8 @@
     <div class="container">
         <h1>Text to Image Generator (Client-side)</h1>
         
-        <div>
-            <input type="text" id="textInput" placeholder="Enter text" style="width: 300px;" />
+        <div id="controls">
+            <textarea id="textInput" placeholder="Enter text" rows="4" style="width: 500px; padding:10px; resize: vertical;"></textarea>
             <select id="fontSelect" style="padding:10px; font-size:16px;">
                 <option value="AlefMultiGenderHebrew">Multi Gender</option>
                 <option value="Amatic SC">Amatic SC - כתב יד עברי</option>
@@ -65,11 +101,12 @@
                 <option value="Varela Round">Varela Round - עגול</option>
                 <option value="Dana Yad">דנה כתב יד (נדרש להתקין)</option>
             </select>
-            <input type="number" id="sizeInput" value="72" min="8" max="144" style="width: 60px;" />
+            <input type="number" id="sizeInput" value="32" min="8" max="144" style="width: 120px;" />
             <button id="shareWhatsApp" style="background-color: #25D366;">
                 <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='white' viewBox='0 0 16 16'%3E%3Cpath d='M13.601 2.326A7.854 7.854 0 0 0 7.994 0C3.627 0 .068 3.558.064 7.926c0 1.399.366 2.76 1.057 3.965L0 16l4.204-1.102a7.933 7.933 0 0 0 3.79.965h.004c4.368 0 7.926-3.558 7.93-7.93A7.898 7.898 0 0 0 13.6 2.326zM7.994 14.521a6.573 6.573 0 0 1-3.356-.92l-.24-.144-2.494.654.666-2.433-.156-.251a6.56 6.56 0 0 1-1.007-3.505c0-3.626 2.957-6.584 6.591-6.584a6.56 6.56 0 0 1 4.66 1.931 6.557 6.557 0 0 1 1.928 4.66c-.004 3.639-2.961 6.592-6.592 6.592zm3.615-4.934c-.197-.099-1.17-.578-1.353-.646-.182-.065-.315-.099-.445.099-.133.197-.513.646-.627.775-.114.133-.232.148-.43.05-.197-.1-.836-.308-1.592-.985-.59-.525-.985-1.175-1.103-1.372-.114-.198-.011-.304.088-.403.087-.088.197-.232.296-.346.1-.114.133-.198.198-.33.065-.134.034-.248-.015-.347-.05-.099-.445-1.076-.612-1.47-.16-.389-.323-.335-.445-.34-.114-.007-.247-.007-.38-.007a.729.729 0 0 0-.529.247c-.182.198-.691.677-.691 1.654 0 .977.71 1.916.81 2.049.098.133 1.394 2.132 3.383 2.992.47.205.84.326 1.129.418.475.152.904.129 1.246.08.38-.058 1.171-.48 1.338-.943.164-.464.164-.86.114-.943-.049-.084-.182-.133-.38-.232z'/%3E%3C/svg%3E" alt="WhatsApp" style="vertical-align: middle; margin-right: 5px;">
                 Share on WhatsApp
             </button>
+            <button id="themeToggle" style="border:1px solid #e5e7eb; background: transparent; color: inherit; padding: 8px 10px; border-radius: 6px; cursor: pointer;">Toggle theme</button>
         </div>
         <canvas id="canvas" width="800" height="200"></canvas>
     </div>
@@ -87,7 +124,8 @@
             const ctx = canvas.getContext('2d');
             const text = document.getElementById('textInput').value;
             const font = document.getElementById('fontSelect').value;
-            const size = document.getElementById('sizeInput').value || 72;
+            const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
+            const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 72;
 
             // Clear canvas
             ctx.fillStyle = 'white';
@@ -95,11 +133,11 @@
 
             // Wait for fonts to load
             document.fonts.ready.then(() => {
-                // Set text properties
+                // Set text properties (canvas is white, keep high-contrast text)
                 ctx.fillStyle = 'black';
                 ctx.font = `${size}px "${font}"`;
                 ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
+                ctx.textBaseline = 'alphabetic';
                 ctx.direction = 'rtl';
                 ctx.textRendering = 'optimizeLegibility';
                 
@@ -141,8 +179,15 @@
                     console.log('OpenType features not fully supported:', e);
                 }
 
-            // Draw text
-                ctx.fillText(text, canvas.width / 2, canvas.height / 2);
+            // Draw multi-line text centered
+                const lines = text.split(/\r?\n/);
+                const lineHeight = Math.round(size * 1.3);
+                const totalHeight = lineHeight * Math.max(lines.length, 1);
+                let y = Math.round((canvas.height - totalHeight) / 2) + size; // baseline
+                for (const line of lines) {
+                    ctx.fillText(line, canvas.width / 2, y);
+                    y += lineHeight;
+                }
             });
         }
 
@@ -150,6 +195,21 @@
         document.getElementById('textInput').addEventListener('input', generateImage);
         document.getElementById('fontSelect').addEventListener('change', generateImage);
         document.getElementById('sizeInput').addEventListener('input', generateImage);
+
+        // Theme toggle
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const nextIsDark = !document.body.classList.contains('dark');
+            document.body.classList.toggle('dark', nextIsDark);
+            localStorage.setItem('theme_noamba', nextIsDark ? 'dark' : 'light');
+        });
+
+        // Initialize theme from prefers-color-scheme/localStorage
+        (function initTheme() {
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const saved = localStorage.getItem('theme_noamba');
+            const isDark = saved ? saved === 'dark' : prefersDark;
+            document.body.classList.toggle('dark', isDark);
+        })();
 
         // WhatsApp share functionality
         document.getElementById('shareWhatsApp').addEventListener('click', async function() {
