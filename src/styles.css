@@ -13,7 +13,7 @@
 * { box-sizing: border-box; }
 
 body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
+    font-family: "AlefMultiGenderHebrew", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     margin: 0;
     padding: 0;
     background: var(--bg-light);
@@ -176,6 +176,90 @@ body.dark canvas {
 @font-face {
     font-family: "AlefMultiGenderHebrew";
     src: url("fonts/AlefMultiGndr-Regular.woff");
+    font-display: swap;
+}
+
+/* Special character keyboard */
+.char-keyboard {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
+    gap: 8px;
+    margin: 16px 0;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.char-button {
+    background: var(--control-bg-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
+    padding: 12px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 18px;
+    font-family: "AlefMultiGenderHebrew", sans-serif;
+    transition: all 0.2s ease;
+    min-height: 48px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.dark .char-button {
+    background: var(--control-bg-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.char-button:hover {
+    background: rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+body.dark .char-button:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.char-button:active {
+    transform: translateY(0);
+}
+
+.keyboard-label {
+    font-size: 14px;
+    font-weight: 500;
+    margin: 16px 0 8px 0;
+    color: var(--text-light);
+}
+
+body.dark .keyboard-label {
+    color: var(--text-dark);
+}
+
+@media (max-width: 768px) {
+    .char-keyboard {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 6px;
+    }
+    
+    .char-button {
+        padding: 10px 6px;
+        font-size: 16px;
+        min-height: 44px;
+    }
+}
+
+@media (max-width: 480px) {
+    .char-keyboard {
+        grid-template-columns: repeat(4, 1fr);
+        gap: 4px;
+    }
+    
+    .char-button {
+        padding: 8px 4px;
+        font-size: 14px;
+        min-height: 40px;
+    }
 }
 
 @media (max-width: 768px) {

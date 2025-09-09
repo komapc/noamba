@@ -124,6 +124,33 @@ const ShareManager = {
     }
 };
 
+// Character keyboard module
+const CharKeyboard = {
+    init() {
+        const buttons = document.querySelectorAll('.char-button');
+        buttons.forEach(button => {
+            button.addEventListener('click', () => {
+                const char = button.getAttribute('data-char');
+                const textInput = document.getElementById('textInput');
+                const cursorPos = textInput.selectionStart;
+                const text = textInput.value;
+                
+                // Insert character at cursor position
+                const newText = text.slice(0, cursorPos) + char + text.slice(cursorPos);
+                textInput.value = newText;
+                
+                // Set cursor position after inserted character
+                const newCursorPos = cursorPos + char.length;
+                textInput.setSelectionRange(newCursorPos, newCursorPos);
+                textInput.focus();
+                
+                // Trigger canvas update
+                CanvasRenderer.generate();
+            });
+        });
+    }
+};
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     ThemeManager.init();
@@ -136,4 +163,7 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('sizeInput').addEventListener('input', () => CanvasRenderer.generate());
     document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
     document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
+    
+    // Initialize character keyboard
+    CharKeyboard.init();
 });
