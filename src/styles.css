@@ -182,10 +182,10 @@ body.dark canvas {
 /* Special character keyboard */
 .char-keyboard {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(40px, 1fr));
-    gap: 8px;
-    margin: 16px 0;
-    max-width: 600px;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 6px;
+    margin: 8px 0;
+    max-width: 480px;
     margin-left: auto;
     margin-right: auto;
 }
@@ -194,13 +194,13 @@ body.dark canvas {
     background: var(--control-bg-light);
     border: 1px solid var(--border-light);
     color: var(--text-light);
-    padding: 12px 8px;
-    border-radius: 8px;
+    padding: 8px 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 18px;
+    font-size: 16px;
     font-family: "AlefMultiGenderHebrew", sans-serif;
     transition: all 0.2s ease;
-    min-height: 48px;
+    min-height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -226,9 +226,9 @@ body.dark .char-button:hover {
 }
 
 .keyboard-label {
-    font-size: 14px;
+    font-size: 13px;
     font-weight: 500;
-    margin: 16px 0 8px 0;
+    margin: 12px 0 4px 0;
     color: var(--text-light);
 }
 
@@ -239,26 +239,28 @@ body.dark .keyboard-label {
 @media (max-width: 768px) {
     .char-keyboard {
         grid-template-columns: repeat(6, 1fr);
-        gap: 6px;
+        gap: 4px;
+        max-width: 360px;
     }
     
     .char-button {
-        padding: 10px 6px;
-        font-size: 16px;
-        min-height: 44px;
+        padding: 6px 3px;
+        font-size: 14px;
+        min-height: 32px;
     }
 }
 
 @media (max-width: 480px) {
     .char-keyboard {
-        grid-template-columns: repeat(4, 1fr);
-        gap: 4px;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 3px;
+        max-width: 300px;
     }
     
     .char-button {
-        padding: 8px 4px;
-        font-size: 14px;
-        min-height: 40px;
+        padding: 5px 2px;
+        font-size: 12px;
+        min-height: 28px;
     }
 }
 
