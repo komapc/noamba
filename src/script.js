@@ -8,101 +8,70 @@ const CanvasRenderer = {
         const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
 
-        // Check if MultiGender font is available and load it
-        const ensureMultiGenderFont = async () => {
+        // Unified font loading for both protocols
+        const loadFontUnified = async () => {
             try {
-                // Check current protocol and adjust font loading accordingly
-                const isFileProtocol = window.location.protocol === 'file:';
-                console.log('Current protocol:', window.location.protocol);
+                console.log('Loading font for protocol:', window.location.protocol);
                 
-                if (isFileProtocol) {
-                    console.log('File protocol detected - using different font loading approach');
-                    // For file:// protocol, try to load font directly
+                // Try WOFF first (works for both protocols)
+                try {
                     const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
                     await fontFace.load();
                     document.fonts.add(fontFace);
-                    console.log('Loaded font via FontFace API for file protocol');
-                } else {
-                    // For http:// protocol, use standard loading
-                    await document.fonts.load('32px "AlefMultiGenderHebrew"');
-                    console.log('Loaded font via document.fonts.load for HTTP protocol');
+                    console.log('Loaded WOFF font successfully');
+                } catch (woffError) {
+                    console.log('WOFF failed, trying TTF:', woffError.message);
+                    // Fallback to TTF
+                    const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
+                    await fontFace.load();
+                    document.fonts.add(fontFace);
+                    console.log('Loaded TTF font successfully');
                 }
                 
-                // Check if font is actually available
+                // Verify font is working
                 const testCanvas = document.createElement('canvas');
                 const testCtx = testCanvas.getContext('2d');
                 testCtx.font = '32px "AlefMultiGenderHebrew"';
                 const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
                 const metrics = testCtx.measureText(testText);
                 
-                console.log('MultiGender font test:', {
+                console.log('Font verification:', {
                     font: testCtx.font,
-                    metrics: metrics,
                     width: metrics.width,
-                    protocol: window.location.protocol
+                    protocol: window.location.protocol,
+                    success: metrics.width > 10
                 });
                 
-                // If width is 0 or very small, font might not be loaded
-                if (metrics.width < 10) {
-                    console.warn('MultiGender font may not be loaded properly, trying TTF fallback');
-                    // Try loading TTF as fallback
-                    const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
-                    await fontFace.load();
-                    document.fonts.add(fontFace);
-                    console.log('Loaded TTF fallback');
-                }
+                return metrics.width > 10;
             } catch (e) {
-                console.error('Font loading error:', e);
+                console.error('Unified font loading failed:', e);
+                return false;
             }
         };
 
         // Load fonts and render
-        ensureMultiGenderFont().then(() => {
-            // Wait for all fonts to be ready
-            document.fonts.ready.then(() => {
-                console.log('Starting canvas rendering...');
-                
-                // Force reload the MultiGender font specifically for canvas
-                const reloadFont = async () => {
-                    try {
-                        const isFileProtocol = window.location.protocol === 'file:';
-                        console.log('Reloading font for protocol:', window.location.protocol);
-                        
-                        if (isFileProtocol) {
-                            // For file protocol, try both WOFF and TTF
-                            try {
-                                const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
-                                await fontFace.load();
-                                document.fonts.add(fontFace);
-                                console.log('Reloaded WOFF font for file protocol');
-                            } catch (woffError) {
-                                console.log('WOFF failed, trying TTF:', woffError);
-                                const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
-                                await fontFace.load();
-                                document.fonts.add(fontFace);
-                                console.log('Reloaded TTF font for file protocol');
-                            }
-                        } else {
-                            // For HTTP protocol, use standard approach
-                            await document.fonts.load('32px "AlefMultiGenderHebrew"');
-                            console.log('Reloaded font via document.fonts.load for HTTP protocol');
-                        }
-                    } catch (e) {
-                        console.log('Font reload error:', e);
-                    }
-                };
-                
-                reloadFont().then(() => {
-                    this.setupCanvas(ctx, font, size);
-                    const lines = this.prepareText(text);
-                    console.log('Prepared lines:', lines);
-                    const dimensions = this.calculateDimensions(ctx, lines, size);
-                    console.log('Canvas dimensions:', dimensions);
-                    this.resizeCanvas(canvas, dimensions);
-                    this.drawText(ctx, lines, size, dimensions);
-                    console.log('Canvas rendering completed');
-                });
+        loadFontUnified().then((fontLoaded) => {
+            console.log('Font loading result:', fontLoaded);
+            console.log('Starting canvas rendering...');
+            
+            this.setupCanvas(ctx, font, size);
+            const initialLines = this.prepareText(text);
+            console.log('Initial lines:', initialLines);
+            
+            // Apply line wrapping to each line
+            const maxLineWidth = 1000; // Maximum width before wrapping
+            const wrappedLines = [];
+            initialLines.forEach(line => {
+                const wrapped = this.wrapText(line, maxLineWidth, ctx);
+                wrappedLines.push(...wrapped);
             });
+            
+            console.log('Wrapped lines:', wrappedLines);
+            const dimensions = this.calculateDimensions(ctx, wrappedLines, size);
+            console.log('Canvas dimensions:', dimensions);
+            this.resizeCanvas(canvas, dimensions);
+            this.drawText(ctx, wrappedLines, size, dimensions);
+            console.log('Canvas rendering completed');
         });
     },
 
@@ -213,13 +182,38 @@ const CanvasRenderer = {
     },
 
     prepareText(text) {
-        const lines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-        return lines.length === 0 ? [''] : lines;
+        // First split by explicit line breaks
+        const explicitLines = text.split(/\r?\n/).filter(line => line.trim() !== '');
+        return explicitLines.length === 0 ? [''] : explicitLines;
+    },
+
+    wrapText(text, maxWidth, ctx) {
+        const words = text.split(' ');
+        const lines = [];
+        let currentLine = '';
+        
+        for (const word of words) {
+            const testLine = currentLine + (currentLine ? ' ' : '') + word;
+            const metrics = ctx.measureText(testLine);
+            
+            if (metrics.width > maxWidth && currentLine) {
+                lines.push(currentLine);
+                currentLine = word;
+            } else {
+                currentLine = testLine;
+            }
+        }
+        
+        if (currentLine) {
+            lines.push(currentLine);
+        }
+        
+        return lines;
     },
 
     calculateDimensions(ctx, lines, size) {
-        const lineHeight = Math.round(size * 1.3);
-        const padding = Math.round(size * 0.5);
+        const lineHeight = Math.round(size * 1.4); // Slightly more line height
+        const padding = Math.round(size * 0.8); // More padding for better spacing
         
         let maxWidth = 0;
         lines.forEach(line => {
@@ -227,9 +221,33 @@ const CanvasRenderer = {
             maxWidth = Math.max(maxWidth, metrics.width);
         });
         
+        // Add extra width for special characters
+        const hasSpecialChars = lines.some(line => /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(line));
+        const extraWidth = hasSpecialChars ? size * 0.5 : 0;
+        
+        // More intelligent width calculation
+        const minWidth = 300;
+        const maxWidthLimit = 1400;
+        const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
+        
+        // Better height calculation
+        const minHeight = 80;
+        const calculatedHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
+        
+        console.log('Canvas sizing details:', {
+            maxWidth,
+            extraWidth,
+            hasSpecialChars,
+            lines: lines.length,
+            lineHeight,
+            padding,
+            calculatedWidth,
+            calculatedHeight
+        });
+        
         return {
-            width: Math.max(400, Math.min(1200, maxWidth + padding * 2)),
-            height: Math.max(100, lines.length * lineHeight + padding * 2),
+            width: calculatedWidth,
+            height: calculatedHeight,
             lineHeight,
             padding
         };
