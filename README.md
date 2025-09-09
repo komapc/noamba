@@ -116,3 +116,25 @@ The server embeds a known-good font via `@font-face` in the SVG before rasterizi
 - Download errors for fonts on server: check network access for Google Fonts; the server caches to `src/fonts/` once downloaded.
 
 
+### Deploying the static demo (free)
+
+You can host the client-only demo (`noamba.html`) anywhere that serves static files.
+
+- Cloudflare Pages (with Deploy command)
+  - Repo contains `wrangler.jsonc` configured to publish the `src/` folder as static assets.
+  - In Pages settings:
+    - Build command: `echo no build`
+    - Output directory: `src`
+    - Deploy command: `npx wrangler deploy`
+  - Note: `noamba.html` uses a relative font path (`fonts/AlefMultiGndr-Regular.woff`) so it works under any base path.
+
+- Netlify (Drop or connect repo)
+  - Drop: Zip and upload the `src/` folder.
+  - Connected repo: Set publish directory to `src` and leave build command empty.
+
+- GitHub Pages
+  - Copy the contents of `src/` to a `docs/` folder and set Pages to deploy from `/docs` on `master`, or deploy from root and move the files accordingly.
+
+Server page note: `index.html` calls the `/render` API and requires the Node server (`src/render.js`). Deploy that separately to a server host (Render, Railway, Fly.io) if you want `index.html` live.
+
+
