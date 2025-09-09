@@ -59,7 +59,7 @@ const CanvasRenderer = {
             console.log('Initial lines:', initialLines);
             
             // Apply line wrapping to each line
-            const maxLineWidth = 1000; // Maximum width before wrapping
+            const maxLineWidth = 600; // Reduced max width for better proportions
             const wrappedLines = [];
             initialLines.forEach(line => {
                 const wrapped = this.wrapText(line, maxLineWidth, ctx);
@@ -226,8 +226,8 @@ const CanvasRenderer = {
         const extraWidth = hasSpecialChars ? size * 0.5 : 0;
         
         // More intelligent width calculation
-        const minWidth = 300;
-        const maxWidthLimit = 1400;
+        const minWidth = 200;
+        const maxWidthLimit = 800; // Reduced max width for better proportions
         const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
         
         // Better height calculation
