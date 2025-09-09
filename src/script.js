@@ -156,11 +156,32 @@ const CanvasRenderer = {
         // Set text color based on theme
         ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
         
+        // Ensure we're using the correct font for special characters
+        const textInput = document.getElementById('textInput').value;
+        const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(textInput);
+        console.log('Text input:', textInput);
+        console.log('Has special chars:', hasSpecialChars);
+        
+        if (hasSpecialChars) {
+            ctx.font = `${size}px "AlefMultiGenderHebrew"`;
+            console.log('Drawing with font:', ctx.font);
+            
+            // Test individual special characters
+            const specialChars = '׭׬׌׎׫׊׏׋׉׮׍׈';
+            for (let i = 0; i < specialChars.length; i++) {
+                const char = specialChars[i];
+                const charCode = char.charCodeAt(0);
+                const metrics = ctx.measureText(char);
+                console.log(`Char ${char} (U+${charCode.toString(16).toUpperCase()}): width=${metrics.width}`);
+            }
+        }
+        
         // Draw multi-line text centered
         const totalTextHeight = lines.length * dimensions.lineHeight;
         let y = Math.round((ctx.canvas.height - totalTextHeight) / 2) + size;
         
         for (const line of lines) {
+            console.log('Drawing line:', line, 'with font:', ctx.font);
             ctx.fillText(line, ctx.canvas.width / 2, y);
             y += dimensions.lineHeight;
         }
