@@ -59,7 +59,7 @@ const CanvasRenderer = {
             console.log('Initial lines:', initialLines);
             
             // Apply line wrapping to each line
-            const maxLineWidth = 600; // Reduced max width for better proportions
+            const maxLineWidth = 400; // Further reduced for Hebrew text
             const wrappedLines = [];
             initialLines.forEach(line => {
                 const wrapped = this.wrapText(line, maxLineWidth, ctx);
@@ -188,27 +188,56 @@ const CanvasRenderer = {
     },
 
     wrapText(text, maxWidth, ctx) {
-        const words = text.split(' ');
-        const lines = [];
-        let currentLine = '';
+        // For Hebrew text, split by characters rather than words for better wrapping
+        const isHebrew = /[\u0590-\u05FF]/.test(text);
         
-        for (const word of words) {
-            const testLine = currentLine + (currentLine ? ' ' : '') + word;
-            const metrics = ctx.measureText(testLine);
+        if (isHebrew) {
+            // For Hebrew, split by characters and wrap more conservatively
+            const chars = text.split('');
+            const lines = [];
+            let currentLine = '';
             
-            if (metrics.width > maxWidth && currentLine) {
-                lines.push(currentLine);
-                currentLine = word;
-            } else {
-                currentLine = testLine;
+            for (const char of chars) {
+                const testLine = currentLine + char;
+                const metrics = ctx.measureText(testLine);
+                
+                if (metrics.width > maxWidth && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = char;
+                } else {
+                    currentLine = testLine;
+                }
             }
+            
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            
+            return lines;
+        } else {
+            // For English, use word-based wrapping
+            const words = text.split(' ');
+            const lines = [];
+            let currentLine = '';
+            
+            for (const word of words) {
+                const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                const metrics = ctx.measureText(testLine);
+                
+                if (metrics.width > maxWidth && currentLine) {
+                    lines.push(currentLine);
+                    currentLine = word;
+                } else {
+                    currentLine = testLine;
+                }
+            }
+            
+            if (currentLine) {
+                lines.push(currentLine);
+            }
+            
+            return lines;
         }
-        
-        if (currentLine) {
-            lines.push(currentLine);
-        }
-        
-        return lines;
     },
 
     calculateDimensions(ctx, lines, size) {
@@ -315,14 +344,17 @@ const CanvasRenderer = {
         for (const line of lines) {
             console.log('Drawing line:', line, 'with font:', ctx.font);
             
-            // Test drawing individual characters
-            if (hasSpecialChars) {
+            // Test drawing individual characters (only once, not for every line)
+            if (hasSpecialChars && lines.indexOf(line) === 0) {
                 console.log('Testing individual character rendering...');
                 const testY = y - 50; // Draw test above main text
                 ctx.fillText('Test: ׭׬׌', ctx.canvas.width / 2, testY);
             }
             
-            ctx.fillText(line, ctx.canvas.width / 2, y);
+            // Ensure line is not empty or corrupted
+            if (line && line.trim()) {
+                ctx.fillText(line, ctx.canvas.width / 2, y);
+            }
             y += dimensions.lineHeight;
         }
     }
