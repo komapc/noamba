@@ -12,77 +12,186 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <style>
-        :root { color-scheme: light dark; }
+        :root { 
+            color-scheme: light dark; 
+            --bg-light: #f7f7f8;
+            --bg-dark: #0b0f14;
+            --text-light: #111827;
+            --text-dark: #e5e7eb;
+            --border-light: #e5e7eb;
+            --border-dark: #1f2937;
+            --control-bg-light: #ffffff;
+            --control-bg-dark: #0f172a;
+        }
+        
+        * { box-sizing: border-box; }
+        
         body {
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
             margin: 0;
             padding: 0;
-            background: #f7f7f8;
-            color: #111827;
+            background: var(--bg-light);
+            color: var(--text-light);
+            line-height: 1.5;
         }
-        body.dark { background: #0b0f14; color: #e5e7eb; }
+        
+        body.dark { 
+            background: var(--bg-dark); 
+            color: var(--text-dark); 
+        }
+        
         .container {
-            max-width: 960px;
+            max-width: 1200px;
             margin: 0 auto;
-            padding: 24px 16px 48px;
+            padding: 20px 16px 40px;
             text-align: center;
         }
-        img {
-            max-width: 100%;
-            margin-top: 20px;
-            border: 1px solid #e5e7eb;
-            border-radius: 8px;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        
+        h1 {
+            margin: 0 0 24px 0;
+            font-size: clamp(1.75rem, 4vw, 2.5rem);
+            font-weight: 600;
         }
-        body.dark img { border-color: #1f2937; box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        #controls {
+        
+        .theme-toggle {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 100;
+            background: transparent;
+            border: 1px solid var(--border-light);
+            color: inherit;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s ease;
+        }
+        
+        body.dark .theme-toggle { 
+            border-color: var(--border-dark); 
+        }
+        
+        .theme-toggle:hover {
+            background: rgba(0,0,0,0.05);
+        }
+        
+        body.dark .theme-toggle:hover {
+            background: rgba(255,255,255,0.05);
+        }
+        
+        .controls {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 16px;
+            margin: 24px 0;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .controls-row {
             display: flex;
             flex-wrap: wrap;
             gap: 12px;
             justify-content: center;
             align-items: center;
-            margin-top: 12px;
         }
-        #controls textarea,
-        #controls select,
-        #controls input[type="number"] {
-            padding: 10px;
+        
+        .text-input {
+            width: 100%;
+            min-height: 100px;
+            padding: 12px;
             font-size: 16px;
-            border: 1px solid #e5e7eb;
-            border-radius: 6px;
-            background: #ffffff;
-            color: #111827;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--control-bg-light);
+            color: var(--text-light);
+            resize: vertical;
+            font-family: inherit;
         }
-        body.dark #controls textarea,
-        body.dark #controls select,
-        body.dark #controls input[type="number"] { background: #0f172a; color: #e5e7eb; border-color: #1f2937; }
-        #controls textarea {
-            width: min(100%, 640px);
+        
+        body.dark .text-input {
+            background: var(--control-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
         }
-        #controls select,
-        #controls input[type="number"] {
-            width: 180px;
+        
+        .font-select,
+        .size-input {
+            padding: 12px;
+            font-size: 16px;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            background: var(--control-bg-light);
+            color: var(--text-light);
+            font-family: inherit;
         }
-        #themeToggle {
-            position: absolute;
-            top: 12px;
-            right: 12px;
-            background: transparent;
-            border: 1px solid #e5e7eb;
-            color: inherit;
-            padding: 8px 10px;
-            border-radius: 6px;
-            cursor: pointer;
+        
+        body.dark .font-select,
+        body.dark .size-input {
+            background: var(--control-bg-dark);
+            color: var(--text-dark);
+            border-color: var(--border-dark);
         }
-        body.dark #themeToggle { border-color: #1f2937; }
-        @media (max-width: 640px) {
-            #controls {
+        
+        .font-select {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .size-input {
+            width: 100px;
+        }
+        
+        .result-image {
+            max-width: 100%;
+            margin-top: 24px;
+            border: 1px solid var(--border-light);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        
+        body.dark .result-image { 
+            border-color: var(--border-dark); 
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+        
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px 12px 32px;
+            }
+            
+            .theme-toggle {
+                top: 12px;
+                right: 12px;
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            
+            .controls {
+                gap: 12px;
+            }
+            
+            .controls-row {
                 flex-direction: column;
                 align-items: stretch;
             }
-            #controls select,
-            #controls input[type="number"] {
+            
+            .font-select,
+            .size-input {
                 width: 100%;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 12px 8px 24px;
+            }
+            
+            .text-input {
+                min-height: 80px;
+                font-size: 16px; /* Prevent zoom on iOS */
             }
         }
     </style>
@@ -90,10 +199,11 @@
 <body>
     <div class="container">
         <h1>Text to Image Generator</h1>
-        <button id="themeToggle" aria-label="Toggle theme">Toggle theme</button>
-        <div id="controls" class="controls">
-            <textarea id="textInput" placeholder="Enter text" rows="4" style="width: 500px; padding:10px; resize: vertical;"></textarea>
-            <select id="fontSelect" style="padding:10px; font-size:16px;">
+        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+        <div class="controls">
+            <textarea id="textInput" class="text-input" placeholder="Enter text" rows="4"></textarea>
+            <div class="controls-row">
+            <select id="fontSelect" class="font-select">
                 <option value="Kalam" selected>כתב יד קלאם</option>
                 <option value="Gochi Hand">כתב יד גוצ׳י</option>
                 <option value="Handlee">כתב יד הנדלי</option>
@@ -101,80 +211,86 @@
                 <option value="Caveat">כתב יד קאביט</option>
                 <option value="Sriracha">כתב יד סיראצ׳ה</option>
             </select>
-            <input type="number" id="sizeInput" value="32" min="8" max="144" style="width: 120px; padding:10px;" />
+            <input type="number" id="sizeInput" class="size-input" value="32" min="8" max="144" />
+            </div>
         </div>
-        <img id="resultImg" style="margin-top:20px;" />
+        <img id="resultImg" class="result-image" />
     </div>
 
     <script>
-        // Generate image logic (auto on input changes)
-        let lastObjectUrl = null;
-        let lastRequestId = 0;
-        async function generateImage() {
-            const text = encodeURIComponent(document.getElementById('textInput').value);
-            const font = encodeURIComponent(document.getElementById('fontSelect').value);
-            const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
-            const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 24;
-            const isDark = document.body.classList.contains('dark');
-            const fg = encodeURIComponent(isDark ? '#e5e7eb' : '#111827');
-            const bg = encodeURIComponent(isDark ? '#0b0f14' : '#ffffff');
-            const ts = Date.now();
-            const url = `/render?text=${text}&font=${font}&size=${size}&fg=${fg}&bg=${bg}&ts=${ts}`;
-            try {
-                const requestId = ++lastRequestId;
-                const response = await fetch(url, { cache: 'no-store' });
-                if (!response.ok) throw new Error('Network response was not ok');
-                const blob = await response.blob();
-                if (requestId !== lastRequestId) {
-                    return; // stale response, ignore
+        // Image generation module
+        const ImageGenerator = {
+            lastObjectUrl: null,
+            lastRequestId: 0,
+            debouncedTimer: null,
+
+            async generate() {
+                const text = encodeURIComponent(document.getElementById('textInput').value);
+                const font = encodeURIComponent(document.getElementById('fontSelect').value);
+                const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
+                const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
+                const isDark = document.body.classList.contains('dark');
+                const fg = encodeURIComponent(isDark ? '#e5e7eb' : '#111827');
+                const bg = encodeURIComponent(isDark ? '#0b0f14' : '#ffffff');
+                const ts = Date.now();
+                const url = `/render?text=${text}&font=${font}&size=${size}&fg=${fg}&bg=${bg}&ts=${ts}`;
+                
+                try {
+                    const requestId = ++this.lastRequestId;
+                    const response = await fetch(url, { cache: 'no-store' });
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const blob = await response.blob();
+                    if (requestId !== this.lastRequestId) return; // stale response
+                    
+                    const nextUrl = URL.createObjectURL(blob);
+                    const img = document.getElementById('resultImg');
+                    if (this.lastObjectUrl) {
+                        URL.revokeObjectURL(this.lastObjectUrl);
+                    }
+                    img.src = '';
+                    requestAnimationFrame(() => {
+                        img.src = nextUrl;
+                    });
+                    this.lastObjectUrl = nextUrl;
+                } catch (err) {
+                    alert('Error fetching image: ' + err.message);
                 }
-                const nextUrl = URL.createObjectURL(blob);
-                const img = document.getElementById('resultImg');
-                if (lastObjectUrl) {
-                    URL.revokeObjectURL(lastObjectUrl);
-                }
-                // Force refresh by clearing src before setting the new URL
-                img.src = '';
-                requestAnimationFrame(() => {
-                    img.src = nextUrl;
-                });
-                lastObjectUrl = nextUrl;
-            } catch (err) {
-                alert('Error fetching image: ' + err.message);
+            },
+
+            schedule() {
+                if (this.debouncedTimer) clearTimeout(this.debouncedTimer);
+                this.debouncedTimer = setTimeout(() => this.generate(), 150);
             }
-        }
+        };
 
-        // Debounce rapid changes (especially number input)
-        let debouncedTimer = null;
-        function scheduleRender() {
-            if (debouncedTimer) clearTimeout(debouncedTimer);
-            debouncedTimer = setTimeout(generateImage, 150);
-        }
+        // Theme management module
+        const ThemeManager = {
+            init() {
+                const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+                const saved = localStorage.getItem('theme');
+                const isDark = saved ? saved === 'dark' : prefersDark;
+                document.body.classList.toggle('dark', isDark);
+            },
 
-        // Set default text and initial render
+            toggle() {
+                const nextIsDark = !document.body.classList.contains('dark');
+                document.body.classList.toggle('dark', nextIsDark);
+                localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
+                ImageGenerator.generate();
+            }
+        };
+
+        // Initialize app
         document.addEventListener('DOMContentLoaded', function() {
-            // Initialize theme from prefers-color-scheme/localStorage BEFORE first render
-            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const saved = localStorage.getItem('theme');
-            const isDark = saved ? saved === 'dark' : prefersDark;
-            document.body.classList.toggle('dark', isDark);
-
+            ThemeManager.init();
             document.getElementById('textInput').value = 'הללו וורלד';
-            generateImage();
-        });
+            ImageGenerator.generate();
 
-        // Real-time updates
-        document.getElementById('textInput').addEventListener('input', scheduleRender);
-        document.getElementById('fontSelect').addEventListener('change', scheduleRender);
-        document.getElementById('sizeInput').addEventListener('input', scheduleRender);
-
-        // Theme toggle
-        document.getElementById('themeToggle').addEventListener('click', function() {
-            const nextIsDark = !document.body.classList.contains('dark');
-            document.body.classList.toggle('dark', nextIsDark);
-            localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
-            // Refresh image immediately to apply new colors
-            generateImage();
+            // Event listeners
+            document.getElementById('textInput').addEventListener('input', () => ImageGenerator.schedule());
+            document.getElementById('fontSelect').addEventListener('change', () => ImageGenerator.schedule());
+            document.getElementById('sizeInput').addEventListener('input', () => ImageGenerator.schedule());
+            document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
         });
     </script>
     </body>
