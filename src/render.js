@@ -53,46 +53,53 @@ function escapeXml(unsafe) {
 }
 
 app.get('/render', async (req, res) => {
-    const text = escapeXml(req.query.text || 'Hello, world!');
+    const rawText = req.query.text || 'Hello, world!';
+    const lines = rawText.split(/\r?\n/).map(escapeXml);
     const width = parseInt(req.query.width) || 800;
     const height = parseInt(req.query.height) || 200;
     const font = escapeXml(req.query.font || 'Caveat');
-    const fontSize = parseInt(req.query.size) || 24;
+    const sizeVal = parseInt(req.query.size);
+    const fontSize = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
+    const lineHeight = Math.round(fontSize * 1.3);
     
     try {
         // Download and cache the font
         const fontUrl = 'https://fonts.gstatic.com/s/caveat/v19/WnzgHAc5bAfYB2QRah7pcpNvOx-pjRV6SIAjLw.woff2';
         await downloadFont(fontUrl, 'caveat-bold.woff2');
         
+        const totalTextHeight = lineHeight * Math.max(lines.length, 1);
+        const startY = Math.round((height - totalTextHeight) / 2) + fontSize; // baseline alignment
+        const tspans = lines.map((line, idx) => {
+            const y = startY + idx * lineHeight;
+            return `<tspan x="50%" y="${y}">${line}</tspan>`;
+        }).join('');
+
         const svg = `<?xml version="1.0" encoding="UTF-8"?>
-            <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
-                <defs>
-                    <style type="text/css">
-                        @font-face {
-                            font-family: 'Caveat';
-                            src: url('${path.relative(process.cwd(), path.join(__dirname, 'fonts', 'caveat-bold.woff2'))}') format('woff2');
-                            font-weight: bold;
-                            font-style: normal;
-                            size-adjust: 120%;
-                        }
-                    </style>
-                </defs>
-                <rect width="100%" height="100%" fill="white"/>
-                <text 
-                    x="50%" 
-                    y="50%" 
-                    font-family="${font}, Caveat" 
-                    font-size="${fontSize}" 
-                    text-anchor="middle" 
-                    dominant-baseline="middle"
-                    fill="black"
-                    direction="rtl"
-                    xml:lang="he"
-                >
-                    ${text}
-                </text>
-            </svg>
-        `;
+<svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <style type="text/css">
+      @font-face {
+        font-family: 'Caveat';
+        src: url('${path.relative(process.cwd(), path.join(__dirname, 'fonts', 'caveat-bold.woff2'))}') format('woff2');
+        font-weight: bold;
+        font-style: normal;
+        size-adjust: 120%;
+      }
+    </style>
+  </defs>
+  <rect width="100%" height="100%" fill="white"/>
+  <text
+    x="50%"
+    font-family="${font}, Caveat"
+    font-size="${fontSize}"
+    text-anchor="middle"
+    fill="black"
+    direction="rtl"
+    xml:lang="he"
+  >
+    ${tspans}
+  </text>
+</svg>`;
 
         const buffer = await sharp(Buffer.from(svg))
             .png()

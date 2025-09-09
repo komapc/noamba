@@ -2,9 +2,15 @@
 
 Generate images from text using either a small Node.js server (SVG → PNG via Sharp) or pure client-side Canvas. Includes examples for Hebrew/RTL text, selectable fonts (including a Multi‑Gender Hebrew font), and a WhatsApp share flow.
 
+                               
+ _____     _____       _       
+|   | |___|  _  |_____| |_ ___ 
+| | | | . |     |     | . | .'|
+|_|___|___|__|__|_|_|_|___|__,|
+
 ### Features
-- **Server rendering**: `/render` endpoint converts text to a PNG using SVG + Sharp
-- **Client rendering**: client-side Canvas demo with live preview
+- **Server rendering**: `/render` endpoint converts text to a PNG using SVG + Sharp (supports multiline text)
+- **Client rendering**: client-side Canvas demo with live preview (multiline rendering)
 - **RTL-friendly**: sets `direction="rtl"` for Hebrew text
 - **Font handling**:
   - Server downloads and caches Google Fonts (currently Caveat) for consistent output
@@ -78,12 +84,13 @@ Notes:
 All demos set a default Hebrew text and support live preview.
 
 1) `index.html` – calls `/render` and displays the returned PNG
-   - Inputs: text, font (a set of Google fonts), size
-   - Auto-updates image on any input change
+   - Inputs: multiline text, font (a set of Google fonts), size
+   - Auto-updates image on any input change; multiline is centered and rendered line-by-line
 
 2) `noamba.html` – client-side `<canvas>` with a local `AlefMultiGndr` font
    - Provides an option named "Multi Gender" implemented via `@font-face` pointing to `src/fonts/AlefMultiGndr-Regular.woff`
    - Helpful for testing typographic features for multi‑gender Hebrew glyphs
+   - Multiline text is split by line breaks and drawn centered line-by-line
 
 ### Adding more server fonts
 The server embeds a known-good font via `@font-face` in the SVG before rasterizing. To add another font:

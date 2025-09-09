@@ -2,6 +2,7 @@
 <html>
 <head>
     <title>Text to Image</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Kalam:wght@300;400;700&display=swap" rel="stylesheet">
@@ -11,43 +12,87 @@
     <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;700&display=swap" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Sriracha&display=swap" rel="stylesheet">
     <style>
-    </style>
-    <style>
+        :root { color-scheme: light dark; }
         body {
             font-family: Arial, sans-serif;
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
+            margin: 0;
+            padding: 0;
+            background: #f7f7f8;
+            color: #111827;
         }
+        body.dark { background: #0b0f14; color: #e5e7eb; }
         .container {
+            max-width: 960px;
+            margin: 0 auto;
+            padding: 24px 16px 48px;
             text-align: center;
-        }
-        input, button {
-            padding: 10px;
-            margin: 5px;
-            font-size: 16px;
-        }
-        button {
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #45a049;
         }
         img {
             max-width: 100%;
             margin-top: 20px;
-            border: 1px solid #ddd;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+        }
+        body.dark img { border-color: #1f2937; box-shadow: 0 1px 2px rgba(0,0,0,0.5); }
+        #controls {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: center;
+            align-items: center;
+            margin-top: 12px;
+        }
+        #controls textarea,
+        #controls select,
+        #controls input[type="number"] {
+            padding: 10px;
+            font-size: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 6px;
+            background: #ffffff;
+            color: #111827;
+        }
+        body.dark #controls textarea,
+        body.dark #controls select,
+        body.dark #controls input[type="number"] { background: #0f172a; color: #e5e7eb; border-color: #1f2937; }
+        #controls textarea {
+            width: min(100%, 640px);
+        }
+        #controls select,
+        #controls input[type="number"] {
+            width: 180px;
+        }
+        #themeToggle {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: transparent;
+            border: 1px solid #e5e7eb;
+            color: inherit;
+            padding: 8px 10px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        body.dark #themeToggle { border-color: #1f2937; }
+        @media (max-width: 640px) {
+            #controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            #controls select,
+            #controls input[type="number"] {
+                width: 100%;
+            }
         }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>Text to Image Generator</h1>
-        <div>
-            <input type="text" id="textInput" placeholder="Enter text" style="width: 300px;" ></div>
+        <button id="themeToggle" aria-label="Toggle theme">Toggle theme</button>
+        <div id="controls" class="controls">
+            <textarea id="textInput" placeholder="Enter text" rows="4" style="width: 500px; padding:10px; resize: vertical;"></textarea>
             <select id="fontSelect" style="padding:10px; font-size:16px;">
                 <option value="Kalam" selected>כתב יד קלאם</option>
                 <option value="Gochi Hand">כתב יד גוצ׳י</option>
@@ -56,38 +101,71 @@
                 <option value="Caveat">כתב יד קאביט</option>
                 <option value="Sriracha">כתב יד סיראצ׳ה</option>
             </select>
-            <input type="number" id="sizeInput" value="24" min="8" max="144" style="width: 60px; padding:10px;" />
+            <input type="number" id="sizeInput" value="32" min="8" max="144" style="width: 120px; padding:10px;" />
         </div>
         <img id="resultImg" style="margin-top:20px;" />
     </div>
 
     <script>
         // Generate image logic (auto on input changes)
+        let lastObjectUrl = null;
+        let lastRequestId = 0;
         async function generateImage() {
             const text = encodeURIComponent(document.getElementById('textInput').value);
             const font = encodeURIComponent(document.getElementById('fontSelect').value);
-            const size = document.getElementById('sizeInput').value || 24;
-            const url = `/render?text=${text}&font=${font}&size=${size}`;
+            const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
+            const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 24;
+            const ts = Date.now();
+            const url = `/render?text=${text}&font=${font}&size=${size}&ts=${ts}`;
             try {
-                const response = await fetch(url);
+                const requestId = ++lastRequestId;
+                const response = await fetch(url, { cache: 'no-store' });
                 if (!response.ok) throw new Error('Network response was not ok');
                 const blob = await response.blob();
-                document.getElementById('resultImg').src = URL.createObjectURL(blob);
+                if (requestId !== lastRequestId) {
+                    return; // stale response, ignore
+                }
+                const nextUrl = URL.createObjectURL(blob);
+                const img = document.getElementById('resultImg');
+                if (lastObjectUrl) {
+                    URL.revokeObjectURL(lastObjectUrl);
+                }
+                img.src = nextUrl;
+                lastObjectUrl = nextUrl;
             } catch (err) {
                 alert('Error fetching image: ' + err.message);
             }
+        }
+
+        // Debounce rapid changes (especially number input)
+        let debouncedTimer = null;
+        function scheduleRender() {
+            if (debouncedTimer) clearTimeout(debouncedTimer);
+            debouncedTimer = setTimeout(generateImage, 150);
         }
 
         // Set default text and initial render
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('textInput').value = 'הללו וורלד';
             generateImage();
+            // Initialize theme from prefers-color-scheme/localStorage
+            const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const saved = localStorage.getItem('theme');
+            const isDark = saved ? saved === 'dark' : prefersDark;
+            document.body.classList.toggle('dark', isDark);
         });
 
         // Real-time updates
-        document.getElementById('textInput').addEventListener('input', generateImage);
-        document.getElementById('fontSelect').addEventListener('change', generateImage);
-        document.getElementById('sizeInput').addEventListener('input', generateImage);
+        document.getElementById('textInput').addEventListener('input', scheduleRender);
+        document.getElementById('fontSelect').addEventListener('change', scheduleRender);
+        document.getElementById('sizeInput').addEventListener('input', scheduleRender);
+
+        // Theme toggle
+        document.getElementById('themeToggle').addEventListener('click', function() {
+            const nextIsDark = !document.body.classList.contains('dark');
+            document.body.classList.toggle('dark', nextIsDark);
+            localStorage.setItem('theme', nextIsDark ? 'dark' : 'light');
+        });
     </script>
     </body>
     </html>
