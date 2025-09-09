@@ -5,7 +5,7 @@
   "main": "src/render.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc --outDir dist",
+    "build": "echo \"no build for static deploy\"",
     "start": "node src/render.js"
   },
   "keywords": [],
