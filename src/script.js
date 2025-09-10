@@ -426,7 +426,9 @@ const CanvasRenderer = {
         // Set consistent center alignment for all platforms
         ctx.textAlign = 'center';
         ctx.direction = 'ltr'; // Use LTR for consistent centering behavior
-        const centerX = ctx.canvas.width / 2;
+        
+        // Use logical dimensions for text positioning (not scaled canvas dimensions)
+        const centerX = dimensions.width / 2;
         
         // Draw each line centered
         for (const line of lines) {
@@ -631,6 +633,54 @@ const CharKeyboard = {
 };
 
 // =============================================================================
+// ABOUT MODAL
+// =============================================================================
+const AboutModal = {
+    init() {
+        const aboutLink = document.getElementById('aboutLink');
+        const modal = document.getElementById('aboutModal');
+        const closeButton = document.getElementById('closeModal');
+        
+        // Show modal when about link is clicked
+        aboutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.show();
+        });
+        
+        // Close modal when X button is clicked
+        closeButton.addEventListener('click', () => {
+            this.hide();
+        });
+        
+        // Close modal when clicking outside the modal content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.hide();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                this.hide();
+            }
+        });
+    },
+    
+    show() {
+        const modal = document.getElementById('aboutModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    },
+    
+    hide() {
+        const modal = document.getElementById('aboutModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+};
+
+// =============================================================================
 // APPLICATION INITIALIZATION
 // =============================================================================
 document.addEventListener('DOMContentLoaded', async function() {
@@ -689,6 +739,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Initialize character keyboard
         CharKeyboard.init();
         
+        // Initialize about modal
+        AboutModal.init();
+        
         // Mobile-specific event listeners
         if (isMobile) {
             // Handle orientation changes
@@ -721,6 +774,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
             CanvasRenderer.generate();
             CharKeyboard.init();
+            AboutModal.init();
             console.log('✅ Fallback initialization successful');
         } catch (fallbackError) {
             console.error('❌ Fallback initialization also failed:', fallbackError);

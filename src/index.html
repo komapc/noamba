@@ -66,9 +66,26 @@
         </button>
     </div>
     
-    <!-- Version info -->
-    <div class="footer-version">
-        <span class="version-small">v1.4.0</span>
+    <!-- Footer info -->
+    <div class="footer-info">
+        <span class="version-small">v1.5.0</span>
+        <span class="footer-divider">•</span>
+        <a href="#" id="aboutLink" class="about-link">about</a>
+    </div>
+
+    <!-- About popup modal -->
+    <div id="aboutModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>About This Tool</h3>
+                <button id="closeModal" class="close-button" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>This is an early prototype for creating Hebrew MultiGender text images. Type your text, customize the style, and share it as an image.</p>
+                <p>Created by <strong>Kobi</strong> and <strong>Mark</strong> to support inclusive Hebrew writing.</p>
+                <p>Learn more about MultiGender Hebrew at <a href="https://multigenderhebrew.com/" target="_blank">multigenderhebrew.com</a></p>
+            </div>
+        </div>
     </div>
 
     <script src="script.js"></script>

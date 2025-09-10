@@ -71,12 +71,15 @@ h1 {
     text-decoration: underline;
 }
 
-/* Footer version styling */
-.footer-version {
+/* Footer info styling */
+.footer-info {
     position: fixed;
     bottom: 10px;
     left: 20px;
     z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
 .version-small {
@@ -87,7 +90,29 @@ h1 {
     font-family: 'AlefMultiGenderHebrew', monospace;
 }
 
-body.dark .version-small {
+.footer-divider {
+    font-size: 12px;
+    opacity: 0.3;
+    color: var(--text-light);
+}
+
+.about-link {
+    font-size: 12px;
+    color: var(--text-light);
+    text-decoration: none;
+    opacity: 0.6;
+    font-family: 'AlefMultiGenderHebrew', monospace;
+    transition: opacity 0.2s ease;
+}
+
+.about-link:hover {
+    opacity: 1;
+    text-decoration: underline;
+}
+
+body.dark .version-small,
+body.dark .footer-divider,
+body.dark .about-link {
     color: var(--text-dark);
 }
 
@@ -568,5 +593,147 @@ body.dark .keyboard-label {
         font-size: clamp(1.5rem, 5vw, 2rem);
         flex-wrap: wrap;
         gap: 0.3rem;
+    }
+}
+
+/* =============================================================================
+   MODAL STYLES
+   ============================================================================= */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+}
+
+.modal.show {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 0.2s ease;
+}
+
+.modal-content {
+    background: var(--bg-light);
+    border-radius: 12px;
+    max-width: 400px;
+    width: 90%;
+    max-height: 80%;
+    overflow-y: auto;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    animation: slideIn 0.3s ease;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 24px 16px;
+    border-bottom: 1px solid var(--border-light);
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 18px;
+    color: var(--text-light);
+    font-family: 'AlefMultiGenderHebrew', system-ui, sans-serif;
+}
+
+.close-button {
+    background: none;
+    border: none;
+    font-size: 24px;
+    color: var(--text-light);
+    cursor: pointer;
+    padding: 0;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background-color 0.2s ease;
+}
+
+.close-button:hover {
+    background: var(--border-light);
+}
+
+.modal-body {
+    padding: 20px 24px 24px;
+    line-height: 1.6;
+}
+
+.modal-body p {
+    margin: 0 0 16px 0;
+    color: var(--text-light);
+    font-size: 14px;
+}
+
+.modal-body p:last-child {
+    margin-bottom: 0;
+}
+
+.modal-body a {
+    color: var(--primary-color);
+    text-decoration: none;
+}
+
+.modal-body a:hover {
+    text-decoration: underline;
+}
+
+/* Dark theme modal styles */
+body.dark .modal-content {
+    background: var(--bg-dark);
+}
+
+body.dark .modal-header {
+    border-bottom-color: var(--border-dark);
+}
+
+body.dark .modal-header h3,
+body.dark .modal-body p,
+body.dark .close-button {
+    color: var(--text-dark);
+}
+
+body.dark .close-button:hover {
+    background: var(--border-dark);
+}
+
+/* Modal animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideIn {
+    from { 
+        opacity: 0;
+        transform: translateY(-20px) scale(0.95);
+    }
+    to { 
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+/* Mobile modal adjustments */
+@media (max-width: 480px) {
+    .modal-content {
+        margin: 20px;
+        width: calc(100% - 40px);
+    }
+    
+    .modal-header,
+    .modal-body {
+        padding-left: 16px;
+        padding-right: 16px;
     }
 }
