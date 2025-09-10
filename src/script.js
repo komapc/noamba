@@ -1,209 +1,114 @@
-// Version information
-const APP_VERSION = '1.2.0';
-const BUILD_TIME = new Date().toISOString();
+/**
+ * MultiGender Hebrew Text Designer
+ * A tool for creating beautiful text with MultiGender Hebrew fonts
+ * Version: 1.2.0
+ */
 
-// Log version information
-console.log('🚀 MultiGender Hebrew Text Designer');
-console.log('📦 Version:', APP_VERSION);
-console.log('🕒 Build Time:', BUILD_TIME);
-console.log('🌐 Protocol:', window.location.protocol);
-console.log('📍 URL:', window.location.href);
+// =============================================================================
+// CONFIGURATION
+// =============================================================================
+const CONFIG = {
+    VERSION: '1.2.0',
+    BUILD_TIME: new Date().toISOString(),
+    DEFAULT_FONT_SIZE: 32,
+    MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
+    DEBOUNCE_DELAY: 150
+};
 
-// Canvas renderer module
-const CanvasRenderer = {
-    generate() {
-        const canvas = document.getElementById('canvas');
-        const ctx = canvas.getContext('2d');
-        const text = document.getElementById('textInput').value;
-        const font = document.getElementById('fontSelect').value;
-        const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
-        const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : 32;
-
-        // Unified font loading for both protocols
-        const loadFontUnified = async () => {
-            try {
-                console.log('Loading font for protocol:', window.location.protocol);
-                
-                // Try WOFF first (works for both protocols)
-                try {
-                    const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.woff)');
-                    await fontFace.load();
-                    document.fonts.add(fontFace);
-                    console.log('Loaded WOFF font successfully');
-                } catch (woffError) {
-                    console.log('WOFF failed, trying TTF:', woffError.message);
-                    // Fallback to TTF
-                    const fontFace = new FontFace('AlefMultiGenderHebrew', 'url(fonts/AlefMultiGndr-Regular.ttf)');
-                    await fontFace.load();
-                    document.fonts.add(fontFace);
-                    console.log('Loaded TTF font successfully');
-                }
-                
-                // Verify font is working
-                const testCanvas = document.createElement('canvas');
-                const testCtx = testCanvas.getContext('2d');
-                testCtx.font = '32px "AlefMultiGenderHebrew"';
-                const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
-                const metrics = testCtx.measureText(testText);
-                
-                console.log('Font verification:', {
-                    font: testCtx.font,
-                    width: metrics.width,
-                    protocol: window.location.protocol,
-                    success: metrics.width > 10
-                });
-                
-                return metrics.width > 10;
-            } catch (e) {
-                console.error('Unified font loading failed:', e);
-                return false;
-            }
-        };
-
-        // Load fonts and render
-        loadFontUnified().then((fontLoaded) => {
-            console.log('Font loading result:', fontLoaded);
-            console.log('Starting canvas rendering...');
-            
-            this.setupCanvas(ctx, font, size);
-            const initialLines = this.prepareText(text);
-            console.log('Initial lines:', initialLines);
-            
-            // Apply line wrapping to each line
-            const maxLineWidth = 300; // Reduced for better text wrapping
-            const wrappedLines = [];
-            initialLines.forEach(line => {
-                const wrapped = this.wrapText(line, maxLineWidth, ctx);
-                wrappedLines.push(...wrapped);
-            });
-            
-            console.log('Wrapped lines:', wrappedLines);
-            const dimensions = this.calculateDimensions(ctx, wrappedLines, size);
-            console.log('Canvas dimensions:', dimensions);
-            this.resizeCanvas(canvas, dimensions);
-            this.drawText(ctx, wrappedLines, size, dimensions);
-            console.log('Canvas rendering completed');
-        });
+// =============================================================================
+// UTILITIES
+// =============================================================================
+const Utils = {
+    // Log application startup info
+    logStartup() {
+        console.log('🚀 MultiGender Hebrew Text Designer');
+        console.log('📦 Version:', CONFIG.VERSION);
+        console.log('🕒 Build Time:', CONFIG.BUILD_TIME);
+        console.log('🌐 Protocol:', window.location.protocol);
+        console.log('📍 URL:', window.location.href);
     },
 
-    setupCanvas(ctx, font, size) {
-        // Always use MultiGender font for special characters, fallback to selected font for regular text
-        const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(document.getElementById('textInput').value);
-        
-        if (hasSpecialChars) {
-            // Try multiple font approaches
-            console.log('Attempting multiple font loading approaches...');
+    // Check if text contains MultiGender Hebrew characters
+    hasMultiGenderChars(text) {
+        return /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(text);
+    },
+
+    // Check if text contains Hebrew characters
+    hasHebrewChars(text) {
+        return /[\u0590-\u05FF]/.test(text);
+    },
+
+    // Debounce function calls
+    debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
+            clearTimeout(timeout);
+            timeout = setTimeout(later, wait);
+        };
+    }
+};
+
+// =============================================================================
+// FONT MANAGEMENT
+// =============================================================================
+const FontManager = {
+    async loadMultiGenderFont() {
+        try {
+            console.log('Loading font for protocol:', window.location.protocol);
             
-            // Approach 1: Direct font setting
-            ctx.font = `${size}px "AlefMultiGenderHebrew"`;
-            console.log('Approach 1 - Canvas font:', ctx.font);
+            const fontFace = new FontFace(
+                'AlefMultiGenderHebrew',
+                window.location.protocol === 'file:' 
+                    ? 'url(fonts/AlefMultiGndr-Regular.ttf)'
+                    : 'url(fonts/AlefMultiGndr-Regular.woff)'
+            );
             
-            // Approach 2: Try with fallback
-            ctx.font = `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`;
-            console.log('Approach 2 - Canvas font with fallback:', ctx.font);
-            
-            // Approach 3: Force reload and retry
-            const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
-            
-            // Test each approach
-            const approaches = [
-                `${size}px "AlefMultiGenderHebrew"`,
-                `${size}px "AlefMultiGndr"`,
-                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`,
-                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", "Arial Unicode MS", sans-serif`
-            ];
-            
-            let workingApproach = 0;
-            for (let i = 0; i < approaches.length; i++) {
-                ctx.font = approaches[i];
-                const metrics = ctx.measureText(testText);
-                console.log(`Approach ${i + 1} (${approaches[i]}): width=${metrics.width}`);
-                
-                if (metrics.width > 10) {
-                    console.log(`Using approach ${i + 1} - font working!`);
-                    workingApproach = i;
-                    break;
-                }
-            }
-            
-            // Force the working approach
-            ctx.font = approaches[workingApproach];
-            console.log('Final working font:', ctx.font);
-            
-            // Final test
-            const finalMetrics = ctx.measureText(testText);
-            console.log('Final canvas font metrics:', finalMetrics);
-            
-            // Compare with HTML element
-            const testElement = document.createElement('div');
+            const loadedFont = await fontFace.load();
+            document.fonts.add(loadedFont);
+            console.log('Loaded WOFF font successfully');
+
+            // Verify font loading
+            const testText = CONFIG.MULTIGENDER_CHARS;
+            const testElement = document.createElement('span');
             testElement.style.fontFamily = 'AlefMultiGenderHebrew';
-            testElement.style.fontSize = `${size}px`;
+            testElement.style.fontSize = '32px';
             testElement.textContent = testText;
             testElement.style.position = 'absolute';
             testElement.style.left = '-9999px';
             document.body.appendChild(testElement);
-            
-            const computedStyle = window.getComputedStyle(testElement);
-            console.log('HTML element font family:', computedStyle.fontFamily);
-            console.log('HTML element font size:', computedStyle.fontSize);
-            
-            // Remove test element
+
+            const width = testElement.getBoundingClientRect().width;
             document.body.removeChild(testElement);
-            
-        } else {
-            // Use selected font with MultiGender as fallback
-            const fontMap = {
-                'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
-                'Amatic SC': 'Amatic SC',
-                'Caveat': 'Caveat',
-                'Noto Rashi Hebrew': 'Noto Rashi Hebrew',
-                'Rubik Scribble': 'Rubik Scribble',
-                'Satisfy': 'Satisfy',
-                'Varela Round': 'Varela Round',
-                'Dana Yad': 'Dana Yad'
-            };
-            const actualFont = fontMap[font] || font;
-            ctx.font = `${size}px "${actualFont}", "AlefMultiGenderHebrew", sans-serif`;
-        }
-        
-        ctx.textAlign = 'center';
-        ctx.textBaseline = 'alphabetic';
-        ctx.direction = 'rtl'; // Proper RTL for Hebrew text
-        ctx.textRendering = 'optimizeLegibility';
-        ctx.fontKerning = 'normal';
-        
-        // Enable OpenType features
-        try {
-            const features = {
-                'kern': 'normal', 'liga': 'normal', 'hlig': 'normal',
-                'calt': 'normal', 'dlig': 'normal', 'ccmp': 'normal',
-                'rlig': 'normal', 'locl': 'normal', 'mark': 'normal', 'mkmk': 'normal'
-            };
-            
-            const featureString = Object.entries(features)
-                .map(([feature, value]) => `"${feature}" ${value}`)
-                .join(', ');
-            
-            if (ctx.fontFeatureSettings !== undefined) {
-                ctx.fontFeatureSettings = featureString;
-            }
-        } catch (e) {
-            console.log('OpenType features not fully supported:', e);
-        }
-    },
 
-    prepareText(text) {
-        // First split by explicit line breaks
-        const explicitLines = text.split(/\r?\n/).filter(line => line.trim() !== '');
-        return explicitLines.length === 0 ? [''] : explicitLines;
-    },
+            const success = width > 10;
+            console.log('Font verification:', {
+                font: '32px AlefMultiGenderHebrew',
+                width,
+                protocol: window.location.protocol,
+                success
+            });
 
+            return success;
+        } catch (error) {
+            console.error('Font loading failed:', error);
+            return false;
+        }
+    }
+};
+
+// =============================================================================
+// TEXT PROCESSING
+// =============================================================================
+const TextProcessor = {
     wrapText(text, maxWidth, ctx) {
-        // For Hebrew text, split by characters rather than words for better wrapping
-        const isHebrew = /[\u0590-\u05FF]/.test(text);
+        const isHebrew = Utils.hasHebrewChars(text);
         
         if (isHebrew) {
-            // For Hebrew, split by characters and wrap more conservatively
+            // Character-based wrapping for Hebrew
             const chars = text.split('');
             const lines = [];
             let currentLine = '';
@@ -226,13 +131,13 @@ const CanvasRenderer = {
             
             return lines;
         } else {
-            // For English, use word-based wrapping
+            // Word-based wrapping for English
             const words = text.split(' ');
             const lines = [];
             let currentLine = '';
             
             for (const word of words) {
-                const testLine = currentLine + (currentLine ? ' ' : '') + word;
+                const testLine = currentLine ? currentLine + ' ' + word : word;
                 const metrics = ctx.measureText(testLine);
                 
                 if (metrics.width > maxWidth && currentLine) {
@@ -249,54 +154,118 @@ const CanvasRenderer = {
             
             return lines;
         }
+    }
+};
+
+// =============================================================================
+// CANVAS RENDERER
+// =============================================================================
+const CanvasRenderer = {
+    async generate() {
+        console.log('Starting canvas rendering...');
+        
+        // Get elements and values
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+        const text = document.getElementById('textInput').value;
+        const font = document.getElementById('fontSelect').value;
+        const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
+        const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : CONFIG.DEFAULT_FONT_SIZE;
+
+        // Ensure font is loaded
+        await FontManager.loadMultiGenderFont();
+
+        // Setup canvas
+        this.setupCanvas(ctx, font, size);
+
+        // Process text into lines
+        const lines = this.processText(text, ctx);
+        console.log('Wrapped lines:', lines);
+
+        // Calculate dimensions and resize canvas
+        const dimensions = this.calculateDimensions(lines, size, ctx);
+        this.resizeCanvas(canvas, dimensions);
+        console.log('Canvas dimensions:', dimensions);
+
+        // Re-setup canvas after resize (context is reset)
+        this.setupCanvas(ctx, font, size);
+
+        // Draw the text
+        this.drawText(ctx, lines, size, dimensions);
+        console.log('Canvas rendering completed');
     },
 
-    calculateDimensions(ctx, lines, size) {
-        const lineHeight = Math.round(size * 1.4); // Slightly more line height
-        const padding = Math.round(size * 0.8); // More padding for better spacing
+    setupCanvas(ctx, font, size) {
+        // Set font
+        const hasSpecialChars = Utils.hasMultiGenderChars(document.getElementById('textInput').value);
+        if (hasSpecialChars) {
+            ctx.font = `${size}px AlefMultiGenderHebrew, sans-serif`;
+        } else {
+            const fontMap = {
+                'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
+                'Arial': 'Arial',
+                'Times New Roman': 'Times New Roman',
+                'Georgia': 'Georgia',
+                'Verdana': 'Verdana',
+                'Tahoma': 'Tahoma',
+                'Courier New': 'Courier New',
+                'serif': 'serif',
+                'sans-serif': 'sans-serif'
+            };
+            const actualFont = fontMap[font] || font;
+            ctx.font = `${size}px "${actualFont}", "AlefMultiGenderHebrew", sans-serif`;
+        }
+
+        // Set text properties
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'alphabetic';
+        ctx.direction = 'rtl';
+        ctx.textRendering = 'optimizeLegibility';
+        ctx.fontKerning = 'normal';
+    },
+
+    processText(text, ctx) {
+        const lines = text.split('\n');
+        const wrappedLines = [];
+        const maxLineWidth = 300;
+
+        for (const line of lines) {
+            if (line.trim()) {
+                const wrapped = TextProcessor.wrapText(line, maxLineWidth, ctx);
+                wrappedLines.push(...wrapped);
+            } else {
+                wrappedLines.push('');
+            }
+        }
+
+        return wrappedLines;
+    },
+
+    calculateDimensions(lines, size, ctx) {
+        const lineHeight = Math.round(size * 1.4);
+        const padding = Math.round(size * 0.8);
         
+        // Calculate width
         let maxWidth = 0;
-        lines.forEach(line => {
-            const metrics = ctx.measureText(line);
-            maxWidth = Math.max(maxWidth, metrics.width);
-        });
-        
-        // Add extra width for special characters
-        const hasSpecialChars = lines.some(line => /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(line));
-        const extraWidth = hasSpecialChars ? size * 0.5 : 0;
-        
-        // More intelligent width calculation
+        for (const line of lines) {
+            if (line.trim()) {
+                const metrics = ctx.measureText(line);
+                maxWidth = Math.max(maxWidth, metrics.width);
+            }
+        }
+
+        const hasSpecialChars = lines.some(line => Utils.hasMultiGenderChars(line));
+        const extraWidth = hasSpecialChars ? 16 : 0;
         const minWidth = 200;
-        const maxWidthLimit = 600; // Reduced max width for better proportions
+        const maxWidthLimit = 600;
         const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
-        
-        console.log('Width calculation details:', {
-            maxWidth,
-            extraWidth,
-            padding,
-            calculatedWidth,
-            maxWidthLimit
-        });
-        
-        // Better height calculation - ensure adequate padding for text positioning
+
+        // Calculate height
         const minHeight = 120;
         const textHeight = lines.length * lineHeight;
-        const extraPadding = Math.max(20, size * 0.5); // Additional padding based on font size
+        const extraPadding = Math.max(20, size * 0.5);
         const calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
-        
-        console.log('Canvas sizing details:', {
-            maxWidth,
-            extraWidth,
-            hasSpecialChars,
-            lines: lines.length,
-            lineHeight,
-            textHeight,
-            padding,
-            extraPadding,
-            calculatedWidth,
-            calculatedHeight
-        });
-        
+
         return {
             width: calculatedWidth,
             height: calculatedHeight,
@@ -306,18 +275,18 @@ const CanvasRenderer = {
     },
 
     resizeCanvas(canvas, dimensions) {
-        // Get device pixel ratio for sharp rendering on high-DPI displays
+        // Get device pixel ratio for sharp rendering
         const dpr = window.devicePixelRatio || 1;
         
-        // Set the actual size in memory (scaled to account for extra pixel density)
+        // Set actual size in memory (scaled for pixel density)
         canvas.width = dimensions.width * dpr;
         canvas.height = dimensions.height * dpr;
         
-        // Scale the canvas back down using CSS
+        // Scale canvas back down using CSS
         canvas.style.width = dimensions.width + 'px';
         canvas.style.height = dimensions.height + 'px';
         
-        // Scale the drawing context so everything draws at the correct size
+        // Scale drawing context
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
         
@@ -335,55 +304,13 @@ const CanvasRenderer = {
         ctx.fillStyle = isDark ? '#0b0f14' : 'white';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
-        // Set text color based on theme
+        // Set text color
         ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
         
-        // Ensure we're using the correct font for special characters
-        const textInput = document.getElementById('textInput').value;
-        const hasSpecialChars = /[׭׬׌׎׫׊׏׋׉׮׍׈]/.test(textInput);
-        console.log('Text input:', textInput);
-        console.log('Has special chars:', hasSpecialChars);
-        
-        if (hasSpecialChars) {
-            // Use the same font approach that worked in setupCanvas
-            const approaches = [
-                `${size}px "AlefMultiGenderHebrew"`,
-                `${size}px "AlefMultiGndr"`,
-                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", sans-serif`,
-                `${size}px "AlefMultiGenderHebrew", "AlefMultiGndr", "Arial Unicode MS", sans-serif`
-            ];
-            
-            // Test which approach works
-            let workingFont = approaches[0];
-            for (let i = 0; i < approaches.length; i++) {
-                ctx.font = approaches[i];
-                const testText = '׭׬׌׎׫׊׏׋׉׮׍׈';
-                const metrics = ctx.measureText(testText);
-                if (metrics.width > 10) {
-                    workingFont = approaches[i];
-                    break;
-                }
-            }
-            
-            ctx.font = workingFont;
-            console.log('Drawing with font:', ctx.font);
-            
-            // Test individual special characters
-            const specialChars = '׭׬׌׎׫׊׏׋׉׮׍׈';
-            for (let i = 0; i < specialChars.length; i++) {
-                const char = specialChars[i];
-                const charCode = char.charCodeAt(0);
-                const metrics = ctx.measureText(char);
-                console.log(`Char ${char} (U+${charCode.toString(16).toUpperCase()}): width=${metrics.width}`);
-            }
-        }
-        
-        // Draw multi-line text centered with proper positioning
+        // Calculate text positioning
         const totalTextHeight = lines.length * dimensions.lineHeight;
-        // Start at the top of the text block (center it vertically)
         const textBlockTop = Math.round((ctx.canvas.height - totalTextHeight) / 2);
-        // First baseline should be one ascent distance from the top of the text block
-        const startY = textBlockTop + dimensions.lineHeight * 0.8; // Use 80% of lineHeight as ascent approximation
+        const startY = textBlockTop + dimensions.lineHeight * 0.8;
         let y = startY;
         
         console.log('Text positioning details:', {
@@ -395,81 +322,177 @@ const CanvasRenderer = {
             lines: lines.length
         });
         
+        // Draw each line
         for (const line of lines) {
-            // For proper RTL center alignment, calculate the center position manually
-            const lineWidth = ctx.measureText(line).width;
-            const centerX = (ctx.canvas.width - lineWidth) / 2;
-            
-            console.log('Drawing line:', line);
-            console.log('  Canvas width:', ctx.canvas.width);
-            console.log('  Line width:', lineWidth);
-            console.log('  Calculated centerX:', centerX);
-            console.log('  Drawing at x:', centerX, 'y:', y);
-            
-            // Ensure line is not empty or corrupted
             if (line && line.trim()) {
-                // Use left alignment and manually calculated center position for consistent RTL behavior
+                // Manual center calculation for consistent positioning
+                const lineWidth = ctx.measureText(line).width;
+                const centerX = (ctx.canvas.width - lineWidth) / 2;
+                
+                console.log('Drawing line:', line, 'at x:', centerX, 'y:', y);
+                
+                // Use left alignment with calculated center position
                 ctx.textAlign = 'left';
                 ctx.fillText(line, centerX, y);
-                console.log('Drew line at x:', centerX, 'y:', y);
             }
             y += dimensions.lineHeight;
         }
     }
 };
 
-// Theme management module
+// =============================================================================
+// FAVICON MANAGER
+// =============================================================================
+const FaviconManager = {
+    init() {
+        // Create a better favicon with proper encoding
+        this.createFavicon();
+        console.log('🎯 Favicon initialized');
+    },
+
+    createFavicon() {
+        // Remove existing favicons
+        document.querySelectorAll('link[rel*="icon"]').forEach(link => link.remove());
+
+        // Create SVG favicon with proper encoding
+        const svgContent = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
+            <rect width="32" height="32" fill="#1f2937"/>
+            <text x="16" y="24" font-family="serif" font-size="18" fill="#10b981" text-anchor="middle" font-weight="bold">׋</text>
+        </svg>`;
+        
+        const encodedSvg = encodeURIComponent(svgContent).replace(/'/g, '%27').replace(/"/g, '%22');
+        const faviconUrl = `data:image/svg+xml,${encodedSvg}`;
+
+        // Add standard favicon
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.type = 'image/svg+xml';
+        favicon.href = faviconUrl;
+        document.head.appendChild(favicon);
+
+        // Add apple-touch-icon for mobile
+        const appleFavicon = document.createElement('link');
+        appleFavicon.rel = 'apple-touch-icon';
+        appleFavicon.href = faviconUrl;
+        document.head.appendChild(appleFavicon);
+
+        // Add alternative PNG favicon for better compatibility
+        this.createPngFavicon();
+    },
+
+    createPngFavicon() {
+        try {
+            const canvas = document.createElement('canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = 32;
+            canvas.height = 32;
+
+            // Background
+            ctx.fillStyle = '#1f2937';
+            ctx.fillRect(0, 0, 32, 32);
+
+            // MultiGender Hebrew character
+            ctx.fillStyle = '#10b981';
+            ctx.font = 'bold 18px serif';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('׋', 16, 16);
+
+            // Convert to data URL and set as backup favicon
+            const pngUrl = canvas.toDataURL('image/png');
+            
+            const pngFavicon = document.createElement('link');
+            pngFavicon.rel = 'icon';
+            pngFavicon.type = 'image/png';
+            pngFavicon.href = pngUrl;
+            document.head.appendChild(pngFavicon);
+
+        } catch (error) {
+            console.warn('PNG favicon creation failed:', error);
+        }
+    }
+};
+
+// =============================================================================
+// THEME MANAGER
+// =============================================================================
 const ThemeManager = {
     init() {
-        const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
-        const saved = localStorage.getItem('theme_noamba');
-        const isDark = saved ? saved === 'dark' : prefersDark;
-        document.body.classList.toggle('dark', isDark);
+        const savedTheme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = savedTheme || (prefersDark ? 'dark' : 'light');
+        
+        this.setTheme(theme);
+        console.log('🎨 Theme initialized:', theme);
     },
 
     toggle() {
-        const nextIsDark = !document.body.classList.contains('dark');
-        document.body.classList.toggle('dark', nextIsDark);
-        localStorage.setItem('theme_noamba', nextIsDark ? 'dark' : 'light');
-        CanvasRenderer.generate();
-    }
-};
-
-// Share functionality module
-const ShareManager = {
-    async share() {
-        const canvas = document.getElementById('canvas');
+        const currentTheme = document.body.classList.contains('dark') ? 'dark' : 'light';
+        const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+        this.setTheme(newTheme);
         
-        try {
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            const file = new File([blob], 'text-image.png', { type: 'image/png' });
-            
-            if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                await navigator.share({
-                    files: [file],
-                    title: 'Generated Text Image'
-                });
-            } else {
-                this.download(blob);
-            }
-        } catch (error) {
-            console.log('Sharing failed', error);
-            const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-            this.download(blob);
-        }
+        // Regenerate canvas with new theme
+        setTimeout(() => CanvasRenderer.generate(), 50);
     },
 
-    download(blob) {
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement('a');
-        link.download = 'text-image.png';
-        link.href = url;
-        link.click();
-        URL.revokeObjectURL(url);
+    setTheme(theme) {
+        document.body.classList.toggle('dark', theme === 'dark');
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
     }
 };
 
-// Character keyboard module
+// =============================================================================
+// SHARE MANAGER
+// =============================================================================
+const ShareManager = {
+    async share() {
+        try {
+            const canvas = document.getElementById('canvas');
+            
+            canvas.toBlob(async (blob) => {
+                const text = document.getElementById('textInput').value;
+                const truncatedText = text.length > 50 ? text.substring(0, 50) + '...' : text;
+                const message = `Check out this MultiGender Hebrew text: "${truncatedText}"`;
+                
+                // Try Web Share API first (mobile)
+                if (navigator.share && navigator.canShare) {
+                    try {
+                        const file = new File([blob], 'multigender-hebrew-text.png', { type: 'image/png' });
+                        await navigator.share({
+                            title: 'MultiGender Hebrew Text',
+                            text: message,
+                            files: [file]
+                        });
+                        return;
+                    } catch (shareError) {
+                        console.log('Web Share failed, falling back to WhatsApp');
+                    }
+                }
+                
+                // Fallback to WhatsApp Web
+                const encodedMessage = encodeURIComponent(message);
+                const whatsappUrl = `https://wa.me/?text=${encodedMessage}`;
+                window.open(whatsappUrl, '_blank');
+                
+                // Download image as fallback
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = 'multigender-hebrew-text.png';
+                a.click();
+                URL.revokeObjectURL(url);
+                
+            }, 'image/png');
+        } catch (error) {
+            console.error('Share failed:', error);
+        }
+    }
+};
+
+// =============================================================================
+// CHARACTER KEYBOARD
+// =============================================================================
 const CharKeyboard = {
     init() {
         const buttons = document.querySelectorAll('.char-button');
@@ -493,23 +516,37 @@ const CharKeyboard = {
                 CanvasRenderer.generate();
             });
         });
+        console.log('⌨️ Character keyboard initialized');
     }
 };
 
-
-// Initialize app
+// =============================================================================
+// APPLICATION INITIALIZATION
+// =============================================================================
 document.addEventListener('DOMContentLoaded', function() {
+    // Log startup information
+    Utils.logStartup();
+    
+    // Initialize managers
+    FaviconManager.init();
     ThemeManager.init();
+    
+    // Set initial text and generate canvas
     document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
     CanvasRenderer.generate();
 
+    // Create debounced canvas generator
+    const debouncedGenerate = Utils.debounce(() => CanvasRenderer.generate(), CONFIG.DEBOUNCE_DELAY);
+
     // Event listeners
-    document.getElementById('textInput').addEventListener('input', () => CanvasRenderer.generate());
+    document.getElementById('textInput').addEventListener('input', debouncedGenerate);
     document.getElementById('fontSelect').addEventListener('change', () => CanvasRenderer.generate());
-    document.getElementById('sizeInput').addEventListener('input', () => CanvasRenderer.generate());
+    document.getElementById('sizeInput').addEventListener('input', debouncedGenerate);
     document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
     document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
     
     // Initialize character keyboard
     CharKeyboard.init();
+    
+    console.log('✅ Application initialized successfully');
 });
