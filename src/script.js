@@ -306,8 +306,26 @@ const CanvasRenderer = {
     },
 
     resizeCanvas(canvas, dimensions) {
-        canvas.width = dimensions.width;
-        canvas.height = dimensions.height;
+        // Get device pixel ratio for sharp rendering on high-DPI displays
+        const dpr = window.devicePixelRatio || 1;
+        
+        // Set the actual size in memory (scaled to account for extra pixel density)
+        canvas.width = dimensions.width * dpr;
+        canvas.height = dimensions.height * dpr;
+        
+        // Scale the canvas back down using CSS
+        canvas.style.width = dimensions.width + 'px';
+        canvas.style.height = dimensions.height + 'px';
+        
+        // Scale the drawing context so everything draws at the correct size
+        const ctx = canvas.getContext('2d');
+        ctx.scale(dpr, dpr);
+        
+        console.log('Canvas scaled for sharp rendering:', {
+            logicalSize: `${dimensions.width}x${dimensions.height}`,
+            actualSize: `${canvas.width}x${canvas.height}`,
+            devicePixelRatio: dpr
+        });
     },
 
     drawText(ctx, lines, size, dimensions) {
