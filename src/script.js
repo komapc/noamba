@@ -529,47 +529,6 @@ const FaviconGenerator = {
         appleTouchIcon.rel = 'apple-touch-icon';
         appleTouchIcon.href = dataURL;
         document.head.appendChild(appleTouchIcon);
-    },
-
-    // Generate static default favicon files
-    generateStaticFavicons: async function() {
-        try {
-            // Create a simple default favicon with MultiGender Hebrew character
-            const sizes = [16, 32, 48];
-            
-            for (const size of sizes) {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                canvas.width = size;
-                canvas.height = size;
-
-                // Background
-                ctx.fillStyle = '#2563eb'; // Blue background
-                ctx.fillRect(0, 0, size, size);
-
-                // Load and draw Hebrew character
-                await CanvasRenderer.loadFontUnified();
-                ctx.fillStyle = '#ffffff';
-                ctx.font = `${Math.floor(size * 0.7)}px AlefMultiGenderHebrew, sans-serif`;
-                ctx.textAlign = 'center';
-                ctx.textBaseline = 'middle';
-                ctx.fillText('׊', size / 2, size / 2);
-
-                // Convert to blob and download
-                canvas.toBlob((blob) => {
-                    const url = URL.createObjectURL(blob);
-                    const a = document.createElement('a');
-                    a.href = url;
-                    a.download = `favicon-${size}x${size}.png`;
-                    a.click();
-                    URL.revokeObjectURL(url);
-                }, 'image/png');
-            }
-            
-            console.log('Static favicon files generated for download');
-        } catch (error) {
-            console.error('Error generating static favicons:', error);
-        }
     }
 };
 
@@ -601,7 +560,6 @@ document.addEventListener('DOMContentLoaded', function() {
         setTimeout(() => FaviconGenerator.generateFavicon(), 100);
     });
     document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
-    document.getElementById('generateFavicon').addEventListener('click', () => FaviconGenerator.generateStaticFavicons());
     
     // Initialize character keyboard
     CharKeyboard.init();
