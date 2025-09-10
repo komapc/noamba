@@ -469,6 +469,101 @@ const CharKeyboard = {
     }
 };
 
+// Favicon generation module
+const FaviconGenerator = {
+    generateFavicon: async function() {
+        try {
+            const canvas = document.getElementById('canvas');
+            if (!canvas) {
+                console.warn('Canvas not found for favicon generation');
+                return;
+            }
+
+            // Create a smaller canvas for favicon (32x32)
+            const faviconCanvas = document.createElement('canvas');
+            const faviconCtx = faviconCanvas.getContext('2d');
+            faviconCanvas.width = 32;
+            faviconCanvas.height = 32;
+
+            // Fill with theme-appropriate background
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            faviconCtx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
+            faviconCtx.fillRect(0, 0, 32, 32);
+
+            // Scale and draw the main canvas content to favicon size
+            faviconCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 32, 32);
+
+            // Convert to data URL and update favicon
+            const faviconDataURL = faviconCanvas.toDataURL('image/png');
+            this.updateFavicon(faviconDataURL);
+
+            console.log('Favicon generated and updated');
+        } catch (error) {
+            console.error('Error generating favicon:', error);
+        }
+    },
+
+    updateFavicon: function(dataURL) {
+        // Remove existing favicon links
+        const existingFavicons = document.querySelectorAll('link[rel*="icon"]');
+        existingFavicons.forEach(link => link.remove());
+
+        // Create new favicon link
+        const faviconLink = document.createElement('link');
+        faviconLink.rel = 'icon';
+        faviconLink.type = 'image/png';
+        faviconLink.href = dataURL;
+        document.head.appendChild(faviconLink);
+
+        // Also create apple-touch-icon for mobile
+        const appleTouchIcon = document.createElement('link');
+        appleTouchIcon.rel = 'apple-touch-icon';
+        appleTouchIcon.href = dataURL;
+        document.head.appendChild(appleTouchIcon);
+    },
+
+    // Generate static default favicon files
+    generateStaticFavicons: async function() {
+        try {
+            // Create a simple default favicon with MultiGender Hebrew character
+            const sizes = [16, 32, 48];
+            
+            for (const size of sizes) {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = size;
+                canvas.height = size;
+
+                // Background
+                ctx.fillStyle = '#2563eb'; // Blue background
+                ctx.fillRect(0, 0, size, size);
+
+                // Load and draw Hebrew character
+                await CanvasRenderer.loadFontUnified();
+                ctx.fillStyle = '#ffffff';
+                ctx.font = `${Math.floor(size * 0.7)}px AlefMultiGenderHebrew, sans-serif`;
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('׊', size / 2, size / 2);
+
+                // Convert to blob and download
+                canvas.toBlob((blob) => {
+                    const url = URL.createObjectURL(blob);
+                    const a = document.createElement('a');
+                    a.href = url;
+                    a.download = `favicon-${size}x${size}.png`;
+                    a.click();
+                    URL.revokeObjectURL(url);
+                }, 'image/png');
+            }
+            
+            console.log('Static favicon files generated for download');
+        } catch (error) {
+            console.error('Error generating static favicons:', error);
+        }
+    }
+};
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     ThemeManager.init();
@@ -476,12 +571,32 @@ document.addEventListener('DOMContentLoaded', function() {
     CanvasRenderer.generate();
 
     // Event listeners
-    document.getElementById('textInput').addEventListener('input', () => CanvasRenderer.generate());
-    document.getElementById('fontSelect').addEventListener('change', () => CanvasRenderer.generate());
-    document.getElementById('sizeInput').addEventListener('input', () => CanvasRenderer.generate());
-    document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
+    document.getElementById('textInput').addEventListener('input', () => {
+        CanvasRenderer.generate();
+        // Update favicon when content changes (debounced)
+        clearTimeout(window.faviconTimeout);
+        window.faviconTimeout = setTimeout(() => FaviconGenerator.generateFavicon(), 500);
+    });
+    document.getElementById('fontSelect').addEventListener('change', () => {
+        CanvasRenderer.generate();
+        FaviconGenerator.generateFavicon();
+    });
+    document.getElementById('sizeInput').addEventListener('input', () => {
+        CanvasRenderer.generate();
+        clearTimeout(window.faviconTimeout);
+        window.faviconTimeout = setTimeout(() => FaviconGenerator.generateFavicon(), 500);
+    });
+    document.getElementById('themeToggle').addEventListener('click', () => {
+        ThemeManager.toggle();
+        // Update favicon after theme change
+        setTimeout(() => FaviconGenerator.generateFavicon(), 100);
+    });
     document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
+    document.getElementById('generateFavicon').addEventListener('click', () => FaviconGenerator.generateStaticFavicons());
     
     // Initialize character keyboard
     CharKeyboard.init();
+    
+    // Generate initial favicon
+    setTimeout(() => FaviconGenerator.generateFavicon(), 1000);
 });
