@@ -168,7 +168,7 @@ const CanvasRenderer = {
         
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
-        ctx.direction = 'rtl';
+        ctx.direction = 'ltr'; // Use LTR to avoid RTL positioning issues
         ctx.textRendering = 'optimizeLegibility';
         ctx.fontKerning = 'normal';
         
@@ -378,13 +378,15 @@ const CanvasRenderer = {
         });
         
         for (const line of lines) {
-            console.log('Drawing line:', line, 'at y:', y, 'with font:', ctx.font);
+            const centerX = ctx.canvas.width / 2;
+            console.log('Drawing line:', line, 'at x:', centerX, 'y:', y, 'with font:', ctx.font);
+            console.log('Canvas width:', ctx.canvas.width, 'Center X:', centerX, 'textAlign:', ctx.textAlign, 'direction:', ctx.direction);
             
             // Ensure line is not empty or corrupted
             if (line && line.trim()) {
-                // Draw without artificial bounds checking that was cutting off text
-                ctx.fillText(line, ctx.canvas.width / 2, y);
-                console.log('Drew line at y:', y);
+                // Draw text at center position with center alignment
+                ctx.fillText(line, centerX, y);
+                console.log('Drew line at x:', centerX, 'y:', y);
             }
             y += dimensions.lineHeight;
         }
