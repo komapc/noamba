@@ -216,11 +216,37 @@ canvas {
     /* Ensure crisp rendering on high-DPI displays */
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
+    /* Mobile-specific optimizations */
+    touch-action: manipulation;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    user-select: none;
 }
 
 body.dark canvas { 
     border-color: var(--border-dark); 
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Mobile-specific optimizations */
+body.mobile {
+    -webkit-text-size-adjust: 100%;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
+body.mobile canvas {
+    /* Force GPU acceleration on mobile */
+    transform: translate3d(0, 0, 0);
+    -webkit-transform: translate3d(0, 0, 0);
+    /* Optimize for mobile rendering */
+    image-rendering: optimizeQuality;
+}
+
+body.mobile .text-input {
+    /* Prevent zoom on focus for mobile */
+    font-size: 16px;
+    transform: translateZ(0);
 }
 
 /* Bottom share section */
@@ -423,15 +449,44 @@ body.dark .keyboard-label {
 @media (max-width: 480px) {
     .container {
         padding: 12px 8px 24px;
+        min-height: 100vh;
+        overflow-x: hidden;
     }
     
     .text-input {
         min-height: 80px;
         font-size: 16px; /* Prevent zoom on iOS */
+        -webkit-appearance: none;
+        border-radius: 8px;
+    }
+    
+    .canvas-container {
+        margin-top: 16px;
+        padding: 0 4px;
+    }
+    
+    canvas {
+        max-width: calc(100vw - 24px);
+        height: auto;
+        /* Mobile canvas optimizations */
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
     }
     
     .share-button {
         width: 100%;
         justify-content: center;
+    }
+    
+    /* Fix for mobile viewport issues */
+    .mg-icon {
+        font-size: 1.1em;
+    }
+    
+    h1 {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        flex-wrap: wrap;
+        gap: 0.3rem;
     }
 }

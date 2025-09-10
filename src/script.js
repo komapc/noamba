@@ -59,42 +59,101 @@ const FontManager = {
     async loadMultiGenderFont() {
         try {
             console.log('Loading font for protocol:', window.location.protocol);
+            console.log('User agent:', navigator.userAgent);
+            console.log('Is mobile:', this.isMobile());
             
-            const fontFace = new FontFace(
-                'AlefMultiGenderHebrew',
-                window.location.protocol === 'file:' 
-                    ? 'url(fonts/AlefMultiGndr-Regular.ttf)'
-                    : 'url(fonts/AlefMultiGndr-Regular.woff)'
-            );
+            // Try multiple font loading approaches for better mobile compatibility
+            const fontLoadPromises = [];
             
-            const loadedFont = await fontFace.load();
-            document.fonts.add(loadedFont);
-            console.log('Loaded WOFF font successfully');
+            // Approach 1: FontFace API
+            try {
+                const fontFace = new FontFace(
+                    'AlefMultiGenderHebrew',
+                    window.location.protocol === 'file:' 
+                        ? 'url(fonts/AlefMultiGndr-Regular.ttf)'
+                        : 'url(fonts/AlefMultiGndr-Regular.woff)'
+                );
+                
+                fontLoadPromises.push(fontFace.load().then(font => {
+                    document.fonts.add(font);
+                    console.log('FontFace API: Font loaded successfully');
+                    return true;
+                }));
+            } catch (error) {
+                console.warn('FontFace API not supported:', error);
+            }
+            
+            // Approach 2: document.fonts.load for mobile compatibility
+            try {
+                fontLoadPromises.push(
+                    document.fonts.load('32px AlefMultiGenderHebrew').then(() => {
+                        console.log('document.fonts.load: Font loaded successfully');
+                        return true;
+                    })
+                );
+            } catch (error) {
+                console.warn('document.fonts.load failed:', error);
+            }
+            
+            // Wait for any font loading approach to succeed
+            try {
+                await Promise.race(fontLoadPromises);
+            } catch (error) {
+                console.warn('All font loading approaches failed, using fallback');
+            }
+            
+            // Extra wait for mobile devices
+            if (this.isMobile()) {
+                console.log('Mobile device detected, adding extra wait time');
+                await new Promise(resolve => setTimeout(resolve, 500));
+            }
 
-            // Verify font loading
+            // Verify font loading with multiple checks
+            const success = await this.verifyFontLoading();
+            
+            console.log('Font verification result:', success);
+            return success;
+        } catch (error) {
+            console.error('Font loading failed:', error);
+            return false;
+        }
+    },
+
+    isMobile() {
+        return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+               (window.innerWidth <= 768 && 'ontouchstart' in window);
+    },
+
+    async verifyFontLoading() {
+        try {
+            // Test 1: Element measurement
             const testText = CONFIG.MULTIGENDER_CHARS;
             const testElement = document.createElement('span');
-            testElement.style.fontFamily = 'AlefMultiGenderHebrew';
+            testElement.style.fontFamily = 'AlefMultiGenderHebrew, serif';
             testElement.style.fontSize = '32px';
             testElement.textContent = testText;
             testElement.style.position = 'absolute';
             testElement.style.left = '-9999px';
+            testElement.style.visibility = 'hidden';
             document.body.appendChild(testElement);
+
+            // Wait a bit for font rendering
+            await new Promise(resolve => setTimeout(resolve, 100));
 
             const width = testElement.getBoundingClientRect().width;
             document.body.removeChild(testElement);
 
-            const success = width > 10;
-            console.log('Font verification:', {
+            console.log('Font verification details:', {
                 font: '32px AlefMultiGenderHebrew',
                 width,
                 protocol: window.location.protocol,
-                success
+                isMobile: this.isMobile(),
+                success: width > 10
             });
 
-            return success;
+            return width > 10;
         } catch (error) {
-            console.error('Font loading failed:', error);
+            console.error('Font verification failed:', error);
             return false;
         }
     }
@@ -275,8 +334,15 @@ const CanvasRenderer = {
     },
 
     resizeCanvas(canvas, dimensions) {
-        // Get device pixel ratio for sharp rendering
-        const dpr = window.devicePixelRatio || 1;
+        // Get device pixel ratio with mobile-specific handling
+        let dpr = window.devicePixelRatio || 1;
+        const isMobile = FontManager.isMobile();
+        
+        // Limit DPR on mobile to prevent memory issues and rendering problems
+        if (isMobile && dpr > 2) {
+            console.log('Mobile device with high DPR detected, limiting to 2x');
+            dpr = 2;
+        }
         
         // Set actual size in memory (scaled for pixel density)
         canvas.width = dimensions.width * dpr;
@@ -290,10 +356,19 @@ const CanvasRenderer = {
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
         
+        // Mobile-specific canvas optimizations
+        if (isMobile) {
+            ctx.imageSmoothingEnabled = true;
+            ctx.imageSmoothingQuality = 'high';
+        }
+        
         console.log('Canvas scaled for sharp rendering:', {
             logicalSize: `${dimensions.width}x${dimensions.height}`,
             actualSize: `${canvas.width}x${canvas.height}`,
-            devicePixelRatio: dpr
+            devicePixelRatio: window.devicePixelRatio,
+            usedDPR: dpr,
+            isMobile,
+            memoryUsage: `${Math.round(canvas.width * canvas.height * 4 / 1024)}KB`
         });
     },
 
@@ -523,30 +598,93 @@ const CharKeyboard = {
 // =============================================================================
 // APPLICATION INITIALIZATION
 // =============================================================================
-document.addEventListener('DOMContentLoaded', function() {
-    // Log startup information
-    Utils.logStartup();
-    
-    // Initialize managers
-    FaviconManager.init();
-    ThemeManager.init();
-    
-    // Set initial text and generate canvas
-    document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
-    CanvasRenderer.generate();
+document.addEventListener('DOMContentLoaded', async function() {
+    try {
+        // Log startup information
+        Utils.logStartup();
+        
+        // Mobile-specific initialization
+        const isMobile = FontManager.isMobile();
+        if (isMobile) {
+            console.log('📱 Mobile device detected, applying mobile optimizations');
+            
+            // Prevent zoom on input focus (additional safety)
+            document.addEventListener('touchstart', function() {}, {passive: true});
+            
+            // Add mobile body class for additional styling
+            document.body.classList.add('mobile');
+        }
+        
+        // Initialize managers
+        FaviconManager.init();
+        ThemeManager.init();
+        
+        // Preload font before initial render (important for mobile)
+        console.log('🔤 Preloading fonts...');
+        await FontManager.loadMultiGenderFont();
+        
+        // Set initial text and generate canvas
+        document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
+        
+        // Initial render with extra delay for mobile
+        if (isMobile) {
+            setTimeout(() => CanvasRenderer.generate(), 300);
+        } else {
+            CanvasRenderer.generate();
+        }
 
-    // Create debounced canvas generator
-    const debouncedGenerate = Utils.debounce(() => CanvasRenderer.generate(), CONFIG.DEBOUNCE_DELAY);
+        // Create debounced canvas generator with longer delay for mobile
+        const debounceDelay = isMobile ? CONFIG.DEBOUNCE_DELAY * 2 : CONFIG.DEBOUNCE_DELAY;
+        const debouncedGenerate = Utils.debounce(() => CanvasRenderer.generate(), debounceDelay);
 
-    // Event listeners
-    document.getElementById('textInput').addEventListener('input', debouncedGenerate);
-    document.getElementById('fontSelect').addEventListener('change', () => CanvasRenderer.generate());
-    document.getElementById('sizeInput').addEventListener('input', debouncedGenerate);
-    document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
-    document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
-    
-    // Initialize character keyboard
-    CharKeyboard.init();
-    
-    console.log('✅ Application initialized successfully');
+        // Event listeners
+        document.getElementById('textInput').addEventListener('input', debouncedGenerate);
+        document.getElementById('fontSelect').addEventListener('change', () => {
+            // Force immediate update for font changes
+            setTimeout(() => CanvasRenderer.generate(), 50);
+        });
+        document.getElementById('sizeInput').addEventListener('input', debouncedGenerate);
+        document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
+        document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
+        
+        // Initialize character keyboard
+        CharKeyboard.init();
+        
+        // Mobile-specific event listeners
+        if (isMobile) {
+            // Handle orientation changes
+            window.addEventListener('orientationchange', () => {
+                setTimeout(() => {
+                    console.log('📱 Orientation changed, re-rendering canvas');
+                    CanvasRenderer.generate();
+                }, 500);
+            });
+            
+            // Handle page visibility changes (background/foreground)
+            document.addEventListener('visibilitychange', () => {
+                if (!document.hidden) {
+                    console.log('📱 Page became visible, checking canvas');
+                    setTimeout(() => CanvasRenderer.generate(), 200);
+                }
+            });
+        }
+        
+        console.log('✅ Application initialized successfully', isMobile ? '(Mobile Mode)' : '(Desktop Mode)');
+        
+    } catch (error) {
+        console.error('❌ Application initialization failed:', error);
+        
+        // Fallback initialization without font loading
+        console.log('🔄 Attempting fallback initialization...');
+        try {
+            FaviconManager.init();
+            ThemeManager.init();
+            document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
+            CanvasRenderer.generate();
+            CharKeyboard.init();
+            console.log('✅ Fallback initialization successful');
+        } catch (fallbackError) {
+            console.error('❌ Fallback initialization also failed:', fallbackError);
+        }
+    }
 });
