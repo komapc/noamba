@@ -40,7 +40,17 @@
             </div>
             
             <div class="controls-row">
-                <input type="number" id="sizeInput" class="size-input" value="32" min="8" max="144" />
+                <div class="size-control">
+                    <label for="sizeSlider" class="size-label">Font Size: <span id="sizeDisplay">32</span>px</label>
+                    <input type="range" id="sizeSlider" class="size-slider" value="32" min="8" max="144" step="2" />
+                    <div class="size-marks">
+                        <span>8</span>
+                        <span>32</span>
+                        <span>64</span>
+                        <span>96</span>
+                        <span>144</span>
+                    </div>
+                </div>
             </div>
         </div>
         <div class="canvas-container">
@@ -58,7 +68,7 @@
     
     <!-- Version info -->
     <div class="footer-version">
-        <span class="version-small">v1.3.0</span>
+        <span class="version-small">v1.4.0</span>
     </div>
 
     <script src="script.js"></script>

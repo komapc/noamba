@@ -228,7 +228,7 @@ const CanvasRenderer = {
         const ctx = canvas.getContext('2d');
         const text = document.getElementById('textInput').value;
         const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
-        const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
+        const sizeVal = parseInt(document.getElementById('sizeSlider').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : CONFIG.DEFAULT_FONT_SIZE;
 
         // Ensure font is loaded
@@ -258,21 +258,14 @@ const CanvasRenderer = {
         // Always use MultiGender Hebrew font with fallbacks
         ctx.font = `${size}px AlefMultiGenderHebrew, sans-serif`;
 
-        // Set text properties with mobile-aware RTL handling
-        const isMobile = FontManager.isMobile();
-        
-        ctx.textAlign = 'center';
+        // Set basic text properties (alignment will be set in drawText)
         ctx.textBaseline = 'alphabetic';
-        // On mobile, use LTR to avoid positioning conflicts, RTL on desktop for better control
-        ctx.direction = isMobile ? 'ltr' : 'rtl';
         ctx.textRendering = 'optimizeLegibility';
         ctx.fontKerning = 'normal';
         
         console.log('Canvas text properties set:', {
             font: ctx.font,
-            textAlign: ctx.textAlign,
-            direction: ctx.direction,
-            isMobile
+            textBaseline: ctx.textBaseline
         });
     },
 
@@ -430,25 +423,16 @@ const CanvasRenderer = {
             topMargin: isMobile ? Math.max(dimensions.padding, size * 0.5) : 'N/A'
         });
         
-        // Draw each line with mobile-optimized positioning
+        // Set consistent center alignment for all platforms
+        ctx.textAlign = 'center';
+        ctx.direction = 'ltr'; // Use LTR for consistent centering behavior
+        const centerX = ctx.canvas.width / 2;
+        
+        // Draw each line centered
         for (const line of lines) {
             if (line && line.trim()) {
-                let drawX;
-                
-                if (isMobile) {
-                    // Mobile: Use true center alignment to avoid RTL positioning issues
-                    drawX = ctx.canvas.width / 2;
-                    ctx.textAlign = 'center';
-                    console.log('Mobile center alignment - Drawing line:', line, 'at center x:', drawX, 'y:', y);
-                } else {
-                    // Desktop: Manual center calculation for more control
-                    const lineWidth = ctx.measureText(line).width;
-                    drawX = (ctx.canvas.width - lineWidth) / 2;
-                    ctx.textAlign = 'left';
-                    console.log('Desktop manual positioning - Drawing line:', line, 'at calculated x:', drawX, 'y:', y);
-                }
-                
-                ctx.fillText(line, drawX, y);
+                console.log('Drawing centered line:', line, 'at center x:', centerX, 'y:', y);
+                ctx.fillText(line, centerX, y);
             }
             y += dimensions.lineHeight;
         }
@@ -690,11 +674,15 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Event listeners
         document.getElementById('textInput').addEventListener('input', debouncedGenerate);
-        document.getElementById('fontSelect').addEventListener('change', () => {
-            // Force immediate update for font changes
-            setTimeout(() => CanvasRenderer.generate(), 50);
+        
+        // Size slider with display update
+        const sizeSlider = document.getElementById('sizeSlider');
+        const sizeDisplay = document.getElementById('sizeDisplay');
+        
+        sizeSlider.addEventListener('input', (e) => {
+            sizeDisplay.textContent = e.target.value;
+            debouncedGenerate();
         });
-        document.getElementById('sizeInput').addEventListener('input', debouncedGenerate);
         document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
         document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
         
