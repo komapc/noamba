@@ -275,12 +275,21 @@ const CanvasRenderer = {
             ctx.font = `${size}px "${actualFont}", "AlefMultiGenderHebrew", sans-serif`;
         }
 
-        // Set text properties
+        // Set text properties with mobile-aware RTL handling
+        const isMobile = FontManager.isMobile();
+        
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
-        ctx.direction = 'rtl';
+        // On mobile, use LTR to avoid positioning conflicts, RTL on desktop for better control
+        ctx.direction = isMobile ? 'ltr' : 'rtl';
         ctx.textRendering = 'optimizeLegibility';
         ctx.fontKerning = 'normal';
+        
+        console.log('Canvas text properties set:', {
+            textAlign: ctx.textAlign,
+            direction: ctx.direction,
+            isMobile
+        });
     },
 
     processText(text, ctx) {
@@ -437,18 +446,25 @@ const CanvasRenderer = {
             topMargin: isMobile ? Math.max(dimensions.padding, size * 0.5) : 'N/A'
         });
         
-        // Draw each line
+        // Draw each line with mobile-optimized positioning
         for (const line of lines) {
             if (line && line.trim()) {
-                // Manual center calculation for consistent positioning
-                const lineWidth = ctx.measureText(line).width;
-                const centerX = (ctx.canvas.width - lineWidth) / 2;
+                let drawX;
                 
-                console.log('Drawing line:', line, 'at x:', centerX, 'y:', y);
+                if (isMobile) {
+                    // Mobile: Use true center alignment to avoid RTL positioning issues
+                    drawX = ctx.canvas.width / 2;
+                    ctx.textAlign = 'center';
+                    console.log('Mobile center alignment - Drawing line:', line, 'at center x:', drawX, 'y:', y);
+                } else {
+                    // Desktop: Manual center calculation for more control
+                    const lineWidth = ctx.measureText(line).width;
+                    drawX = (ctx.canvas.width - lineWidth) / 2;
+                    ctx.textAlign = 'left';
+                    console.log('Desktop manual positioning - Drawing line:', line, 'at calculated x:', drawX, 'y:', y);
+                }
                 
-                // Use left alignment with calculated center position
-                ctx.textAlign = 'left';
-                ctx.fillText(line, centerX, y);
+                ctx.fillText(line, drawX, y);
             }
             y += dimensions.lineHeight;
         }
