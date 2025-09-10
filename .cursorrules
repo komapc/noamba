@@ -1,0 +1,57 @@
+# Cursor Rules for MultiGender Hebrew Text Designer
+
+## Version Management
+- **CRITICAL**: Every time you commit changes, automatically increment the version number in `src/index.html`
+- Version format: `v{major}.{minor}.{patch}` (e.g., v1.3.0)
+- Version increment rules:
+  - **Patch** (+0.0.1): Bug fixes, small improvements, CSS tweaks, minor text changes
+  - **Minor** (+0.1.0): New features, UI improvements, significant functionality additions
+  - **Major** (+1.0.0): Breaking changes, complete rewrites, major architecture changes
+
+## Version Location
+- Version is displayed in `<span class="version-small">` inside `<div class="footer-version">` at the bottom of `src/index.html`
+- Always update the version before committing
+- Include version change in commit message
+
+## Commit Message Format
+```
+[Type]: Brief description
+
+- Change 1
+- Change 2
+- Version: v{old} → v{new}
+```
+
+## Code Style
+- Use modular JavaScript (CONFIG, Utils, FontManager, etc.)
+- Maintain mobile-first responsive design
+- Always test font loading and canvas rendering
+- Keep consistent naming conventions
+- Use CSS variables for theming
+
+## MultiGender Hebrew Specifics
+- Always use `AlefMultiGenderHebrew` font
+- Support special characters: ׭׬׌׎׫׊׏׋׉׮׍׈
+- Ensure proper RTL/LTR text handling
+- Test on both desktop and mobile
+- Maintain canvas text centering
+
+## File Structure
+- `src/index.html` - Main page with version display
+- `src/script.js` - Modular JavaScript
+- `src/styles.css` - Responsive CSS with themes
+- `src/fonts/` - Font files
+
+## Testing Requirements
+- Test text alignment on mobile and desktop
+- Verify font loading works
+- Check theme switching
+- Ensure responsive layout
+- Test special character rendering
+
+## Never Do
+- Skip version increment on commits
+- Break mobile responsiveness
+- Remove MultiGender Hebrew font support
+- Create new files without explicit need
+- Ignore linter warnings
