@@ -395,8 +395,8 @@ const CanvasRenderer = {
         const isDark = document.body.classList.contains('dark');
         const isMobile = FontManager.isMobile();
         
-        // Clear canvas with theme-aware background
-        ctx.fillStyle = isDark ? '#0b0f14' : 'white';
+        // Clear canvas with theme-aware background (matching control colors)
+        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
         // Set text color
