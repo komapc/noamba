@@ -278,10 +278,11 @@ const CanvasRenderer = {
             maxWidthLimit
         });
         
-        // Better height calculation - add extra space for text positioning
+        // Better height calculation - ensure adequate padding for text positioning
         const minHeight = 120;
         const textHeight = lines.length * lineHeight;
-        const calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + size); // Add font size for better spacing
+        const extraPadding = Math.max(20, size * 0.5); // Additional padding based on font size
+        const calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
         
         console.log('Canvas sizing details:', {
             maxWidth,
@@ -289,7 +290,9 @@ const CanvasRenderer = {
             hasSpecialChars,
             lines: lines.length,
             lineHeight,
+            textHeight,
             padding,
+            extraPadding,
             calculatedWidth,
             calculatedHeight
         });
@@ -359,12 +362,16 @@ const CanvasRenderer = {
         
         // Draw multi-line text centered with proper positioning
         const totalTextHeight = lines.length * dimensions.lineHeight;
-        const startY = Math.round((ctx.canvas.height - totalTextHeight) / 2) + dimensions.lineHeight;
+        // Start at the top of the text block (center it vertically)
+        const textBlockTop = Math.round((ctx.canvas.height - totalTextHeight) / 2);
+        // First baseline should be one ascent distance from the top of the text block
+        const startY = textBlockTop + dimensions.lineHeight * 0.8; // Use 80% of lineHeight as ascent approximation
         let y = startY;
         
         console.log('Text positioning details:', {
             canvasHeight: ctx.canvas.height,
             totalTextHeight,
+            textBlockTop,
             startY,
             lineHeight: dimensions.lineHeight,
             lines: lines.length
@@ -373,15 +380,11 @@ const CanvasRenderer = {
         for (const line of lines) {
             console.log('Drawing line:', line, 'at y:', y, 'with font:', ctx.font);
             
-            // Debug: Test special character rendering (completely removed)
-            // This was causing "Test:" to appear in the rendered image
-            
-            // Ensure line is not empty or corrupted and is within canvas bounds
+            // Ensure line is not empty or corrupted
             if (line && line.trim()) {
-                // Ensure text is within canvas bounds
-                const textY = Math.max(size, Math.min(y, ctx.canvas.height - 10));
-                ctx.fillText(line, ctx.canvas.width / 2, textY);
-                console.log('Drew line at y:', textY);
+                // Draw without artificial bounds checking that was cutting off text
+                ctx.fillText(line, ctx.canvas.width / 2, y);
+                console.log('Drew line at y:', y);
             }
             y += dimensions.lineHeight;
         }
