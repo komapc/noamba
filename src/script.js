@@ -301,8 +301,11 @@ const CanvasRenderer = {
     },
 
     calculateDimensions(lines, size, ctx) {
+        const isMobile = FontManager.isMobile();
         const lineHeight = Math.round(size * 1.4);
-        const padding = Math.round(size * 0.8);
+        
+        // Mobile-optimized padding (much less padding on mobile)
+        const padding = isMobile ? Math.round(size * 0.3) : Math.round(size * 0.6);
         
         // Calculate width
         let maxWidth = 0;
@@ -315,15 +318,38 @@ const CanvasRenderer = {
 
         const hasSpecialChars = lines.some(line => Utils.hasMultiGenderChars(line));
         const extraWidth = hasSpecialChars ? 16 : 0;
-        const minWidth = 200;
-        const maxWidthLimit = 600;
+        const minWidth = isMobile ? 150 : 200;
+        const maxWidthLimit = isMobile ? 400 : 600;
         const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
 
-        // Calculate height
-        const minHeight = 120;
+        // Mobile-optimized height calculation - much more compact on mobile
+        const minHeight = isMobile ? Math.max(60, size + 20) : 120;
         const textHeight = lines.length * lineHeight;
-        const extraPadding = Math.max(20, size * 0.5);
-        const calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
+        const extraPadding = isMobile ? Math.max(8, size * 0.15) : Math.max(20, size * 0.5);
+        
+        // On mobile, make canvas height much tighter to actual content
+        let calculatedHeight;
+        if (isMobile) {
+            calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
+            // Extra mobile optimization: if single line, make it even more compact
+            if (lines.length === 1) {
+                calculatedHeight = Math.max(size + 30, textHeight + padding * 1.5);
+            }
+        } else {
+            calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
+        }
+
+        console.log('Dimension calculation details:', {
+            isMobile,
+            size,
+            lineHeight,
+            padding,
+            textHeight,
+            extraPadding,
+            calculatedWidth,
+            calculatedHeight,
+            lines: lines.length
+        });
 
         return {
             width: calculatedWidth,
@@ -374,6 +400,7 @@ const CanvasRenderer = {
 
     drawText(ctx, lines, size, dimensions) {
         const isDark = document.body.classList.contains('dark');
+        const isMobile = FontManager.isMobile();
         
         // Clear canvas with theme-aware background
         ctx.fillStyle = isDark ? '#0b0f14' : 'white';
@@ -382,19 +409,32 @@ const CanvasRenderer = {
         // Set text color
         ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
         
-        // Calculate text positioning
+        // Mobile-optimized text positioning
         const totalTextHeight = lines.length * dimensions.lineHeight;
-        const textBlockTop = Math.round((ctx.canvas.height - totalTextHeight) / 2);
-        const startY = textBlockTop + dimensions.lineHeight * 0.8;
+        
+        // Different positioning strategy for mobile vs desktop
+        let startY;
+        if (isMobile) {
+            // On mobile: much tighter positioning, start closer to top
+            const topMargin = Math.max(dimensions.padding, size * 0.5);
+            startY = topMargin + dimensions.lineHeight * 0.7; // Reduced from 0.8 to 0.7
+        } else {
+            // Desktop: traditional center positioning
+            const textBlockTop = Math.round((ctx.canvas.height - totalTextHeight) / 2);
+            startY = textBlockTop + dimensions.lineHeight * 0.8;
+        }
+        
         let y = startY;
         
-        console.log('Text positioning details:', {
+        console.log('Mobile-optimized text positioning:', {
             canvasHeight: ctx.canvas.height,
             totalTextHeight,
-            textBlockTop,
             startY,
             lineHeight: dimensions.lineHeight,
-            lines: lines.length
+            lines: lines.length,
+            isMobile,
+            padding: dimensions.padding,
+            topMargin: isMobile ? Math.max(dimensions.padding, size * 0.5) : 'N/A'
         });
         
         // Draw each line
@@ -411,6 +451,17 @@ const CanvasRenderer = {
                 ctx.fillText(line, centerX, y);
             }
             y += dimensions.lineHeight;
+        }
+        
+        // Mobile debugging: draw canvas bounds
+        if (isMobile && window.location.search.includes('debug')) {
+            ctx.strokeStyle = 'red';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+            ctx.strokeStyle = 'blue';
+            ctx.strokeRect(dimensions.padding, dimensions.padding, 
+                         ctx.canvas.width - dimensions.padding * 2, 
+                         ctx.canvas.height - dimensions.padding * 2);
         }
     }
 };
