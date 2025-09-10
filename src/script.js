@@ -478,57 +478,54 @@ const CharKeyboard = {
     }
 };
 
-// Favicon generation module
-const FaviconGenerator = {
-    generateFavicon: async function() {
-        try {
-            const canvas = document.getElementById('canvas');
-            if (!canvas) {
-                console.warn('Canvas not found for favicon generation');
-                return;
-            }
+// Favicon management - uses canvas image as favicon
+const FaviconManager = {
+    // Generate favicon from current canvas content
+    update: function() {
+        const canvas = document.getElementById('canvas');
+        if (!canvas) return;
 
-            // Create a smaller canvas for favicon (32x32)
+        try {
+            // Create 32x32 favicon canvas
             const faviconCanvas = document.createElement('canvas');
-            const faviconCtx = faviconCanvas.getContext('2d');
+            const ctx = faviconCanvas.getContext('2d');
             faviconCanvas.width = 32;
             faviconCanvas.height = 32;
 
-            // Fill with theme-appropriate background
+            // Use theme-appropriate background
             const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            faviconCtx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
-            faviconCtx.fillRect(0, 0, 32, 32);
+            ctx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
+            ctx.fillRect(0, 0, 32, 32);
 
-            // Scale and draw the main canvas content to favicon size
-            faviconCtx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 32, 32);
+            // Scale main canvas to favicon size
+            ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 32, 32);
 
-            // Convert to data URL and update favicon
-            const faviconDataURL = faviconCanvas.toDataURL('image/png');
-            this.updateFavicon(faviconDataURL);
-
-            console.log('Favicon generated and updated');
+            // Update browser favicon
+            this.setFavicon(faviconCanvas.toDataURL('image/png'));
+            
+            console.log('📱 Favicon updated from canvas');
         } catch (error) {
-            console.error('Error generating favicon:', error);
+            console.error('Error updating favicon:', error);
         }
     },
 
-    updateFavicon: function(dataURL) {
-        // Remove existing favicon links
-        const existingFavicons = document.querySelectorAll('link[rel*="icon"]');
-        existingFavicons.forEach(link => link.remove());
+    // Set favicon in document head
+    setFavicon: function(dataURL) {
+        // Remove existing favicons
+        document.querySelectorAll('link[rel*="icon"]').forEach(link => link.remove());
 
-        // Create new favicon link
-        const faviconLink = document.createElement('link');
-        faviconLink.rel = 'icon';
-        faviconLink.type = 'image/png';
-        faviconLink.href = dataURL;
-        document.head.appendChild(faviconLink);
+        // Add new favicon
+        const favicon = document.createElement('link');
+        favicon.rel = 'icon';
+        favicon.type = 'image/png';
+        favicon.href = dataURL;
+        document.head.appendChild(favicon);
 
-        // Also create apple-touch-icon for mobile
-        const appleTouchIcon = document.createElement('link');
-        appleTouchIcon.rel = 'apple-touch-icon';
-        appleTouchIcon.href = dataURL;
-        document.head.appendChild(appleTouchIcon);
+        // Add apple-touch-icon for mobile
+        const appleIcon = document.createElement('link');
+        appleIcon.rel = 'apple-touch-icon';
+        appleIcon.href = dataURL;
+        document.head.appendChild(appleIcon);
     }
 };
 
@@ -543,27 +540,27 @@ document.addEventListener('DOMContentLoaded', function() {
         CanvasRenderer.generate();
         // Update favicon when content changes (debounced)
         clearTimeout(window.faviconTimeout);
-        window.faviconTimeout = setTimeout(() => FaviconGenerator.generateFavicon(), 500);
+        window.faviconTimeout = setTimeout(() => FaviconManager.update(), 500);
     });
     document.getElementById('fontSelect').addEventListener('change', () => {
         CanvasRenderer.generate();
-        FaviconGenerator.generateFavicon();
+        FaviconManager.update();
     });
     document.getElementById('sizeInput').addEventListener('input', () => {
         CanvasRenderer.generate();
         clearTimeout(window.faviconTimeout);
-        window.faviconTimeout = setTimeout(() => FaviconGenerator.generateFavicon(), 500);
+        window.faviconTimeout = setTimeout(() => FaviconManager.update(), 500);
     });
     document.getElementById('themeToggle').addEventListener('click', () => {
         ThemeManager.toggle();
         // Update favicon after theme change
-        setTimeout(() => FaviconGenerator.generateFavicon(), 100);
+        setTimeout(() => FaviconManager.update(), 100);
     });
     document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
     
     // Initialize character keyboard
     CharKeyboard.init();
     
-    // Generate initial favicon
-    setTimeout(() => FaviconGenerator.generateFavicon(), 1000);
+    // Generate initial favicon from canvas
+    setTimeout(() => FaviconManager.update(), 1000);
 });
