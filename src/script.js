@@ -478,56 +478,6 @@ const CharKeyboard = {
     }
 };
 
-// Favicon management - uses canvas image as favicon
-const FaviconManager = {
-    // Generate favicon from current canvas content
-    update: function() {
-        const canvas = document.getElementById('canvas');
-        if (!canvas) return;
-
-        try {
-            // Create 32x32 favicon canvas
-            const faviconCanvas = document.createElement('canvas');
-            const ctx = faviconCanvas.getContext('2d');
-            faviconCanvas.width = 32;
-            faviconCanvas.height = 32;
-
-            // Use theme-appropriate background
-            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-            ctx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
-            ctx.fillRect(0, 0, 32, 32);
-
-            // Scale main canvas to favicon size
-            ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height, 0, 0, 32, 32);
-
-            // Update browser favicon
-            this.setFavicon(faviconCanvas.toDataURL('image/png'));
-            
-            console.log('📱 Favicon updated from canvas');
-        } catch (error) {
-            console.error('Error updating favicon:', error);
-        }
-    },
-
-    // Set favicon in document head
-    setFavicon: function(dataURL) {
-        // Remove existing favicons
-        document.querySelectorAll('link[rel*="icon"]').forEach(link => link.remove());
-
-        // Add new favicon
-        const favicon = document.createElement('link');
-        favicon.rel = 'icon';
-        favicon.type = 'image/png';
-        favicon.href = dataURL;
-        document.head.appendChild(favicon);
-
-        // Add apple-touch-icon for mobile
-        const appleIcon = document.createElement('link');
-        appleIcon.rel = 'apple-touch-icon';
-        appleIcon.href = dataURL;
-        document.head.appendChild(appleIcon);
-    }
-};
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
@@ -536,31 +486,12 @@ document.addEventListener('DOMContentLoaded', function() {
     CanvasRenderer.generate();
 
     // Event listeners
-    document.getElementById('textInput').addEventListener('input', () => {
-        CanvasRenderer.generate();
-        // Update favicon when content changes (debounced)
-        clearTimeout(window.faviconTimeout);
-        window.faviconTimeout = setTimeout(() => FaviconManager.update(), 500);
-    });
-    document.getElementById('fontSelect').addEventListener('change', () => {
-        CanvasRenderer.generate();
-        FaviconManager.update();
-    });
-    document.getElementById('sizeInput').addEventListener('input', () => {
-        CanvasRenderer.generate();
-        clearTimeout(window.faviconTimeout);
-        window.faviconTimeout = setTimeout(() => FaviconManager.update(), 500);
-    });
-    document.getElementById('themeToggle').addEventListener('click', () => {
-        ThemeManager.toggle();
-        // Update favicon after theme change
-        setTimeout(() => FaviconManager.update(), 100);
-    });
+    document.getElementById('textInput').addEventListener('input', () => CanvasRenderer.generate());
+    document.getElementById('fontSelect').addEventListener('change', () => CanvasRenderer.generate());
+    document.getElementById('sizeInput').addEventListener('input', () => CanvasRenderer.generate());
+    document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
     document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
     
     // Initialize character keyboard
     CharKeyboard.init();
-    
-    // Generate initial favicon from canvas
-    setTimeout(() => FaviconManager.update(), 1000);
 });
