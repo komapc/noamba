@@ -37,6 +37,21 @@ h1 {
     margin: 0 0 16px 0;
     font-size: clamp(1.75rem, 4vw, 2.5rem);
     font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.mg-icon {
+    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif;
+    font-size: 1.2em;
+    color: var(--accent-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    display: inline-block;
 }
 
 .mg-logo {
@@ -206,6 +221,40 @@ canvas {
 body.dark canvas { 
     border-color: var(--border-dark); 
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+}
+
+/* Bottom share section */
+.bottom-share {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.bottom-share .share-button {
+    background-color: #25D366;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    transition: all 0.3s ease;
+}
+
+.bottom-share .share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+}
+
+@media (max-width: 768px) {
+    .bottom-share {
+        bottom: 16px;
+        right: 16px;
+    }
+    
+    .bottom-share .share-button {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
 }
 
 @font-face {
