@@ -227,7 +227,7 @@ const CanvasRenderer = {
         const canvas = document.getElementById('canvas');
         const ctx = canvas.getContext('2d');
         const text = document.getElementById('textInput').value;
-        const font = document.getElementById('fontSelect').value;
+        const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
         const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : CONFIG.DEFAULT_FONT_SIZE;
 
@@ -255,25 +255,8 @@ const CanvasRenderer = {
     },
 
     setupCanvas(ctx, font, size) {
-        // Set font
-        const hasSpecialChars = Utils.hasMultiGenderChars(document.getElementById('textInput').value);
-        if (hasSpecialChars) {
-            ctx.font = `${size}px AlefMultiGenderHebrew, sans-serif`;
-        } else {
-            const fontMap = {
-                'AlefMultiGenderHebrew': 'AlefMultiGenderHebrew',
-                'Arial': 'Arial',
-                'Times New Roman': 'Times New Roman',
-                'Georgia': 'Georgia',
-                'Verdana': 'Verdana',
-                'Tahoma': 'Tahoma',
-                'Courier New': 'Courier New',
-                'serif': 'serif',
-                'sans-serif': 'sans-serif'
-            };
-            const actualFont = fontMap[font] || font;
-            ctx.font = `${size}px "${actualFont}", "AlefMultiGenderHebrew", sans-serif`;
-        }
+        // Always use MultiGender Hebrew font with fallbacks
+        ctx.font = `${size}px AlefMultiGenderHebrew, sans-serif`;
 
         // Set text properties with mobile-aware RTL handling
         const isMobile = FontManager.isMobile();
@@ -286,6 +269,7 @@ const CanvasRenderer = {
         ctx.fontKerning = 'normal';
         
         console.log('Canvas text properties set:', {
+            font: ctx.font,
             textAlign: ctx.textAlign,
             direction: ctx.direction,
             isMobile
