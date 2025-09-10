@@ -168,7 +168,7 @@ const CanvasRenderer = {
         
         ctx.textAlign = 'center';
         ctx.textBaseline = 'alphabetic';
-        ctx.direction = 'ltr'; // Use LTR to avoid RTL positioning issues
+        ctx.direction = 'rtl'; // Proper RTL for Hebrew text
         ctx.textRendering = 'optimizeLegibility';
         ctx.fontKerning = 'normal';
         
@@ -378,13 +378,20 @@ const CanvasRenderer = {
         });
         
         for (const line of lines) {
-            const centerX = ctx.canvas.width / 2;
-            console.log('Drawing line:', line, 'at x:', centerX, 'y:', y, 'with font:', ctx.font);
-            console.log('Canvas width:', ctx.canvas.width, 'Center X:', centerX, 'textAlign:', ctx.textAlign, 'direction:', ctx.direction);
+            // For proper RTL center alignment, calculate the center position manually
+            const lineWidth = ctx.measureText(line).width;
+            const centerX = (ctx.canvas.width - lineWidth) / 2;
+            
+            console.log('Drawing line:', line);
+            console.log('  Canvas width:', ctx.canvas.width);
+            console.log('  Line width:', lineWidth);
+            console.log('  Calculated centerX:', centerX);
+            console.log('  Drawing at x:', centerX, 'y:', y);
             
             // Ensure line is not empty or corrupted
             if (line && line.trim()) {
-                // Draw text at center position with center alignment
+                // Use left alignment and manually calculated center position for consistent RTL behavior
+                ctx.textAlign = 'left';
                 ctx.fillText(line, centerX, y);
                 console.log('Drew line at x:', centerX, 'y:', y);
             }
