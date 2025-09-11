@@ -213,6 +213,8 @@ body.dark .canvas-toggle:hover {
     text-align: right; /* Consistent right alignment with canvas */
     word-wrap: break-word;
     white-space: pre-wrap;
+    /* Match canvas line breaking behavior */
+    overflow-wrap: break-word;
     /* Prevent zoom on iOS while allowing dynamic sizing */
     font-size: max(16px, var(--current-font-size, 32px));
     /* Center the text area itself */
