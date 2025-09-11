@@ -290,58 +290,33 @@ const CanvasRenderer = {
         const isMobile = FontManager.isMobile();
         const lineHeight = Math.round(size * 1.4);
         
-        // Mobile-optimized padding (much less padding on mobile)
-        const padding = isMobile ? Math.round(size * 0.3) : Math.round(size * 0.6);
+        // Fixed width - don't change based on text content
+        const fixedWidth = isMobile ? 350 : 500;
         
-        // Calculate width
-        let maxWidth = 0;
-        for (const line of lines) {
-            if (line.trim()) {
-                const metrics = ctx.measureText(line);
-                maxWidth = Math.max(maxWidth, metrics.width);
-            }
-        }
-
-        const hasSpecialChars = lines.some(line => Utils.hasMultiGenderChars(line));
-        const extraWidth = hasSpecialChars ? 16 : 0;
-        const minWidth = isMobile ? 150 : 200;
-        const maxWidthLimit = isMobile ? 400 : 600;
-        const calculatedWidth = Math.max(minWidth, Math.min(maxWidthLimit, maxWidth + extraWidth + padding * 2));
-
-        // Mobile-optimized height calculation - much more compact on mobile
-        const minHeight = isMobile ? Math.max(60, size + 20) : 120;
+        // Small vertical margins - keep minimal padding
+        const verticalPadding = isMobile ? Math.round(size * 0.2) : Math.round(size * 0.25);
+        
+        // Calculate height with minimal margins
         const textHeight = lines.length * lineHeight;
-        const extraPadding = isMobile ? Math.max(8, size * 0.15) : Math.max(20, size * 0.5);
-        
-        // On mobile, make canvas height much tighter to actual content
-        let calculatedHeight;
-        if (isMobile) {
-            calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
-            // Extra mobile optimization: if single line, make it even more compact
-            if (lines.length === 1) {
-                calculatedHeight = Math.max(size + 30, textHeight + padding * 1.5);
-            }
-        } else {
-            calculatedHeight = Math.max(minHeight, textHeight + padding * 2 + extraPadding);
-        }
+        const minHeight = Math.max(size + 20, lineHeight + verticalPadding * 2);
+        const calculatedHeight = Math.max(minHeight, textHeight + verticalPadding * 2);
 
         console.log('Dimension calculation details:', {
             isMobile,
             size,
             lineHeight,
-            padding,
+            verticalPadding,
             textHeight,
-            extraPadding,
-            calculatedWidth,
+            fixedWidth,
             calculatedHeight,
             lines: lines.length
         });
 
         return {
-            width: calculatedWidth,
+            width: fixedWidth,
             height: calculatedHeight,
             lineHeight,
-            padding
+            padding: verticalPadding
         };
     },
 
