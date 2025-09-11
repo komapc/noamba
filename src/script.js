@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.11.3',
+    VERSION: '1.11.5',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -68,8 +68,12 @@ const Utils = {
 // FONT MANAGEMENT
 // =============================================================================
 const FontManager = {
+    loaded: false,
     async loadMultiGenderFont() {
         try {
+            if (this.loaded) {
+                return true;
+            }
             
             // Try multiple font loading approaches for better mobile compatibility
             const fontLoadPromises = [];
@@ -116,7 +120,7 @@ const FontManager = {
 
             // Verify font loading with multiple checks
             const success = await this.verifyFontLoading();
-            
+            if (success) this.loaded = true;
             return success;
         } catch (error) {
             console.error('Font loading failed:', error);
@@ -218,7 +222,15 @@ const TextProcessor = {
 // CANVAS RENDERER
 // =============================================================================
 const CanvasRenderer = {
+    _rafId: null,
     async generate() {
+        if (this._rafId) {
+            cancelAnimationFrame(this._rafId);
+            this._rafId = null;
+        }
+        this._rafId = requestAnimationFrame(() => this._render());
+    },
+    async _render() {
         
         // Get elements and values with null checks
         const canvas = document.getElementById('canvas');
@@ -949,8 +961,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         function applySelectedFontSize(triggerCanvasUpdate = true) {
             const preset = fontSizeSelect.value || 'normal';
             const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
-            const textAreaFontSize = Math.max(16, canvasFontSize);
             const isMobileNow = FontManager.isMobile();
+            
+            // Scale textarea font to on-screen preview width to avoid oversized input
+            const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+            const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
+            const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
 
             document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
             
@@ -960,8 +976,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Force style recalc to ensure visual update
             textInput.offsetHeight;
             
-            const canvasWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
-            textInput.style.width = `${canvasWidth - CONFIG.TEXTAREA_PADDING}px`;
+            textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
             
             textInput.style.direction = 'rtl';
             textInput.style.textAlign = 'right';
