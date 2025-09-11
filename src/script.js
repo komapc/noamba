@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.9.0',
+    VERSION: '1.9.1',
     DEFAULT_FONT_SIZE: 32,
     MIN_FONT_SIZE: 8,
     MAX_FONT_SIZE: 144,
