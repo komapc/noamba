@@ -165,16 +165,25 @@ body.dark .theme-toggle:hover {
 }
 
 .text-input {
-    width: 100%;
+    /* Match canvas width exactly */
+    width: 500px;
+    max-width: 100%;
     min-height: 100px;
     padding: 12px;
-    font-size: 16px;
+    font-size: 32px; /* Will be updated by JavaScript to match canvas */
+    line-height: 1.4; /* Match canvas line height */
     border: 1px solid var(--border-light);
     border-radius: 8px;
     background: var(--control-bg-light);
     color: var(--text-light);
     resize: vertical;
-    font-family: inherit;
+    font-family: 'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif;
+    direction: rtl;
+    text-align: right;
+    word-wrap: break-word;
+    white-space: pre-wrap;
+    /* Prevent zoom on iOS while allowing dynamic sizing */
+    font-size: max(16px, var(--current-font-size, 32px));
 }
 
 body.dark .text-input {
@@ -552,11 +561,17 @@ body.dark .keyboard-label {
     }
     
     .text-input {
+        /* Match mobile canvas width */
+        width: 350px;
+        max-width: calc(100vw - 24px);
         min-height: 80px;
-        font-size: 16px; /* Prevent zoom on iOS */
+        font-size: max(16px, var(--current-font-size, 32px)); /* Prevent zoom on iOS */
         appearance: none;
         -webkit-appearance: none;
         border-radius: 8px;
+        /* Match mobile canvas text alignment */
+        direction: ltr;
+        text-align: center;
     }
     
     .size-control-compact {
