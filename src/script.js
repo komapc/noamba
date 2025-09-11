@@ -812,15 +812,33 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Event listeners
         document.getElementById('textInput').addEventListener('input', debouncedGenerate);
         
-        // Size input with validation
+        // Size input with validation and text area sync
         const sizeInput = document.getElementById('sizeInput');
+        const textInput = document.getElementById('textInput');
         
-        sizeInput.addEventListener('input', (e) => {
-            const value = parseInt(e.target.value, 10);
+        function updateFontSize() {
+            const value = parseInt(sizeInput.value, 10);
             if (value >= 8 && value <= 144) {
+                // Update text area font size to match canvas
+                textInput.style.fontSize = `${Math.max(16, value * 0.8)}px`;
+                textInput.style.lineHeight = '1.4';
                 debouncedGenerate();
             }
-        });
+        }
+        
+        sizeInput.addEventListener('input', updateFontSize);
+        
+        // Set initial font size for text area
+        updateFontSize();
+        
+        // Force character buttons to use correct font after DOM load
+        setTimeout(() => {
+            const charButtons = document.querySelectorAll('.char-button');
+            charButtons.forEach(button => {
+                button.style.fontFamily = "'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif";
+                button.style.fontFeatureSettings = '"liga" 1, "kern" 1';
+            });
+        }, 100);
         document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
         document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
         

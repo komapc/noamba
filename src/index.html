@@ -1,6 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="he" dir="rtl">
 <head>
+    <meta charset="utf-8">
     <title>עיצוב טקסט עברית רב־מגדרית</title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="description" content="עיצוב טקסט יפה עם גופן עברית רב־מגדרית ותווים מיוחדים" />
@@ -20,17 +21,17 @@
         <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
         
         <div class="controls">
-            <textarea id="textInput" class="text-input" placeholder="הקלידו טקסט" rows="4"></textarea>
+            <div class="input-section">
+                <textarea id="textInput" class="text-input" placeholder="הקלידו טקסט" rows="4"></textarea>
+                <div class="size-control-compact">
+                    <label for="sizeInput" class="size-label-compact">גודל גופן:</label>
+                    <input type="number" id="sizeInput" class="size-input-compact" value="32" min="8" max="144" step="2" />
+                    <span class="size-unit">px</span>
+                </div>
+            </div>
             
             <div class="keyboard-section">
-                <div class="keyboard-header">
-                    <div class="keyboard-label">תווים מיוחדים:</div>
-                    <div class="size-control-compact">
-                        <label for="sizeInput" class="size-label-compact">גודל:</label>
-                        <input type="number" id="sizeInput" class="size-input-compact" value="32" min="8" max="144" step="2" />
-                        <span class="size-unit">px</span>
-                    </div>
-                </div>
+                <div class="keyboard-label">תווים מיוחדים:</div>
                 <div class="char-keyboard">
                     <button class="char-button" data-char="׭" title="רב־מגדרי • Shift+ק">׭</button>
                     <button class="char-button" data-char="׬" title="רב־מגדרי • Shift+ר">׬</button>
@@ -59,10 +60,10 @@
             שתפו בוואטסאפ
         </button>
     </div>
-    
+
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.7.2</span>
+        <span class="version-small">v1.7.3</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>
@@ -113,5 +114,5 @@
     </div>
 
     <script src="script.js"></script>
-</body>
-</html>
+    </body>
+    </html>
