@@ -819,9 +819,31 @@ document.addEventListener('DOMContentLoaded', async function() {
         function updateFontSize() {
             const value = parseInt(sizeInput.value, 10);
             if (value >= 8 && value <= 144) {
-                // Update text area font size to match canvas
-                textInput.style.fontSize = `${Math.max(16, value * 0.8)}px`;
-                textInput.style.lineHeight = '1.4';
+                const isMobile = Utils.isMobile();
+                
+                // Match canvas font size exactly
+                const canvasFontSize = value;
+                const textAreaFontSize = Math.max(16, canvasFontSize); // Prevent iOS zoom
+                
+                // Update CSS custom property for responsive sizing
+                document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
+                
+                // Update text area to match canvas exactly
+                textInput.style.fontSize = `${textAreaFontSize}px`;
+                textInput.style.lineHeight = '1.4'; // Match canvas line height
+                
+                // Set width to match canvas
+                if (isMobile) {
+                    textInput.style.width = '350px';
+                    textInput.style.direction = 'ltr';
+                    textInput.style.textAlign = 'center';
+                } else {
+                    textInput.style.width = '500px';
+                    textInput.style.direction = 'rtl';
+                    textInput.style.textAlign = 'right';
+                }
+                
+                // Update canvas to match
                 debouncedGenerate();
             }
         }
@@ -830,6 +852,15 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Set initial font size for text area
         updateFontSize();
+        
+        // Update layout on orientation change or window resize
+        window.addEventListener('orientationchange', () => {
+            setTimeout(updateFontSize, 100);
+        });
+        
+        window.addEventListener('resize', () => {
+            setTimeout(updateFontSize, 100);
+        });
         
         // Force character buttons to use correct font after DOM load
         setTimeout(() => {
