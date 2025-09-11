@@ -745,6 +745,54 @@ const AboutModal = {
 };
 
 // =============================================================================
+// CHEAT SHEET MODAL
+// =============================================================================
+const CheatSheetModal = {
+    init() {
+        const cheatSheetLink = document.getElementById('cheatSheetLink');
+        const modal = document.getElementById('cheatSheetModal');
+        const closeButton = document.getElementById('closeCheatSheet');
+        
+        // Show modal when cheat sheet link is clicked
+        cheatSheetLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            this.show();
+        });
+        
+        // Close modal when X button is clicked
+        closeButton.addEventListener('click', () => {
+            this.hide();
+        });
+        
+        // Close modal when clicking outside the modal content
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                this.hide();
+            }
+        });
+        
+        // Close modal with Escape key
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && modal.classList.contains('show')) {
+                this.hide();
+            }
+        });
+    },
+    
+    show() {
+        const modal = document.getElementById('cheatSheetModal');
+        modal.classList.add('show');
+        document.body.style.overflow = 'hidden'; // Prevent background scrolling
+    },
+    
+    hide() {
+        const modal = document.getElementById('cheatSheetModal');
+        modal.classList.remove('show');
+        document.body.style.overflow = ''; // Restore scrolling
+    }
+};
+
+// =============================================================================
 // APPLICATION INITIALIZATION
 // =============================================================================
 document.addEventListener('DOMContentLoaded', async function() {
@@ -806,6 +854,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Initialize about modal
         AboutModal.init();
         
+        // Initialize cheat sheet modal
+        CheatSheetModal.init();
+        
         // Mobile-specific event listeners
         if (isMobile) {
             // Handle orientation changes
@@ -839,6 +890,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             CanvasRenderer.generate();
             CharKeyboard.init();
             AboutModal.init();
+            CheatSheetModal.init();
             console.log('✅ Fallback initialization successful');
         } catch (fallbackError) {
             console.error('❌ Fallback initialization also failed:', fallbackError);

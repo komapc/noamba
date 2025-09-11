@@ -24,18 +24,18 @@
             
             <div class="keyboard-label">Special Characters:</div>
             <div class="char-keyboard">
-                <button class="char-button" data-char="׭" title="רב־מגדרי • Shift+ק • דוגמה: מכר׭">׭</button>
-                <button class="char-button" data-char="׬" title="רב־מגדרי • Shift+ר • דוגמה: חבר׬">׬</button>
-                <button class="char-button" data-char="׌" title="רב־מגדרי • Shift+א • דוגמה: עובד׌">׌</button>
-                <button class="char-button" data-char="׎" title="רב־מגדרי • Shift+ת • דוגמה: ידיד׎">׎</button>
-                <button class="char-button" data-char="׫" title="הָת - סמיכות • Shift+ס • דוגמה: מור׫ הכיתה">׫</button>
-                <button class="char-button" data-char="׊" title="רב־מגדרי • Shift+צ • דוגמה: זוג׊">׊</button>
-                <button class="char-button" data-char="׏" title="יָת - עתיד וסיומת ית • Shift+ע • דוגמה: ׏למד, אזרח׏">׏</button>
-                <button class="char-button" data-char="׋" title="רב־מגדרי • Shift+י • דוגמה: שותף׋">׋</button>
-                <button class="char-button" data-char="׉" title="רב־מגדרי • Shift+ח • דוגמה: קורא׉">׉</button>
-                <button class="char-button" data-char="׮" title="נָת - זוגות ומיוחד • Shift+ז • דוגמה: ש׮יים, ב׮אדם">׮</button>
-                <button class="char-button" data-char="׍" title="תָּה - הנפוץ ביותר • Shift+ט • דוגמה: לומד׍, אומר׍">׍</button>
-                <button class="char-button" data-char="׈" title="רב־מגדרי • Shift+ל • דוגמה: שכן׈">׈</button>
+                <button class="char-button" data-char="׭" title="רב־מגדרי • Shift+ק">׭</button>
+                <button class="char-button" data-char="׬" title="רב־מגדרי • Shift+ר">׬</button>
+                <button class="char-button" data-char="׌" title="רב־מגדרי • Shift+א">׌</button>
+                <button class="char-button" data-char="׎" title="רב־מגדרי • Shift+ת">׎</button>
+                <button class="char-button" data-char="׫" title="הָת - סמיכות • Shift+ס">׫</button>
+                <button class="char-button" data-char="׊" title="רב־מגדרי • Shift+צ">׊</button>
+                <button class="char-button" data-char="׏" title="יָת - עתיד וסיומת ית • Shift+ע">׏</button>
+                <button class="char-button" data-char="׋" title="רב־מגדרי • Shift+י">׋</button>
+                <button class="char-button" data-char="׉" title="רב־מגדרי • Shift+ח">׉</button>
+                <button class="char-button" data-char="׮" title="נָת - זוגות ומיוחד • Shift+ז">׮</button>
+                <button class="char-button" data-char="׍" title="תָּה - הנפוץ ביותר • Shift+ט">׍</button>
+                <button class="char-button" data-char="׈" title="רב־מגדרי • Shift+ל">׈</button>
             </div>
             
             <div class="controls-row">
@@ -67,9 +67,11 @@
     
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.6.3</span>
+        <span class="version-small">v1.6.4</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">about</a>
+        <span class="footer-divider">•</span>
+        <a href="#" id="cheatSheetLink" class="cheat-sheet-link">шпаргалка</a>
         <span class="footer-divider">•</span>
         <a href="https://multigenderhebrew.com/" target="_blank" class="mg-logo" title="עברית רב־מגדרית - MultiGender Hebrew">עברית רב־מגדרית</a>
     </div>
@@ -85,6 +87,32 @@
                 <p>This is an early prototype for creating Hebrew MultiGender text images. Type your text, customize the style, and share it as an image.</p>
                 <p>Created by <strong>Kobi</strong> and <strong>Mark</strong> to support inclusive Hebrew writing.</p>
                 <p>Learn more about MultiGender Hebrew at <a href="https://multigenderhebrew.com/" target="_blank">multigenderhebrew.com</a></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Cheat sheet modal -->
+    <div id="cheatSheetModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Keyboard Shortcuts | קיצורי דרך</h3>
+                <button id="closeCheatSheet" class="close-button" aria-label="Close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="shortcuts-grid">
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ט</span> → <span class="shortcut-char">׍</span> <span class="shortcut-desc">תָּה - הנפוץ ביותר</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ע</span> → <span class="shortcut-char">׏</span> <span class="shortcut-desc">יָת - עתיד וסיומת ית</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ס</span> → <span class="shortcut-char">׫</span> <span class="shortcut-desc">הָת - סמיכות</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ז</span> → <span class="shortcut-char">׮</span> <span class="shortcut-desc">נָת - זוגות ומיוחד</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ק</span> → <span class="shortcut-char">׭</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ר</span> → <span class="shortcut-char">׬</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+א</span> → <span class="shortcut-char">׌</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ת</span> → <span class="shortcut-char">׎</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+צ</span> → <span class="shortcut-char">׊</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+י</span> → <span class="shortcut-char">׋</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ח</span> → <span class="shortcut-char">׉</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                    <div class="shortcut-item"><span class="shortcut-key">Shift+ל</span> → <span class="shortcut-char">׈</span> <span class="shortcut-desc">רב־מגדרי</span></div>
+                </div>
             </div>
         </div>
     </div>
