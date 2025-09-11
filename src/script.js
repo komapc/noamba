@@ -8,11 +8,17 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.2.0',
-    BUILD_TIME: new Date().toISOString(),
+    VERSION: '1.9.0',
     DEFAULT_FONT_SIZE: 32,
+    MIN_FONT_SIZE: 8,
+    MAX_FONT_SIZE: 144,
     MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
-    DEBOUNCE_DELAY: 150
+    DEBOUNCE_DELAY: 150,
+    // Canvas dimensions
+    MOBILE_CANVAS_WIDTH: 350,
+    DESKTOP_CANVAS_WIDTH: 500,
+    CANVAS_PADDING: 20,
+    TEXTAREA_PADDING: 24
 };
 
 // =============================================================================
@@ -236,7 +242,7 @@ const CanvasRenderer = {
 
         // Get initial canvas width for line wrapping calculation
         const isMobile = FontManager.isMobile();
-        const canvasWidth = isMobile ? 350 : 500;
+        const canvasWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
         
         // Process text into lines using actual canvas width
         const lines = this.processText(text, ctx, canvasWidth);
@@ -269,8 +275,8 @@ const CanvasRenderer = {
         
         // Use actual canvas width minus padding for line wrapping
         const isMobile = FontManager.isMobile();
-        const padding = 20; // Match canvas padding
-        const maxLineWidth = (canvasWidth || (isMobile ? 350 : 500)) - (padding * 2);
+        const defaultWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+        const maxLineWidth = (canvasWidth || defaultWidth) - (CONFIG.CANVAS_PADDING * 2);
 
         for (const line of lines) {
             if (line.trim()) {
@@ -289,7 +295,7 @@ const CanvasRenderer = {
         const lineHeight = Math.round(size * 1.4);
         
         // Fixed width - don't change based on text content
-        const fixedWidth = isMobile ? 350 : 500;
+        const fixedWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
         
         // Small vertical margins - keep minimal padding
         const verticalPadding = isMobile ? Math.round(size * 0.2) : Math.round(size * 0.25);
@@ -927,12 +933,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             const numericValue = parseInt(value, 10);
             
             if (isNaN(numericValue)) {
-                sizeInput.value = '32'; // Reset to default
-                return 32;
+                sizeInput.value = CONFIG.DEFAULT_FONT_SIZE.toString();
+                return CONFIG.DEFAULT_FONT_SIZE;
             }
             
-            // Clamp value between 8 and 144
-            const clampedValue = Math.max(8, Math.min(144, numericValue));
+            // Clamp value between configured min/max
+            const clampedValue = Math.max(CONFIG.MIN_FONT_SIZE, Math.min(CONFIG.MAX_FONT_SIZE, numericValue));
             sizeInput.value = clampedValue.toString();
             
             return clampedValue;
@@ -957,9 +963,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.offsetHeight; // Trigger reflow
             
             // Set width to match canvas for consistent line breaking and alignment
-            const canvasWidth = isMobile ? 350 : 500;
-            const textAreaPadding = 24; // Account for text area internal padding
-            textInput.style.width = `${canvasWidth - textAreaPadding}px`;
+            const canvasWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+            textInput.style.width = `${canvasWidth - CONFIG.TEXTAREA_PADDING}px`;
             
             // Use consistent right alignment for both desktop and mobile
             textInput.style.direction = 'rtl';
@@ -993,8 +998,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         if (sizeUpBtn) {
             sizeUpBtn.addEventListener('click', () => {
-                const currentValue = parseInt(sizeInput.value, 10) || 32;
-                const newValue = Math.min(144, currentValue + 2);
+                const currentValue = parseInt(sizeInput.value, 10) || CONFIG.DEFAULT_FONT_SIZE;
+                const newValue = Math.min(CONFIG.MAX_FONT_SIZE, currentValue + 2);
                 sizeInput.value = newValue.toString();
                 // Immediate update for arrow clicks
                 updateFontSize(true);
@@ -1003,8 +1008,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         if (sizeDownBtn) {
             sizeDownBtn.addEventListener('click', () => {
-                const currentValue = parseInt(sizeInput.value, 10) || 32;
-                const newValue = Math.max(8, currentValue - 2);
+                const currentValue = parseInt(sizeInput.value, 10) || CONFIG.DEFAULT_FONT_SIZE;
+                const newValue = Math.max(CONFIG.MIN_FONT_SIZE, currentValue - 2);
                 sizeInput.value = newValue.toString();
                 // Immediate update for arrow clicks
                 updateFontSize(true);

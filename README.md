@@ -1,6 +1,6 @@
 ## MultiGender Hebrew Text Designer
 
-A client-side text-to-image generator focused on MultiGender Hebrew typography. Features an intuitive interface with hover hints, keyboard shortcuts, dynamic canvas sizing, and comprehensive theme support.
+A modern, client-side text-to-image generator specifically designed for MultiGender Hebrew typography. Features real-time WYSIWYG editing, comprehensive character support, and professional-grade canvas rendering with perfect mobile responsiveness.
 
                                
  _____     _____       _       
@@ -8,19 +8,37 @@ A client-side text-to-image generator focused on MultiGender Hebrew typography. 
 | | | | . |     |     | . | .'|
 |_|___|___|__|__|_|_|_|___|__,|
 
-### Features
-- **Client-side rendering**: Pure Canvas-based text-to-image generation
-- **MultiGender Hebrew support**: Default AlefMultiGenderHebrew font with special character support
-- **Smart UI controls**: Horizontal range slider for font size with real-time display
-- **Keyboard shortcuts**: Shift+letter combinations for quick MultiGender character input
-- **Interactive hints**: Hover over characters to see usage information and shortcuts
-- **Dynamic sizing**: Canvas automatically adjusts to fit text content with proper alignment
-- **RTL-friendly**: Proper Hebrew text direction with mobile-optimized positioning
-- **Theme support**: Light/dark mode with consistent canvas and UI colors
-- **Special characters**: 12 unique MultiGender Hebrew symbols with detailed usage guidance
-- **Share/Export**: Web Share API with WhatsApp integration and download fallback
-- **Responsive design**: Mobile-first design with touch-optimized controls
-- **About modal**: Educational popup with project information
+### ✨ Features
+
+**🎨 Advanced Text Rendering**
+- **WYSIWYG Editing**: Real-time synchronization between text area and canvas
+- **Professional Canvas**: High-DPI rendering with perfect font smoothing
+- **Smart Line Breaking**: Intelligent Hebrew text wrapping with consistent behavior
+- **Dynamic Sizing**: Canvas automatically adjusts height to fit content
+
+**🔤 MultiGender Hebrew Excellence**
+- **Native Font Support**: AlefMultiGenderHebrew with 12 special characters
+- **Interactive Character Keyboard**: Click buttons or use keyboard shortcuts
+- **Contextual Tooltips**: Hover hints with usage examples and typing instructions
+- **RTL Optimization**: Perfect Hebrew text direction on all devices
+
+**⚡ Modern Interface**
+- **Instant Font Size Control**: Arrow buttons + numeric input with immediate updates
+- **Theme System**: Light/dark mode with localStorage persistence
+- **Canvas Visibility Toggle**: Show/hide preview for distraction-free editing
+- **Text Alignment Control**: Right/center/left alignment options
+
+**📱 Mobile Excellence**
+- **Touch-Optimized**: Large buttons and responsive layouts
+- **iOS Zoom Prevention**: Smart font sizing to prevent input zoom
+- **Orientation Handling**: Automatic layout updates on device rotation
+- **High-DPI Support**: Crystal clear rendering on all screen densities
+
+**🚀 Developer Experience**
+- **Zero Build**: Pure client-side - no compilation required
+- **Modular Architecture**: Clean, maintainable ES6+ JavaScript
+- **Error Recovery**: Robust initialization with graceful fallbacks
+- **Debug Mode**: Add `?debug` to URL for development insights
 
 ### Key MultiGender Characters & Shortcuts
 
@@ -57,29 +75,35 @@ Simply open `src/index.html` in a web browser. No server required!
 - Hover over character buttons for usage hints
 
 **Controls:**
-- Drag the font size slider or use the keyboard shortcuts
-- Toggle light/dark theme with the 🌓 button
-- Click "about" for project information and character guide
+- **Font Size**: Use ▲▼ arrow buttons or type directly (8-144px range)
+- **Theme Toggle**: 🌓 button for light/dark mode switching  
+- **Canvas Toggle**: 👁️ button to show/hide canvas preview
+- **Text Alignment**: Dropdown for right/center/left alignment
+- **About**: אודות link for project information
+- **Shortcuts**: קיצורי דרך link for keyboard shortcut reference
 
 ### Technical Architecture
 
-**Modular JavaScript Design:**
-- `CONFIG`: Application constants and settings
-- `Utils`: Helper functions and debugging tools
-- `FontManager`: Font loading with mobile optimizations
-- `TextProcessor`: Hebrew text wrapping and line processing
-- `CanvasRenderer`: High-DPI canvas rendering with theme support
-- `ThemeManager`: Light/dark mode persistence
-- `CharKeyboard`: Special character input with keyboard shortcuts
-- `ShareManager`: Web Share API integration
-- `AboutModal`: Educational popup functionality
+**🏗️ Modular JavaScript Architecture:**
+- `CONFIG`: Centralized constants and configuration
+- `Utils`: Core utilities and mobile detection
+- `FontManager`: Advanced font loading with fallback strategies
+- `TextProcessor`: Intelligent Hebrew text wrapping and line processing
+- `CanvasRenderer`: High-DPI canvas rendering with theme synchronization
+- `ThemeManager`: Persistent light/dark mode with smooth transitions
+- `CanvasToggleManager`: Show/hide canvas functionality
+- `TextAlignmentManager`: Dynamic text alignment control
+- `CharKeyboard`: Interactive character input with shortcuts
+- `ShareManager`: Web Share API with WhatsApp integration
+- `AboutModal` & `CheatSheetModal`: Educational popups with Hebrew content
 
-**Canvas Features:**
-- High-DPI scaling with mobile optimization (max 2x DPR)
-- Dynamic sizing based on text content and line count
-- Proper Hebrew RTL text handling with mobile-specific adjustments
-- Theme-aware background and text colors
-- Smooth font rendering with kerning and ligatures
+**🎨 Canvas Rendering Engine:**
+- **High-DPI Scaling**: Automatic devicePixelRatio detection with mobile limits
+- **Dynamic Dimensions**: Content-aware canvas sizing with minimal margins
+- **Perfect Text Positioning**: Hebrew RTL with mobile-optimized vertical alignment
+- **Theme Integration**: Real-time background/text color synchronization
+- **Font Excellence**: OpenType features, kerning, and ligature support
+- **WYSIWYG Accuracy**: Pixel-perfect matching with text area preview
 
 **Responsive Design:**
 - Mobile-first CSS with flexible layouts
