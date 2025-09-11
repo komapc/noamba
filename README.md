@@ -14,7 +14,7 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 - **WYSIWYG Editing**: Real-time synchronization between text area and canvas
 - **Professional Canvas**: High-DPI rendering with perfect font smoothing
 - **Smart Line Breaking**: Intelligent Hebrew text wrapping with consistent behavior
-- **Dynamic Sizing**: Canvas automatically adjusts height to fit content
+- **WhatsApp-safe Export**: Fixed width 1200px; auto height 200–900px (max 3/4)
 
 **🔤 MultiGender Hebrew Excellence**
 - **Native Font Support**: AlefMultiGenderHebrew with 12 special characters
@@ -23,7 +23,7 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 - **RTL Optimization**: Perfect Hebrew text direction on all devices
 
 **⚡ Modern Interface**
-- **Instant Font Size Control**: Arrow buttons + numeric input with immediate updates
+- **Instant Font Size Control**: Three presets — קטן (small), רגיל (normal), גדול (large)
 - **Theme System**: Light/dark mode with localStorage persistence
 - **Canvas Visibility Toggle**: Show/hide preview for distraction-free editing
 - **Text Alignment Control**: Right/center/left alignment options
@@ -75,7 +75,7 @@ Simply open `src/index.html` in a web browser. No server required!
 - Hover over character buttons for usage hints
 
 **Controls:**
-- **Font Size**: Use ▲▼ arrow buttons or type directly (8-144px range)
+- **Font Size**: Select קטן / רגיל / גדול (WhatsApp-like presets)
 - **Theme Toggle**: 🌓 button for light/dark mode switching  
 - **Canvas Toggle**: 👁️ button to show/hide canvas preview
 - **Text Alignment**: Dropdown for right/center/left alignment
@@ -99,7 +99,8 @@ Simply open `src/index.html` in a web browser. No server required!
 
 **🎨 Canvas Rendering Engine:**
 - **High-DPI Scaling**: Automatic devicePixelRatio detection with mobile limits
-- **Dynamic Dimensions**: Content-aware canvas sizing with minimal margins
+- **Fixed Export Width**: 1200px export with responsive on-screen preview scaling
+- **Height Constraints**: Min 200px, max 900px (3/4 of width); line count capped
 - **Perfect Text Positioning**: Hebrew RTL with mobile-optimized vertical alignment
 - **Theme Integration**: Real-time background/text color synchronization
 - **Font Excellence**: OpenType features, kerning, and ligature support
