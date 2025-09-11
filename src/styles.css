@@ -179,11 +179,13 @@ body.dark .theme-toggle:hover {
     resize: vertical;
     font-family: 'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif;
     direction: rtl;
-    text-align: right;
+    text-align: right; /* Consistent right alignment with canvas */
     word-wrap: break-word;
     white-space: pre-wrap;
     /* Prevent zoom on iOS while allowing dynamic sizing */
     font-size: max(16px, var(--current-font-size, 32px));
+    /* Center the text area itself */
+    margin: 0 auto;
 }
 
 body.dark .text-input {
@@ -197,6 +199,7 @@ body.dark .text-input {
     display: flex;
     flex-direction: column;
     gap: 12px;
+    align-items: center; /* Center the input section horizontally */
 }
 
 .size-control-compact {
@@ -569,9 +572,10 @@ body.dark .keyboard-label {
         appearance: none;
         -webkit-appearance: none;
         border-radius: 8px;
-        /* Match mobile canvas text alignment */
-        direction: ltr;
-        text-align: center;
+        /* Keep consistent right alignment on mobile too */
+        direction: rtl;
+        text-align: right;
+        margin: 0 auto; /* Center the text area */
     }
     
     .size-control-compact {

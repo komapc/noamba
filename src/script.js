@@ -398,18 +398,18 @@ const CanvasRenderer = {
             topMargin: isMobile ? Math.max(dimensions.padding, size * 0.5) : 'N/A'
         });
         
-        // Set consistent center alignment for all platforms
-        ctx.textAlign = 'center';
-        ctx.direction = 'ltr'; // Use LTR for consistent centering behavior
+        // Set consistent right alignment to match text area
+        ctx.textAlign = 'right';
+        ctx.direction = 'rtl'; // Use RTL for proper Hebrew text rendering
         
-        // Use logical dimensions for text positioning (not scaled canvas dimensions)
-        const centerX = dimensions.width / 2;
+        // Use right alignment positioning - text starts from right edge with padding
+        const rightX = dimensions.width - dimensions.padding;
         
-        // Draw each line centered
+        // Draw each line right-aligned to match text area
         for (const line of lines) {
             if (line && line.trim()) {
-                console.log('Drawing centered line:', line, 'at center x:', centerX, 'y:', y);
-                ctx.fillText(line, centerX, y);
+                console.log('Drawing right-aligned line:', line, 'at right x:', rightX, 'y:', y);
+                ctx.fillText(line, rightX, y);
             }
             y += dimensions.lineHeight;
         }
@@ -832,16 +832,17 @@ document.addEventListener('DOMContentLoaded', async function() {
                 textInput.style.fontSize = `${textAreaFontSize}px`;
                 textInput.style.lineHeight = '1.4'; // Match canvas line height
                 
-                // Set width to match canvas
+                // Set width to match canvas and consistent right alignment
                 if (isMobile) {
                     textInput.style.width = '350px';
-                    textInput.style.direction = 'ltr';
-                    textInput.style.textAlign = 'center';
                 } else {
                     textInput.style.width = '500px';
-                    textInput.style.direction = 'rtl';
-                    textInput.style.textAlign = 'right';
                 }
+                
+                // Use consistent right alignment for both desktop and mobile
+                textInput.style.direction = 'rtl';
+                textInput.style.textAlign = 'right';
+                textInput.style.margin = '0 auto'; // Center the text area horizontally
                 
                 // Update canvas to match
                 debouncedGenerate();
