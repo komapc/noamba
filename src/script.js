@@ -21,11 +21,7 @@ const CONFIG = {
 const Utils = {
     // Log application startup info
     logStartup() {
-        console.log('🚀 MultiGender Hebrew Text Designer');
-        console.log('📦 Version:', CONFIG.VERSION);
-        console.log('🕒 Build Time:', CONFIG.BUILD_TIME);
-        console.log('🌐 Protocol:', window.location.protocol);
-        console.log('📍 URL:', window.location.href);
+        console.log('🚀 MultiGender Hebrew Text Designer v' + CONFIG.VERSION);
     },
 
     // Check if text contains MultiGender Hebrew characters
@@ -58,9 +54,6 @@ const Utils = {
 const FontManager = {
     async loadMultiGenderFont() {
         try {
-            console.log('Loading font for protocol:', window.location.protocol);
-            console.log('User agent:', navigator.userAgent);
-            console.log('Is mobile:', this.isMobile());
             
             // Try multiple font loading approaches for better mobile compatibility
             const fontLoadPromises = [];
@@ -76,7 +69,6 @@ const FontManager = {
                 
                 fontLoadPromises.push(fontFace.load().then(font => {
                     document.fonts.add(font);
-                    console.log('FontFace API: Font loaded successfully');
                     return true;
                 }));
             } catch (error) {
@@ -87,7 +79,6 @@ const FontManager = {
             try {
                 fontLoadPromises.push(
                     document.fonts.load('32px AlefMultiGenderHebrew').then(() => {
-                        console.log('document.fonts.load: Font loaded successfully');
                         return true;
                     })
                 );
@@ -104,14 +95,12 @@ const FontManager = {
             
             // Extra wait for mobile devices
             if (this.isMobile()) {
-                console.log('Mobile device detected, adding extra wait time');
                 await new Promise(resolve => setTimeout(resolve, 500));
             }
 
             // Verify font loading with multiple checks
             const success = await this.verifyFontLoading();
             
-            console.log('Font verification result:', success);
             return success;
         } catch (error) {
             console.error('Font loading failed:', error);
@@ -143,13 +132,6 @@ const FontManager = {
             const width = testElement.getBoundingClientRect().width;
             document.body.removeChild(testElement);
 
-            console.log('Font verification details:', {
-                font: '32px AlefMultiGenderHebrew',
-                width,
-                protocol: window.location.protocol,
-                isMobile: this.isMobile(),
-                success: width > 10
-            });
 
             return width > 10;
         } catch (error) {
@@ -221,7 +203,6 @@ const TextProcessor = {
 // =============================================================================
 const CanvasRenderer = {
     async generate() {
-        console.log('Starting canvas rendering...');
         
         // Get elements and values with null checks
         const canvas = document.getElementById('canvas');
@@ -255,19 +236,16 @@ const CanvasRenderer = {
 
         // Process text into lines
         const lines = this.processText(text, ctx);
-        console.log('Wrapped lines:', lines);
 
         // Calculate dimensions and resize canvas
         const dimensions = this.calculateDimensions(lines, size, ctx);
         this.resizeCanvas(canvas, dimensions);
-        console.log('Canvas dimensions:', dimensions);
 
         // Re-setup canvas after resize (context is reset)
         this.setupCanvas(ctx, font, size);
 
         // Draw the text
         this.drawText(ctx, lines, size, dimensions);
-        console.log('Canvas rendering completed');
     },
 
     setupCanvas(ctx, font, size) {
@@ -279,10 +257,6 @@ const CanvasRenderer = {
         ctx.textRendering = 'optimizeLegibility';
         ctx.fontKerning = 'normal';
         
-        console.log('Canvas text properties set:', {
-            font: ctx.font,
-            textBaseline: ctx.textBaseline
-        });
     },
 
     processText(text, ctx) {
@@ -912,7 +886,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         await FontManager.loadMultiGenderFont();
         
         // Set initial text and generate canvas
-        document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
+        document.getElementById('textInput').value = 'ברוכ׊׉ הבא׊׉!  הללו וורלד';
         
         // Initial render with extra delay for mobile
         if (isMobile) {
@@ -958,7 +932,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         function updateFontSize(triggerCanvasUpdate = true) {
             const value = validateAndSetFontSize(sizeInput.value);
-            const isMobile = Utils.isMobile();
+            const isMobile = FontManager.isMobile();
             
             // Match canvas font size exactly
             const canvasFontSize = value;
@@ -967,9 +941,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Update CSS custom property for responsive sizing
             document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
             
-            // Update text area to match canvas exactly
+            // Update text area to match canvas exactly - IMMEDIATE visual update
             textInput.style.fontSize = `${textAreaFontSize}px`;
             textInput.style.lineHeight = '1.4'; // Match canvas line height
+            
+            // Force immediate style recalculation to ensure visual update
+            textInput.offsetHeight; // Trigger reflow
             
             // Set width to match canvas and consistent right alignment
             if (isMobile) {
@@ -983,24 +960,25 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.style.textAlign = 'right';
             textInput.style.margin = '0 auto'; // Center the text area horizontally
             
-            // Update canvas to match - CRITICAL for canvas refresh
+            // Update canvas to match - IMMEDIATE refresh for font size changes
             if (triggerCanvasUpdate) {
-                console.log('🔄 Font size changed to:', value, '- triggering canvas update');
+                // For font size changes, update immediately without debouncing
                 CanvasRenderer.generate();
             }
         }
         
-        // Handle text input with numeric validation
+        // Handle text input with numeric validation - IMMEDIATE updates
         sizeInput.addEventListener('input', (e) => {
             // Filter out non-numeric characters during typing
             let value = e.target.value.replace(/[^0-9]/g, '');
             e.target.value = value;
-            updateFontSize();
+            // Immediate update while typing
+            updateFontSize(true);
         });
         
         // Validate on blur to ensure valid range
         sizeInput.addEventListener('blur', () => {
-            updateFontSize();
+            updateFontSize(true);
         });
         
         // Arrow button handlers
@@ -1012,7 +990,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const currentValue = parseInt(sizeInput.value, 10) || 32;
                 const newValue = Math.min(144, currentValue + 2);
                 sizeInput.value = newValue.toString();
-                updateFontSize();
+                // Immediate update for arrow clicks
+                updateFontSize(true);
             });
         }
         
@@ -1021,7 +1000,8 @@ document.addEventListener('DOMContentLoaded', async function() {
                 const currentValue = parseInt(sizeInput.value, 10) || 32;
                 const newValue = Math.max(8, currentValue - 2);
                 sizeInput.value = newValue.toString();
-                updateFontSize();
+                // Immediate update for arrow clicks
+                updateFontSize(true);
             });
         }
         
