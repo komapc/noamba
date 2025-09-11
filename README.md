@@ -1,6 +1,6 @@
 ## MultiGender Hebrew Text Designer
 
-A client-side text-to-image generator focused on MultiGender Hebrew typography. Features a special character keyboard for unique MultiGender symbols, dynamic canvas sizing, and theme support.
+A client-side text-to-image generator focused on MultiGender Hebrew typography. Features an intuitive interface with hover hints, keyboard shortcuts, dynamic canvas sizing, and comprehensive theme support.
 
                                
  _____     _____       _       
@@ -10,22 +10,37 @@ A client-side text-to-image generator focused on MultiGender Hebrew typography. 
 
 ### Features
 - **Client-side rendering**: Pure Canvas-based text-to-image generation
-- **MultiGender Hebrew support**: Default font with special character keyboard
-- **Dynamic sizing**: Canvas automatically adjusts to fit text content
-- **RTL-friendly**: Proper Hebrew text direction and alignment
-- **Theme support**: Light/dark mode with theme-aware colors
-- **Special characters**: 12 unique MultiGender Hebrew symbols (׭ ׬ ׌ ׎ ׫ ׊ ׏ ׋ ׉ ׮ ׍ ׈)
-- **Share/Export**: Web Share API with download fallback
-- **Responsive design**: Mobile-optimized with touch-friendly controls
+- **MultiGender Hebrew support**: Default AlefMultiGenderHebrew font with special character support
+- **Smart UI controls**: Horizontal range slider for font size with real-time display
+- **Keyboard shortcuts**: Shift+letter combinations for quick MultiGender character input
+- **Interactive hints**: Hover over characters to see usage information and shortcuts
+- **Dynamic sizing**: Canvas automatically adjusts to fit text content with proper alignment
+- **RTL-friendly**: Proper Hebrew text direction with mobile-optimized positioning
+- **Theme support**: Light/dark mode with consistent canvas and UI colors
+- **Special characters**: 12 unique MultiGender Hebrew symbols with detailed usage guidance
+- **Share/Export**: Web Share API with WhatsApp integration and download fallback
+- **Responsive design**: Mobile-first design with touch-optimized controls
+- **About modal**: Educational popup with project information
+
+### Key MultiGender Characters & Shortcuts
+
+| Character | Name | Usage | Keyboard Shortcut |
+|-----------|------|-------|------------------|
+| ׍ | תָּה | Most common - לומד׍, אומר׍ (ת/masculine alternation) | Shift+ט |
+| ׏ | יָת | Future tense ׏למד & -ית endings אזרח׏ (ת/י alternation) | Shift+ע or Shift+ב |
+| ׫ | הָת | Construct state מור׫ הכיתה (ת/ה alternation) | Shift+ס |
+| ׮ | נָת | Pairs ש׮יים & special ב׮אדם (ת/נ alternation) | Shift+ז |
 
 ### Project structure
 ```
 render-text/
+  .cursorrules                # Development guidelines and version management
   package.json
+  README.md
   src/
-    index.html              # Main demo with special character keyboard
-    styles.css              # All styling with CSS variables and responsive design
-    script.js               # Modular JavaScript (CanvasRenderer, ThemeManager, etc.)
+    index.html              # Main interface with special character keyboard
+    styles.css              # Complete styling with CSS variables and responsive design
+    script.js               # Modular JavaScript architecture
     fonts/
       AlefMultiGndr-Regular.ttf
       AlefMultiGndr-Regular.woff
@@ -35,46 +50,105 @@ render-text/
 ### Usage
 Simply open `src/index.html` in a web browser. No server required!
 
-### Features in detail
-- **Special Character Keyboard**: Click any of the 12 MultiGender Hebrew symbols to insert them into your text
-- **Dynamic Canvas**: Automatically resizes to fit your text content perfectly
-- **Font Selection**: Choose from various Hebrew fonts including the default MultiGender font
-- **Size Control**: Adjust font size from 8px to 144px
-- **Theme Toggle**: Switch between light and dark modes
-- **Share**: Export your design via WhatsApp or download as PNG
+**Input Methods:**
+- Type directly in the text area
+- Click special character buttons for MultiGender symbols
+- Use keyboard shortcuts (Shift+letter) for quick input
+- Hover over character buttons for usage hints
 
-### Technical Details
-- **Canvas Rendering**: Uses HTML5 Canvas with 2D context for text rendering
-- **Font Loading**: Waits for fonts to load before rendering for consistent results
-- **OpenType Features**: Enables kerning, ligatures, and contextual alternates
-- **RTL Support**: Proper right-to-left text direction for Hebrew
-- **Responsive Design**: CSS Grid and Flexbox with mobile-first approach
+**Controls:**
+- Drag the font size slider or use the keyboard shortcuts
+- Toggle light/dark theme with the 🌓 button
+- Click "about" for project information and character guide
 
-### Browser support
+### Technical Architecture
+
+**Modular JavaScript Design:**
+- `CONFIG`: Application constants and settings
+- `Utils`: Helper functions and debugging tools
+- `FontManager`: Font loading with mobile optimizations
+- `TextProcessor`: Hebrew text wrapping and line processing
+- `CanvasRenderer`: High-DPI canvas rendering with theme support
+- `ThemeManager`: Light/dark mode persistence
+- `CharKeyboard`: Special character input with keyboard shortcuts
+- `ShareManager`: Web Share API integration
+- `AboutModal`: Educational popup functionality
+
+**Canvas Features:**
+- High-DPI scaling with mobile optimization (max 2x DPR)
+- Dynamic sizing based on text content and line count
+- Proper Hebrew RTL text handling with mobile-specific adjustments
+- Theme-aware background and text colors
+- Smooth font rendering with kerning and ligatures
+
+**Responsive Design:**
+- Mobile-first CSS with flexible layouts
+- Touch-optimized controls and button sizing
+- Viewport-aware canvas positioning
+- Orientation change handling
+
+### Browser Support
 - Modern browsers with Canvas 2D support
-- Web Share API with file support (falls back to download on unsupported browsers)
-- CSS Grid and Flexbox support for responsive layout
+- Web Share API with file support (graceful degradation)
+- CSS Grid and Flexbox for responsive layouts
+- Font loading APIs for optimal typography
 
-### Fonts and licensing
-- `AlefMultiGndr-Regular.ttf/.woff` are included with license in `src/fonts/Alef-MultiGndr-MultiGenderHebrew-license.txt` (SIL Open Font License + creator's terms). Review before redistribution.
-- Google Fonts are loaded per their respective licenses.
+### Development
 
-### Troubleshooting
-- **Font size not changing**: Ensure the font is properly loaded and try refreshing the page
-- **Special characters not displaying**: Make sure the MultiGender font is loaded correctly
-- **Canvas not updating**: Check browser console for JavaScript errors
-- **Mobile layout issues**: Ensure viewport meta tag is present and CSS is loading
+**Version Management:**
+- Follows semantic versioning (major.minor.patch)
+- Automatic version increment on commits
+- Version displayed in footer with commit tracking
 
+**Code Standards:**
+- Modular ES6+ JavaScript architecture
+- Mobile-first responsive CSS design
+- Comprehensive error handling and fallbacks
+- Debug logging for troubleshooting
 
-### Deploying (free static hosting)
+### Deploying (Free Static Hosting)
 
-The app is purely client-side and can be hosted anywhere that serves static files.
+The app is purely client-side and works on any static file host:
 
-- **Cloudflare Pages**: Connect repo, set output directory to `src`, build command to `echo no build`
+**Recommended Platforms:**
+- **Cloudflare Pages**: Connect repo, output directory `src`, build command `echo "no build"`
 - **Netlify**: Upload `src/` folder or connect repo with `src` as publish directory
-- **GitHub Pages**: Copy `src/` contents to `docs/` folder and enable Pages
+- **GitHub Pages**: Copy `src/` contents to `docs/` and enable Pages
 - **Vercel**: Connect repo, set root directory to `src`
 
-All static hosts work since the app requires no server-side processing.
+**Configuration Files:**
+- `wrangler.jsonc` provided for Cloudflare Pages
+- `package.json` configured for static deployment
+- No build process required
 
+### Fonts and Licensing
+- `AlefMultiGndr-Regular.ttf/.woff` included with license in `src/fonts/`
+- SIL Open Font License with creator's additional terms
+- Review `Alef-MultiGndr-MultiGenderHebrew-license.txt` before redistribution
 
+### Troubleshooting
+
+**Common Issues:**
+- **Text alignment off on mobile**: Clear browser cache and reload
+- **Keyboard shortcuts not working**: Ensure text area has focus
+- **Special characters display as squares**: Font loading issue - check network tab
+- **Canvas sizing problems**: Check console for dimension calculation errors
+- **Theme not persisting**: localStorage may be disabled or cleared
+
+**Debug Mode:**
+- Add `?debug` to URL for mobile debugging borders and metrics
+- Check browser console for detailed logging
+- Verify font loading status in Network tab
+
+### Contributing
+
+This project follows specific development guidelines:
+- Read `.cursorrules` for coding standards and version management
+- Maintain mobile-first responsive design principles
+- Test MultiGender Hebrew character rendering thoroughly
+- Ensure theme compatibility for all new features
+- Follow semantic versioning for all changes
+
+Created by **Kobi** and **Mark** to support inclusive Hebrew writing.
+
+Learn more about MultiGender Hebrew at [multigenderhebrew.com](https://multigenderhebrew.com/)
