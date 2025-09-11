@@ -234,8 +234,12 @@ const CanvasRenderer = {
         // Setup canvas
         this.setupCanvas(ctx, font, size);
 
-        // Process text into lines
-        const lines = this.processText(text, ctx);
+        // Get initial canvas width for line wrapping calculation
+        const isMobile = FontManager.isMobile();
+        const canvasWidth = isMobile ? 350 : 500;
+        
+        // Process text into lines using actual canvas width
+        const lines = this.processText(text, ctx, canvasWidth);
 
         // Calculate dimensions and resize canvas
         const dimensions = this.calculateDimensions(lines, size, ctx);
@@ -259,10 +263,14 @@ const CanvasRenderer = {
         
     },
 
-    processText(text, ctx) {
+    processText(text, ctx, canvasWidth) {
         const lines = text.split('\n');
         const wrappedLines = [];
-        const maxLineWidth = 300;
+        
+        // Use actual canvas width minus padding for line wrapping
+        const isMobile = FontManager.isMobile();
+        const padding = 20; // Match canvas padding
+        const maxLineWidth = (canvasWidth || (isMobile ? 350 : 500)) - (padding * 2);
 
         for (const line of lines) {
             if (line.trim()) {
@@ -948,12 +956,10 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Force immediate style recalculation to ensure visual update
             textInput.offsetHeight; // Trigger reflow
             
-            // Set width to match canvas and consistent right alignment
-            if (isMobile) {
-                textInput.style.width = '350px';
-            } else {
-                textInput.style.width = '500px';
-            }
+            // Set width to match canvas for consistent line breaking and alignment
+            const canvasWidth = isMobile ? 350 : 500;
+            const textAreaPadding = 24; // Account for text area internal padding
+            textInput.style.width = `${canvasWidth - textAreaPadding}px`;
             
             // Use consistent right alignment for both desktop and mobile
             textInput.style.direction = 'rtl';
