@@ -119,11 +119,18 @@ body.dark .cheat-sheet-link {
     color: var(--text-dark);
 }
 
-.theme-toggle {
+.header-controls {
     position: fixed;
     top: 16px;
     right: 16px;
     z-index: 100;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.theme-toggle,
+.canvas-toggle {
     background: transparent;
     border: 1px solid var(--border-light);
     color: inherit;
@@ -134,16 +141,40 @@ body.dark .cheat-sheet-link {
     transition: all 0.2s ease;
 }
 
-body.dark .theme-toggle { 
+.text-align-select {
+    font-size: 12px;
+    background: var(--control-bg-light);
+    border: 1px solid var(--border-light);
+    color: var(--text-light);
+    padding: 6px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-family: 'AlefMultiGenderHebrew', system-ui, sans-serif;
+}
+
+body.dark .theme-toggle,
+body.dark .canvas-toggle { 
     border-color: var(--border-dark); 
 }
 
-.theme-toggle:hover {
+body.dark .text-align-select {
+    background: var(--control-bg-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
+}
+
+.theme-toggle:hover,
+.canvas-toggle:hover {
     background: rgba(0,0,0,0.05);
 }
 
-body.dark .theme-toggle:hover {
+body.dark .theme-toggle:hover,
+body.dark .canvas-toggle:hover {
     background: rgba(255,255,255,0.05);
+}
+
+.canvas-toggle.hidden {
+    opacity: 0.5;
 }
 
 .controls {
@@ -274,6 +305,86 @@ body.dark .size-unit {
     color: var(--text-dark);
 }
 
+/* New centered size control with arrows */
+.size-control-centered {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    margin: 0 auto;
+    max-width: fit-content;
+}
+
+.size-label {
+    font-size: 14px;
+    color: var(--text-light);
+    font-weight: 500;
+    text-align: center;
+}
+
+.size-input-with-arrows {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: var(--control-bg-light);
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border-light);
+}
+
+.size-arrow {
+    background: transparent;
+    border: none;
+    color: var(--text-light);
+    font-size: 12px;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 4px;
+    transition: background 0.2s ease;
+    min-width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.size-arrow:hover {
+    background: var(--border-light);
+}
+
+.size-input {
+    width: 40px;
+    border: none;
+    background: transparent;
+    color: var(--text-light);
+    font-size: 16px;
+    font-weight: bold;
+    text-align: center;
+    outline: none;
+    padding: 4px 2px;
+}
+
+body.dark .size-label {
+    color: var(--text-dark);
+}
+
+body.dark .size-input-with-arrows {
+    background: var(--control-bg-dark);
+    border-color: var(--border-dark);
+}
+
+body.dark .size-arrow {
+    color: var(--text-dark);
+}
+
+body.dark .size-arrow:hover {
+    background: var(--border-dark);
+}
+
+body.dark .size-input {
+    color: var(--text-dark);
+}
+
 .font-select {
     flex: 1;
     min-width: 200px;
@@ -309,9 +420,13 @@ body.dark .size-unit {
 }
 
 .canvas-container {
-    margin-top: 24px;
+    margin-top: 16px; /* Match input-section gap */
     display: flex;
     justify-content: center;
+}
+
+.canvas-container.hidden {
+    display: none;
 }
 
 canvas {
@@ -529,11 +644,21 @@ body.dark .keyboard-label {
         padding: 16px 12px 32px;
     }
     
-    .theme-toggle {
+    .header-controls {
         top: 12px;
         right: 12px;
+        gap: 6px;
+    }
+    
+    .theme-toggle,
+    .canvas-toggle {
         padding: 6px 10px;
         font-size: 13px;
+    }
+    
+    .text-align-select {
+        font-size: 11px;
+        padding: 4px 6px;
     }
     
     .controls {

@@ -18,15 +18,27 @@
             <span class="mg-icon">׋</span>
             עיצוב טקסט עברית רב־מגדרית
         </h1>
-        <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+        <div class="header-controls">
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+            <button id="canvasToggle" class="canvas-toggle" aria-label="Toggle canvas">👁️</button>
+            <select id="textAlignSelect" class="text-align-select" aria-label="Text alignment">
+                <option value="right">יישור ימין</option>
+                <option value="center">יישור מרכז</option>
+                <option value="left">יישור שמאל</option>
+            </select>
+        </div>
         
         <div class="controls">
             <div class="input-section">
                 <textarea id="textInput" class="text-input" placeholder="הקלידו טקסט" rows="4"></textarea>
-                <div class="size-control-compact">
-                    <label for="sizeInput" class="size-label-compact">גודל גופן:</label>
-                    <input type="number" id="sizeInput" class="size-input-compact" value="32" min="8" max="144" step="2" />
-                    <span class="size-unit">px</span>
+                <div class="size-control-centered">
+                    <label for="sizeInput" class="size-label">גודל גופן:</label>
+                    <div class="size-input-with-arrows">
+                        <button type="button" class="size-arrow" id="sizeDown">▼</button>
+                        <input type="text" id="sizeInput" class="size-input" value="32" />
+                        <button type="button" class="size-arrow" id="sizeUp">▲</button>
+                        <span class="size-unit">px</span>
+                    </div>
                 </div>
             </div>
             
@@ -63,7 +75,7 @@
 
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.7.5</span>
+        <span class="version-small">v1.8.0</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>
