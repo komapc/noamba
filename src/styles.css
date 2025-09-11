@@ -183,32 +183,35 @@ body.dark .text-input {
     border-color: var(--border-dark);
 }
 
-/* Keyboard section with compact size control */
-.keyboard-section {
-    margin-top: 16px;
+/* Input section with text area and font size control */
+.input-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
-.keyboard-header {
+.size-control-compact {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-    margin-bottom: 8px;
+    gap: 8px;
+    background: var(--control-bg-light);
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid var(--border-light);
+    align-self: flex-start;
+    max-width: fit-content;
+}
+
+/* Keyboard section */
+.keyboard-section {
+    margin-top: 16px;
 }
 
 .keyboard-label {
     font-size: 14px;
     font-weight: 500;
     color: var(--text-light);
-}
-
-.size-control-compact {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    background: var(--control-bg-light);
-    padding: 6px 10px;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
+    margin-bottom: 8px;
 }
 
 .size-label-compact {
@@ -544,12 +547,36 @@ body.dark .keyboard-label {
         overflow-x: hidden;
     }
     
+    .input-section {
+        gap: 8px;
+    }
+    
     .text-input {
         min-height: 80px;
         font-size: 16px; /* Prevent zoom on iOS */
         appearance: none;
         -webkit-appearance: none;
         border-radius: 8px;
+    }
+    
+    .size-control-compact {
+        padding: 6px 8px;
+        align-self: center;
+        margin: 0 auto;
+    }
+    
+    .size-label-compact {
+        font-size: 11px;
+    }
+    
+    .size-input-compact {
+        width: 40px;
+        font-size: 12px;
+        padding: 2px 4px;
+    }
+    
+    .size-unit {
+        font-size: 10px;
     }
     
     .canvas-container {
@@ -774,7 +801,10 @@ body.dark .shortcut-desc {
 
 /* Tooltip font fix for MultiGender Hebrew characters */
 .char-button {
-    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif !important;
+    font-family: 'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, -apple-system, sans-serif !important;
+    font-feature-settings: "liga" 1, "kern" 1;
+    -webkit-font-feature-settings: "liga" 1, "kern" 1;
+    -moz-font-feature-settings: "liga" 1, "kern" 1;
 }
 
 /* Custom tooltip styling to ensure proper font rendering */
