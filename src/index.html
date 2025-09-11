@@ -32,13 +32,12 @@
             <div class="input-section">
                 <textarea id="textInput" class="text-input" placeholder="הקלידו טקסט" rows="4"></textarea>
                 <div class="size-control-centered">
-                    <label for="sizeInput" class="size-label">גודל גופן:</label>
-                    <div class="size-input-with-arrows">
-                        <button type="button" class="size-arrow" id="sizeDown">▼</button>
-                        <input type="text" id="sizeInput" class="size-input" value="32" inputmode="numeric" pattern="[0-9]*" />
-                        <button type="button" class="size-arrow" id="sizeUp">▲</button>
-                        <span class="size-unit">px</span>
-                    </div>
+                    <label for="fontSizeSelect" class="size-label">גודל גופן:</label>
+                    <select id="fontSizeSelect" class="text-align-select" aria-label="Font size">
+                        <option value="small">קטן</option>
+                        <option value="normal" selected>רגיל</option>
+                        <option value="large">גדול</option>
+                    </select>
                 </div>
             </div>
             
@@ -75,7 +74,7 @@
 
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.9.1</span>
+        <span class="version-small">v1.11.0</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>

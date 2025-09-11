@@ -8,10 +8,20 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.9.1',
+    VERSION: '1.11.0',
     DEFAULT_FONT_SIZE: 32,
+    // WhatsApp-like presets: small < normal (default) < large
+    FONT_PRESETS: {
+        small: 28,
+        normal: 32,
+        large: 36
+    },
     MIN_FONT_SIZE: 8,
     MAX_FONT_SIZE: 144,
+    // Fixed export dimensions policy (for WhatsApp image sharing)
+    FIXED_CANVAS_WIDTH: 1200,
+    MIN_CANVAS_HEIGHT: 200,
+    MAX_HEIGHT_RATIO: 0.75,
     MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
     DEBOUNCE_DELAY: 150,
     // Canvas dimensions
@@ -213,7 +223,7 @@ const CanvasRenderer = {
         // Get elements and values with null checks
         const canvas = document.getElementById('canvas');
         const textInput = document.getElementById('textInput');
-        const sizeInput = document.getElementById('sizeInput');
+        const fontSizeSelect = document.getElementById('fontSizeSelect');
         
         if (!canvas) {
             console.error('❌ Canvas element not found');
@@ -223,16 +233,16 @@ const CanvasRenderer = {
             console.error('❌ Text input element not found');
             return;
         }
-        if (!sizeInput) {
-            console.error('❌ Size input element not found');
+        if (!fontSizeSelect) {
+            console.error('❌ Font size select element not found');
             return;
         }
         
         const ctx = canvas.getContext('2d');
         const text = textInput.value;
         const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
-        const sizeVal = parseInt(sizeInput.value, 10);
-        const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : CONFIG.DEFAULT_FONT_SIZE;
+        const selectedPreset = fontSizeSelect.value || 'normal';
+        const size = CONFIG.FONT_PRESETS[selectedPreset] || CONFIG.DEFAULT_FONT_SIZE;
 
         // Ensure font is loaded
         await FontManager.loadMultiGenderFont();
@@ -240,12 +250,8 @@ const CanvasRenderer = {
         // Setup canvas
         this.setupCanvas(ctx, font, size);
 
-        // Get initial canvas width for line wrapping calculation
-        const isMobile = FontManager.isMobile();
-        const canvasWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
-        
-        // Process text into lines using actual canvas width
-        const lines = this.processText(text, ctx, canvasWidth);
+        // Process text into lines using FIXED export width and current size
+        const lines = this.processText(text, ctx, size);
 
         // Calculate dimensions and resize canvas
         const dimensions = this.calculateDimensions(lines, size, ctx);
@@ -269,14 +275,13 @@ const CanvasRenderer = {
         
     },
 
-    processText(text, ctx, canvasWidth) {
+    processText(text, ctx, fontSizePx) {
         const lines = text.split('\n');
         const wrappedLines = [];
         
-        // Use actual canvas width minus padding for line wrapping
-        const isMobile = FontManager.isMobile();
-        const defaultWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
-        const maxLineWidth = (canvasWidth || defaultWidth) - (CONFIG.CANVAS_PADDING * 2);
+        // Use FIXED export width for consistent wrapping in the final image
+        const fixedWidth = CONFIG.FIXED_CANVAS_WIDTH;
+        const maxLineWidth = fixedWidth - (CONFIG.CANVAS_PADDING * 2);
 
         for (const line of lines) {
             if (line.trim()) {
@@ -287,23 +292,34 @@ const CanvasRenderer = {
             }
         }
 
-        return wrappedLines;
+        // Cap lines to prevent exceeding max height (3/4 ratio) with a min of 200px
+        const lineHeight = Math.round(fontSizePx * 1.4);
+        const maxHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, Math.floor(CONFIG.FIXED_CANVAS_WIDTH * CONFIG.MAX_HEIGHT_RATIO));
+        const verticalPadding = Math.round(fontSizePx * (FontManager.isMobile() ? 0.2 : 0.25));
+        const availableHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, maxHeight) - verticalPadding * 2;
+        const maxLines = Math.max(1, Math.floor(availableHeight / lineHeight));
+
+        return wrappedLines.slice(0, maxLines);
     },
 
     calculateDimensions(lines, size, ctx) {
         const isMobile = FontManager.isMobile();
         const lineHeight = Math.round(size * 1.4);
         
-        // Fixed width - don't change based on text content
-        const fixedWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+        // Always export at FIXED width
+        const fixedWidth = CONFIG.FIXED_CANVAS_WIDTH;
         
         // Small vertical margins - keep minimal padding
         const verticalPadding = isMobile ? Math.round(size * 0.2) : Math.round(size * 0.25);
         
-        // Calculate height with minimal margins
+        // Height constraints
+        const minHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, lineHeight + verticalPadding * 2);
+        const maxHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, Math.floor(CONFIG.FIXED_CANVAS_WIDTH * CONFIG.MAX_HEIGHT_RATIO));
+        
+        // Calculate height with constraints
         const textHeight = lines.length * lineHeight;
-        const minHeight = Math.max(size + 20, lineHeight + verticalPadding * 2);
-        const calculatedHeight = Math.max(minHeight, textHeight + verticalPadding * 2);
+        const unclampedHeight = textHeight + verticalPadding * 2;
+        const calculatedHeight = Math.max(minHeight, Math.min(maxHeight, unclampedHeight));
 
         console.log('Dimension calculation details:', {
             isMobile,
@@ -335,13 +351,15 @@ const CanvasRenderer = {
             dpr = 2;
         }
         
-        // Set actual size in memory (scaled for pixel density)
-        canvas.width = dimensions.width * dpr;
-        canvas.height = dimensions.height * dpr;
+        // Set actual export size in memory (scaled for pixel density)
+        canvas.width = dimensions.width * dpr; // always 1200 * dpr
+        canvas.height = dimensions.height * dpr; // clamped between 200..(0.75*1200)
         
-        // Scale canvas back down using CSS
-        canvas.style.width = dimensions.width + 'px';
-        canvas.style.height = dimensions.height + 'px';
+        // Display size (responsive preview): scale down for on-screen viewing
+        const displayWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+        const displayScale = displayWidth / dimensions.width; // maintain aspect ratio
+        canvas.style.width = Math.round(dimensions.width * displayScale) + 'px';
+        canvas.style.height = Math.round(dimensions.height * displayScale) + 'px';
         
         // Scale drawing context
         const ctx = canvas.getContext('2d');
@@ -915,117 +933,59 @@ document.addEventListener('DOMContentLoaded', async function() {
 
         // Event listeners with null checks
         const textInput = document.getElementById('textInput');
-        const sizeInput = document.getElementById('sizeInput');
+        const fontSizeSelect = document.getElementById('fontSizeSelect');
         
         if (!textInput) {
             console.error('❌ Text input element not found during initialization');
             return;
         }
-        if (!sizeInput) {
-            console.error('❌ Size input element not found during initialization');
+        if (!fontSizeSelect) {
+            console.error('❌ Font size select element not found during initialization');
             return;
         }
         
         textInput.addEventListener('input', debouncedGenerate);
         
-        function validateAndSetFontSize(value) {
-            // Only allow numeric input
-            const numericValue = parseInt(value, 10);
-            
-            if (isNaN(numericValue)) {
-                sizeInput.value = CONFIG.DEFAULT_FONT_SIZE.toString();
-                return CONFIG.DEFAULT_FONT_SIZE;
-            }
-            
-            // Clamp value between configured min/max
-            const clampedValue = Math.max(CONFIG.MIN_FONT_SIZE, Math.min(CONFIG.MAX_FONT_SIZE, numericValue));
-            sizeInput.value = clampedValue.toString();
-            
-            return clampedValue;
-        }
-        
-        function updateFontSize(triggerCanvasUpdate = true) {
-            const value = validateAndSetFontSize(sizeInput.value);
-            const isMobile = FontManager.isMobile();
-            
-            // Match canvas font size exactly
-            const canvasFontSize = value;
-            const textAreaFontSize = Math.max(16, canvasFontSize); // Prevent iOS zoom
-            
-            // Update CSS custom property for responsive sizing
+        function applySelectedFontSize(triggerCanvasUpdate = true) {
+            const preset = fontSizeSelect.value || 'normal';
+            const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
+            const textAreaFontSize = Math.max(16, canvasFontSize);
+            const isMobileNow = FontManager.isMobile();
+
             document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
             
-            // Update text area to match canvas exactly - IMMEDIATE visual update
             textInput.style.fontSize = `${textAreaFontSize}px`;
-            textInput.style.lineHeight = '1.4'; // Match canvas line height
+            textInput.style.lineHeight = '1.4';
             
-            // Force immediate style recalculation to ensure visual update
-            textInput.offsetHeight; // Trigger reflow
+            // Force style recalc to ensure visual update
+            textInput.offsetHeight;
             
-            // Set width to match canvas for consistent line breaking and alignment
-            const canvasWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+            const canvasWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
             textInput.style.width = `${canvasWidth - CONFIG.TEXTAREA_PADDING}px`;
             
-            // Use consistent right alignment for both desktop and mobile
             textInput.style.direction = 'rtl';
             textInput.style.textAlign = 'right';
-            textInput.style.margin = '0 auto'; // Center the text area horizontally
+            textInput.style.margin = '0 auto';
             
-            // Update canvas to match - IMMEDIATE refresh for font size changes
             if (triggerCanvasUpdate) {
-                // For font size changes, update immediately without debouncing
                 CanvasRenderer.generate();
             }
         }
         
-        // Handle text input with numeric validation - IMMEDIATE updates
-        sizeInput.addEventListener('input', (e) => {
-            // Filter out non-numeric characters during typing
-            let value = e.target.value.replace(/[^0-9]/g, '');
-            e.target.value = value;
-            // Immediate update while typing
-            updateFontSize(true);
-        });
+        // React to preset changes
+        fontSizeSelect.addEventListener('change', () => applySelectedFontSize(true));
         
-        // Validate on blur to ensure valid range
-        sizeInput.addEventListener('blur', () => {
-            updateFontSize(true);
-        });
-        
-        // Arrow button handlers
-        const sizeUpBtn = document.getElementById('sizeUp');
-        const sizeDownBtn = document.getElementById('sizeDown');
-        
-        if (sizeUpBtn) {
-            sizeUpBtn.addEventListener('click', () => {
-                const currentValue = parseInt(sizeInput.value, 10) || CONFIG.DEFAULT_FONT_SIZE;
-                const newValue = Math.min(CONFIG.MAX_FONT_SIZE, currentValue + 2);
-                sizeInput.value = newValue.toString();
-                // Immediate update for arrow clicks
-                updateFontSize(true);
-            });
-        }
-        
-        if (sizeDownBtn) {
-            sizeDownBtn.addEventListener('click', () => {
-                const currentValue = parseInt(sizeInput.value, 10) || CONFIG.DEFAULT_FONT_SIZE;
-                const newValue = Math.max(CONFIG.MIN_FONT_SIZE, currentValue - 2);
-                sizeInput.value = newValue.toString();
-                // Immediate update for arrow clicks
-                updateFontSize(true);
-            });
-        }
-        
-        // Set initial font size for text area
-        updateFontSize();
+        // Initialize with default preset
+        fontSizeSelect.value = 'normal';
+        applySelectedFontSize(false);
         
         // Update layout on orientation change or window resize
         window.addEventListener('orientationchange', () => {
-            setTimeout(updateFontSize, 100);
+            setTimeout(() => applySelectedFontSize(true), 100);
         });
         
         window.addEventListener('resize', () => {
-            setTimeout(updateFontSize, 100);
+            setTimeout(() => applySelectedFontSize(true), 100);
         });
         
         // Force character buttons to use correct font after DOM load
