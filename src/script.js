@@ -611,24 +611,64 @@ const CharKeyboard = {
         buttons.forEach(button => {
             button.addEventListener('click', () => {
                 const char = button.getAttribute('data-char');
-                const textInput = document.getElementById('textInput');
-                const cursorPos = textInput.selectionStart;
-                const text = textInput.value;
-                
-                // Insert character at cursor position
-                const newText = text.slice(0, cursorPos) + char + text.slice(cursorPos);
-                textInput.value = newText;
-                
-                // Set cursor position after inserted character
-                const newCursorPos = cursorPos + char.length;
-                textInput.setSelectionRange(newCursorPos, newCursorPos);
-                textInput.focus();
-                
-                // Trigger canvas update
-                CanvasRenderer.generate();
+                this.insertCharacter(char);
             });
         });
+        
+        // Add keyboard shortcuts
+        this.initKeyboardShortcuts();
         console.log('⌨️ Character keyboard initialized');
+    },
+
+    initKeyboardShortcuts() {
+        document.addEventListener('keydown', (e) => {
+            // Only trigger if Shift is pressed
+            if (!e.shiftKey) return;
+            
+            let charToInsert = null;
+            
+            switch (e.code) {
+                case 'KeyY': // ט key (Hebrew)
+                    charToInsert = '׍'; // תָּה
+                    break;
+                case 'KeyG': // ע key (Hebrew)
+                    charToInsert = '׏'; // יָת
+                    break;
+                case 'KeyX': // ב key (Hebrew)
+                    charToInsert = '׏'; // יָת (alternative)
+                    break;
+                case 'KeyD': // ס key (Hebrew)
+                    charToInsert = '׫'; // הָת
+                    break;
+                case 'KeyA': // ז key (Hebrew)
+                    charToInsert = '׮'; // נָת
+                    break;
+            }
+            
+            if (charToInsert) {
+                e.preventDefault();
+                this.insertCharacter(charToInsert);
+                console.log(`⌨️ Keyboard shortcut: Shift+${e.key} → ${charToInsert}`);
+            }
+        });
+    },
+
+    insertCharacter(char) {
+        const textInput = document.getElementById('textInput');
+        const cursorPos = textInput.selectionStart;
+        const text = textInput.value;
+        
+        // Insert character at cursor position
+        const newText = text.slice(0, cursorPos) + char + text.slice(cursorPos);
+        textInput.value = newText;
+        
+        // Set cursor position after inserted character
+        const newCursorPos = cursorPos + char.length;
+        textInput.setSelectionRange(newCursorPos, newCursorPos);
+        textInput.focus();
+        
+        // Trigger canvas update
+        CanvasRenderer.generate();
     }
 };
 
