@@ -22,33 +22,28 @@
         <div class="controls">
             <textarea id="textInput" class="text-input" placeholder="הקלידו טקסט" rows="4"></textarea>
             
-            <div class="keyboard-label">תווים מיוחדים:</div>
-            <div class="char-keyboard">
-                <button class="char-button" data-char="׭" title="רב־מגדרי • Shift+ק">׭</button>
-                <button class="char-button" data-char="׬" title="רב־מגדרי • Shift+ר">׬</button>
-                <button class="char-button" data-char="׌" title="רב־מגדרי • Shift+א">׌</button>
-                <button class="char-button" data-char="׎" title="רב־מגדרי • Shift+ת">׎</button>
-                <button class="char-button" data-char="׫" title="הָת - סמיכות • Shift+ס">׫</button>
-                <button class="char-button" data-char="׊" title="רב־מגדרי • Shift+צ">׊</button>
-                <button class="char-button" data-char="׏" title="יָת - עתיד וסיומת ית • Shift+ע">׏</button>
-                <button class="char-button" data-char="׋" title="רב־מגדרי • Shift+י">׋</button>
-                <button class="char-button" data-char="׉" title="רב־מגדרי • Shift+ח">׉</button>
-                <button class="char-button" data-char="׮" title="נָת - זוגות ומיוחד • Shift+ז">׮</button>
-                <button class="char-button" data-char="׍" title="תָּה - הנפוץ ביותר • Shift+ט">׍</button>
-                <button class="char-button" data-char="׈" title="רב־מגדרי • Shift+ל">׈</button>
-            </div>
-            
-            <div class="controls-row">
-                <div class="size-control">
-                    <label for="sizeSlider" class="size-label">גודל גופן: <span id="sizeDisplay">32</span>px</label>
-                    <input type="range" id="sizeSlider" class="size-slider" value="32" min="8" max="144" step="2" />
-                    <div class="size-marks">
-                        <span>8</span>
-                        <span>32</span>
-                        <span>64</span>
-                        <span>96</span>
-                        <span>144</span>
+            <div class="keyboard-section">
+                <div class="keyboard-header">
+                    <div class="keyboard-label">תווים מיוחדים:</div>
+                    <div class="size-control-compact">
+                        <label for="sizeInput" class="size-label-compact">גודל:</label>
+                        <input type="number" id="sizeInput" class="size-input-compact" value="32" min="8" max="144" step="2" />
+                        <span class="size-unit">px</span>
                     </div>
+                </div>
+                <div class="char-keyboard">
+                    <button class="char-button" data-char="׭" title="רב־מגדרי • Shift+ק">׭</button>
+                    <button class="char-button" data-char="׬" title="רב־מגדרי • Shift+ר">׬</button>
+                    <button class="char-button" data-char="׌" title="רב־מגדרי • Shift+א">׌</button>
+                    <button class="char-button" data-char="׎" title="רב־מגדרי • Shift+ת">׎</button>
+                    <button class="char-button" data-char="׫" title="הָת - סמיכות • Shift+ס">׫</button>
+                    <button class="char-button" data-char="׊" title="רב־מגדרי • Shift+צ">׊</button>
+                    <button class="char-button" data-char="׏" title="יָת - עתיד וסיומת ית • Shift+ע">׏</button>
+                    <button class="char-button" data-char="׋" title="רב־מגדרי • Shift+י">׋</button>
+                    <button class="char-button" data-char="׉" title="רב־מגדרי • Shift+ח">׉</button>
+                    <button class="char-button" data-char="׮" title="נָת - זוגות ומיוחד • Shift+ז">׮</button>
+                    <button class="char-button" data-char="׍" title="תָּה - הנפוץ ביותר • Shift+ט">׍</button>
+                    <button class="char-button" data-char="׈" title="רב־מגדרי • Shift+ל">׈</button>
                 </div>
             </div>
         </div>
@@ -67,7 +62,7 @@
     
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.7.1</span>
+        <span class="version-small">v1.7.2</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>

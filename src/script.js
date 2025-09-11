@@ -228,7 +228,7 @@ const CanvasRenderer = {
         const ctx = canvas.getContext('2d');
         const text = document.getElementById('textInput').value;
         const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
-        const sizeVal = parseInt(document.getElementById('sizeSlider').value, 10);
+        const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : CONFIG.DEFAULT_FONT_SIZE;
 
         // Ensure font is loaded
@@ -812,13 +812,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Event listeners
         document.getElementById('textInput').addEventListener('input', debouncedGenerate);
         
-        // Size slider with display update
-        const sizeSlider = document.getElementById('sizeSlider');
-        const sizeDisplay = document.getElementById('sizeDisplay');
+        // Size input with validation
+        const sizeInput = document.getElementById('sizeInput');
         
-        sizeSlider.addEventListener('input', (e) => {
-            sizeDisplay.textContent = e.target.value;
-            debouncedGenerate();
+        sizeInput.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value, 10);
+            if (value >= 8 && value <= 144) {
+                debouncedGenerate();
+            }
         });
         document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
         document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
