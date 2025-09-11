@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.11.5',
+    VERSION: '1.12.0',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -19,7 +19,7 @@ const CONFIG = {
     MIN_FONT_SIZE: 8,
     MAX_FONT_SIZE: 144,
     // Fixed export dimensions policy (for WhatsApp image sharing)
-    FIXED_CANVAS_WIDTH: 1200,
+    FIXED_CANVAS_WIDTH: 1600,
     MIN_CANVAS_HEIGHT: 300,
     MAX_HEIGHT_RATIO: 0.75,
     MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
@@ -397,8 +397,8 @@ const CanvasRenderer = {
         const isDark = document.body.classList.contains('dark');
         const isMobile = FontManager.isMobile();
         
-        // Clear canvas with theme-aware background (matching control colors)
-        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+        // Clear canvas with theme-aware background (darker in dark mode)
+        ctx.fillStyle = isDark ? '#020617' : '#ffffff';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
         // Set text color
@@ -930,7 +930,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         await FontManager.loadMultiGenderFont();
         
         // Set initial text and generate canvas
-        document.getElementById('textInput').value = 'ברוכ׊׉ הבא׊׉!  הללו וורלד';
+        document.getElementById('textInput').value = 'ברוכ׊׉ הבא׊׉!';
         
         // Initial render with extra delay for mobile
         if (isMobile) {
@@ -964,7 +964,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const isMobileNow = FontManager.isMobile();
             
             // Scale textarea font to on-screen preview width to avoid oversized input
-            const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+            const basePreviewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : Math.min(window.innerWidth - 40, CONFIG.FIXED_CANVAS_WIDTH);
+            const previewWidth = Math.min(basePreviewWidth, CONFIG.FIXED_CANVAS_WIDTH);
             const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
             const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
 
@@ -977,6 +978,9 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.offsetHeight;
             
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
+            // Dynamic textarea height
+            textInput.style.height = 'auto';
+            textInput.style.height = Math.min(2000, textInput.scrollHeight) + 'px';
             
             textInput.style.direction = 'rtl';
             textInput.style.textAlign = 'right';
@@ -1069,7 +1073,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         try {
             FaviconManager.init();
             ThemeManager.init();
-            document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!  הללו וורלד';
+            document.getElementById('textInput').value = ', ברוכ׊׉ הבא׊׉!';
             CanvasRenderer.generate();
             CharKeyboard.init();
             AboutModal.init();
