@@ -643,6 +643,30 @@ const CharKeyboard = {
                 case 'KeyA': // ז key (Hebrew)
                     charToInsert = '׮'; // נָת
                     break;
+                case 'KeyP': // ק key (Hebrew)
+                    charToInsert = '׭';
+                    break;
+                case 'KeyR': // ר key (Hebrew)
+                    charToInsert = '׬';
+                    break;
+                case 'KeyS': // א key (Hebrew)
+                    charToInsert = '׌';
+                    break;
+                case 'KeyT': // ת key (Hebrew)
+                    charToInsert = '׎';
+                    break;
+                case 'KeyM': // צ key (Hebrew)
+                    charToInsert = '׊';
+                    break;
+                case 'KeyU': // י key (Hebrew)
+                    charToInsert = '׋';
+                    break;
+                case 'KeyH': // ח key (Hebrew)
+                    charToInsert = '׉';
+                    break;
+                case 'KeyK': // ל key (Hebrew)
+                    charToInsert = '׈';
+                    break;
             }
             
             if (charToInsert) {

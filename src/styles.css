@@ -724,6 +724,52 @@ body.dark .close-button:hover {
     }
 }
 
+/* Tooltip font fix for MultiGender Hebrew characters */
+.char-button {
+    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif !important;
+}
+
+/* Custom tooltip styling to ensure proper font rendering */
+.char-button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--bg-dark);
+    color: var(--text-dark);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+    pointer-events: none;
+    margin-bottom: 5px;
+}
+
+.char-button[title]:hover::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--bg-dark);
+    z-index: 1000;
+    pointer-events: none;
+}
+
+body.dark .char-button[title]:hover::after {
+    background: var(--text-dark);
+    color: var(--bg-dark);
+}
+
+body.dark .char-button[title]:hover::before {
+    border-top-color: var(--text-dark);
+}
+
 /* Mobile modal adjustments */
 @media (max-width: 480px) {
     .modal-content {
