@@ -25,19 +25,19 @@
                 <option value="center">יישור מרכז</option>
                 <option value="left">יישור שמאל</option>
             </select>
+            <div class="size-control-header">
+                <label for="fontSizeSelect" class="size-label">גודל:</label>
+                <select id="fontSizeSelect" class="text-align-select" aria-label="Font size">
+                    <option value="small">קטן</option>
+                    <option value="normal" selected>רגיל</option>
+                    <option value="large">גדול</option>
+                </select>
+            </div>
         </div>
         
         <div class="controls">
             <div class="input-section">
                 <textarea id="textInput" class="text-input" placeholder="הקלידו טקסט" rows="4"></textarea>
-                <div class="size-control-centered">
-                    <label for="fontSizeSelect" class="size-label">גודל גופן:</label>
-                    <select id="fontSizeSelect" class="text-align-select" aria-label="Font size">
-                        <option value="small">קטן</option>
-                        <option value="normal" selected>רגיל</option>
-                        <option value="large">גדול</option>
-                    </select>
-                </div>
             </div>
             
             <div class="keyboard-section">
@@ -73,7 +73,7 @@
 
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.12.2</span>
+        <span class="version-small">v1.12.3</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>
