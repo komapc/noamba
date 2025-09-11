@@ -643,13 +643,16 @@ body.dark .keyboard-label {
 
 @media (max-width: 768px) {
     .container {
-        padding: 16px 12px 32px;
+        padding: 60px 12px 32px; /* Extra top padding for fixed header controls */
     }
     
     .header-controls {
-        top: 12px;
+        top: 16px;
         right: 12px;
         gap: 6px;
+        /* Ensure it doesn't interfere with content */
+        max-width: calc(100vw - 24px);
+        flex-wrap: wrap;
     }
     
     .theme-toggle,
@@ -659,8 +662,9 @@ body.dark .keyboard-label {
     }
     
     .text-align-select {
-        font-size: 11px;
+        font-size: 10px;
         padding: 4px 6px;
+        max-width: 80px;
     }
     
     .controls {
@@ -681,7 +685,7 @@ body.dark .keyboard-label {
 
 @media (max-width: 480px) {
     .container {
-        padding: 12px 8px 24px;
+        padding: 70px 8px 24px; /* Extra top padding for fixed header controls */
         min-height: 100vh;
         overflow-x: hidden;
     }
