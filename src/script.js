@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.11.0',
+    VERSION: '1.11.1',
     DEFAULT_FONT_SIZE: 32,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -20,7 +20,7 @@ const CONFIG = {
     MAX_FONT_SIZE: 144,
     // Fixed export dimensions policy (for WhatsApp image sharing)
     FIXED_CANVAS_WIDTH: 1200,
-    MIN_CANVAS_HEIGHT: 200,
+    MIN_CANVAS_HEIGHT: 300,
     MAX_HEIGHT_RATIO: 0.75,
     MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
     DEBOUNCE_DELAY: 150,
