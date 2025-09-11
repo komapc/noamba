@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.1',
+    VERSION: '1.12.2',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -962,6 +962,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const preset = fontSizeSelect.value || 'normal';
             const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
             const isMobileNow = FontManager.isMobile();
+            const isDark = document.body.classList.contains('dark');
             
             // Scale textarea font to on-screen preview width to avoid oversized input
             const basePreviewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : Math.min(window.innerWidth - 40, CONFIG.FIXED_CANVAS_WIDTH);
@@ -974,11 +975,19 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.style.fontSize = `${textAreaFontSize}px`;
             textInput.style.lineHeight = '1.4';
             
+            // Match canvas background and text colors
+            textInput.style.backgroundColor = isDark ? '#020617' : '#ffffff';
+            textInput.style.color = isDark ? '#e5e7eb' : '#111827';
+            
+            // Remove scrollbars and make resizable
+            textInput.style.overflow = 'hidden';
+            textInput.style.resize = 'none';
+            
             // Force style recalc to ensure visual update
             textInput.offsetHeight;
             
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
-            // Dynamic textarea height
+            // Dynamic textarea height - no scrollbars
             textInput.style.height = 'auto';
             textInput.style.height = Math.min(2000, textInput.scrollHeight) + 'px';
             
