@@ -398,18 +398,29 @@ const CanvasRenderer = {
             topMargin: isMobile ? Math.max(dimensions.padding, size * 0.5) : 'N/A'
         });
         
-        // Set consistent right alignment to match text area
-        ctx.textAlign = 'right';
-        ctx.direction = 'rtl'; // Use RTL for proper Hebrew text rendering
+        // Set text alignment based on user preference
+        const alignment = TextAlignmentManager.getCanvasAlignment();
+        let drawX;
         
-        // Use right alignment positioning - text starts from right edge with padding
-        const rightX = dimensions.width - dimensions.padding;
+        if (alignment === 'center') {
+            ctx.textAlign = 'center';
+            ctx.direction = 'ltr';
+            drawX = dimensions.width / 2;
+        } else if (alignment === 'left') {
+            ctx.textAlign = 'left';
+            ctx.direction = 'ltr';
+            drawX = dimensions.padding;
+        } else { // right
+            ctx.textAlign = 'right';
+            ctx.direction = 'rtl';
+            drawX = dimensions.width - dimensions.padding;
+        }
         
-        // Draw each line right-aligned to match text area
+        // Draw each line with selected alignment
         for (const line of lines) {
             if (line && line.trim()) {
-                console.log('Drawing right-aligned line:', line, 'at right x:', rightX, 'y:', y);
-                ctx.fillText(line, rightX, y);
+                console.log('Drawing line with', alignment, 'alignment:', line, 'at x:', drawX, 'y:', y);
+                ctx.fillText(line, drawX, y);
             }
             y += dimensions.lineHeight;
         }
@@ -523,9 +534,83 @@ const ThemeManager = {
     },
 
     setTheme(theme) {
-        document.body.classList.toggle('dark', theme === 'dark');
+        // Force remove both classes first to fix Chrome light mode issue
+        document.body.classList.remove('dark', 'light');
+        
+        // Add the correct class
+        if (theme === 'dark') {
+            document.body.classList.add('dark');
+        }
+        
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
+        
+        console.log('🎨 Theme set to:', theme, 'Body classes:', document.body.className);
+    }
+};
+
+// =============================================================================
+// CANVAS TOGGLE MANAGER
+// =============================================================================
+const CanvasToggleManager = {
+    init() {
+        const canvasToggle = document.getElementById('canvasToggle');
+        const canvasContainer = document.querySelector('.canvas-container');
+        
+        if (canvasToggle && canvasContainer) {
+            canvasToggle.addEventListener('click', () => this.toggle());
+        }
+    },
+    
+    toggle() {
+        const canvasContainer = document.querySelector('.canvas-container');
+        const canvasToggle = document.getElementById('canvasToggle');
+        
+        if (canvasContainer.classList.contains('hidden')) {
+            canvasContainer.classList.remove('hidden');
+            canvasToggle.textContent = '👁️';
+            canvasToggle.title = 'Hide canvas';
+        } else {
+            canvasContainer.classList.add('hidden');
+            canvasToggle.textContent = '🙈';
+            canvasToggle.title = 'Show canvas';
+        }
+    }
+};
+
+// =============================================================================
+// TEXT ALIGNMENT MANAGER
+// =============================================================================
+const TextAlignmentManager = {
+    currentAlignment: 'right',
+    
+    init() {
+        const alignSelect = document.getElementById('textAlignSelect');
+        if (alignSelect) {
+            alignSelect.addEventListener('change', (e) => this.setAlignment(e.target.value));
+        }
+    },
+    
+    setAlignment(alignment) {
+        this.currentAlignment = alignment;
+        const textInput = document.getElementById('textInput');
+        
+        // Update text area alignment
+        textInput.style.textAlign = alignment;
+        if (alignment === 'right') {
+            textInput.style.direction = 'rtl';
+        } else if (alignment === 'left') {
+            textInput.style.direction = 'ltr';
+        } else { // center
+            textInput.style.direction = 'ltr';
+        }
+        
+        // Regenerate canvas with new alignment
+        CanvasRenderer.generate();
+    },
+    
+    getCanvasAlignment() {
+        return this.currentAlignment;
     }
 };
 
@@ -816,40 +901,90 @@ document.addEventListener('DOMContentLoaded', async function() {
         const sizeInput = document.getElementById('sizeInput');
         const textInput = document.getElementById('textInput');
         
-        function updateFontSize() {
-            const value = parseInt(sizeInput.value, 10);
-            if (value >= 8 && value <= 144) {
-                const isMobile = Utils.isMobile();
-                
-                // Match canvas font size exactly
-                const canvasFontSize = value;
-                const textAreaFontSize = Math.max(16, canvasFontSize); // Prevent iOS zoom
-                
-                // Update CSS custom property for responsive sizing
-                document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
-                
-                // Update text area to match canvas exactly
-                textInput.style.fontSize = `${textAreaFontSize}px`;
-                textInput.style.lineHeight = '1.4'; // Match canvas line height
-                
-                // Set width to match canvas and consistent right alignment
-                if (isMobile) {
-                    textInput.style.width = '350px';
-                } else {
-                    textInput.style.width = '500px';
-                }
-                
-                // Use consistent right alignment for both desktop and mobile
-                textInput.style.direction = 'rtl';
-                textInput.style.textAlign = 'right';
-                textInput.style.margin = '0 auto'; // Center the text area horizontally
-                
-                // Update canvas to match
-                debouncedGenerate();
+        function validateAndSetFontSize(value) {
+            // Only allow numeric input
+            const numericValue = parseInt(value, 10);
+            
+            if (isNaN(numericValue)) {
+                sizeInput.value = '32'; // Reset to default
+                return 32;
+            }
+            
+            // Clamp value between 8 and 144
+            const clampedValue = Math.max(8, Math.min(144, numericValue));
+            sizeInput.value = clampedValue.toString();
+            
+            return clampedValue;
+        }
+        
+        function updateFontSize(triggerCanvasUpdate = true) {
+            const value = validateAndSetFontSize(sizeInput.value);
+            const isMobile = Utils.isMobile();
+            
+            // Match canvas font size exactly
+            const canvasFontSize = value;
+            const textAreaFontSize = Math.max(16, canvasFontSize); // Prevent iOS zoom
+            
+            // Update CSS custom property for responsive sizing
+            document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
+            
+            // Update text area to match canvas exactly
+            textInput.style.fontSize = `${textAreaFontSize}px`;
+            textInput.style.lineHeight = '1.4'; // Match canvas line height
+            
+            // Set width to match canvas and consistent right alignment
+            if (isMobile) {
+                textInput.style.width = '350px';
+            } else {
+                textInput.style.width = '500px';
+            }
+            
+            // Use consistent right alignment for both desktop and mobile
+            textInput.style.direction = 'rtl';
+            textInput.style.textAlign = 'right';
+            textInput.style.margin = '0 auto'; // Center the text area horizontally
+            
+            // Update canvas to match - CRITICAL for canvas refresh
+            if (triggerCanvasUpdate) {
+                console.log('🔄 Font size changed to:', value, '- triggering canvas update');
+                CanvasRenderer.generate();
             }
         }
         
-        sizeInput.addEventListener('input', updateFontSize);
+        // Handle text input with numeric validation
+        sizeInput.addEventListener('input', (e) => {
+            // Filter out non-numeric characters during typing
+            let value = e.target.value.replace(/[^0-9]/g, '');
+            e.target.value = value;
+            updateFontSize();
+        });
+        
+        // Validate on blur to ensure valid range
+        sizeInput.addEventListener('blur', () => {
+            updateFontSize();
+        });
+        
+        // Arrow button handlers
+        const sizeUpBtn = document.getElementById('sizeUp');
+        const sizeDownBtn = document.getElementById('sizeDown');
+        
+        if (sizeUpBtn) {
+            sizeUpBtn.addEventListener('click', () => {
+                const currentValue = parseInt(sizeInput.value, 10) || 32;
+                const newValue = Math.min(144, currentValue + 2);
+                sizeInput.value = newValue.toString();
+                updateFontSize();
+            });
+        }
+        
+        if (sizeDownBtn) {
+            sizeDownBtn.addEventListener('click', () => {
+                const currentValue = parseInt(sizeInput.value, 10) || 32;
+                const newValue = Math.max(8, currentValue - 2);
+                sizeInput.value = newValue.toString();
+                updateFontSize();
+            });
+        }
         
         // Set initial font size for text area
         updateFontSize();
@@ -873,6 +1008,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         }, 100);
         document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
         document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
+        
+        // Initialize new managers
+        CanvasToggleManager.init();
+        TextAlignmentManager.init();
         
         // Initialize character keyboard
         CharKeyboard.init();
