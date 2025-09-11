@@ -223,12 +223,28 @@ const CanvasRenderer = {
     async generate() {
         console.log('Starting canvas rendering...');
         
-        // Get elements and values
+        // Get elements and values with null checks
         const canvas = document.getElementById('canvas');
+        const textInput = document.getElementById('textInput');
+        const sizeInput = document.getElementById('sizeInput');
+        
+        if (!canvas) {
+            console.error('❌ Canvas element not found');
+            return;
+        }
+        if (!textInput) {
+            console.error('❌ Text input element not found');
+            return;
+        }
+        if (!sizeInput) {
+            console.error('❌ Size input element not found');
+            return;
+        }
+        
         const ctx = canvas.getContext('2d');
-        const text = document.getElementById('textInput').value;
+        const text = textInput.value;
         const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
-        const sizeVal = parseInt(document.getElementById('sizeInput').value, 10);
+        const sizeVal = parseInt(sizeInput.value, 10);
         const size = Number.isFinite(sizeVal) && sizeVal > 0 ? sizeVal : CONFIG.DEFAULT_FONT_SIZE;
 
         // Ensure font is loaded
@@ -595,6 +611,11 @@ const TextAlignmentManager = {
         this.currentAlignment = alignment;
         const textInput = document.getElementById('textInput');
         
+        if (!textInput) {
+            console.error('❌ Text input element not found in setAlignment');
+            return;
+        }
+        
         // Update text area alignment
         textInput.style.textAlign = alignment;
         if (alignment === 'right') {
@@ -765,6 +786,11 @@ const AboutModal = {
         const modal = document.getElementById('aboutModal');
         const closeButton = document.getElementById('closeModal');
         
+        if (!aboutLink || !modal || !closeButton) {
+            console.warn('⚠️ About modal elements not found, skipping initialization');
+            return;
+        }
+        
         // Show modal when about link is clicked
         aboutLink.addEventListener('click', (e) => {
             e.preventDefault();
@@ -812,6 +838,11 @@ const CheatSheetModal = {
         const cheatSheetLink = document.getElementById('cheatSheetLink');
         const modal = document.getElementById('cheatSheetModal');
         const closeButton = document.getElementById('closeCheatSheet');
+        
+        if (!cheatSheetLink || !modal || !closeButton) {
+            console.warn('⚠️ Cheat sheet modal elements not found, skipping initialization');
+            return;
+        }
         
         // Show modal when cheat sheet link is clicked
         cheatSheetLink.addEventListener('click', (e) => {
@@ -894,12 +925,20 @@ document.addEventListener('DOMContentLoaded', async function() {
         const debounceDelay = isMobile ? CONFIG.DEBOUNCE_DELAY * 2 : CONFIG.DEBOUNCE_DELAY;
         const debouncedGenerate = Utils.debounce(() => CanvasRenderer.generate(), debounceDelay);
 
-        // Event listeners
-        document.getElementById('textInput').addEventListener('input', debouncedGenerate);
-        
-        // Size input with validation and text area sync
-        const sizeInput = document.getElementById('sizeInput');
+        // Event listeners with null checks
         const textInput = document.getElementById('textInput');
+        const sizeInput = document.getElementById('sizeInput');
+        
+        if (!textInput) {
+            console.error('❌ Text input element not found during initialization');
+            return;
+        }
+        if (!sizeInput) {
+            console.error('❌ Size input element not found during initialization');
+            return;
+        }
+        
+        textInput.addEventListener('input', debouncedGenerate);
         
         function validateAndSetFontSize(value) {
             // Only allow numeric input
@@ -1006,8 +1045,21 @@ document.addEventListener('DOMContentLoaded', async function() {
                 button.style.fontFeatureSettings = '"liga" 1, "kern" 1';
             });
         }, 100);
-        document.getElementById('themeToggle').addEventListener('click', () => ThemeManager.toggle());
-        document.getElementById('shareWhatsApp').addEventListener('click', () => ShareManager.share());
+        // Initialize buttons with null checks
+        const themeToggle = document.getElementById('themeToggle');
+        const shareButton = document.getElementById('shareWhatsApp');
+        
+        if (themeToggle) {
+            themeToggle.addEventListener('click', () => ThemeManager.toggle());
+        } else {
+            console.warn('⚠️ Theme toggle button not found');
+        }
+        
+        if (shareButton) {
+            shareButton.addEventListener('click', () => ShareManager.share());
+        } else {
+            console.warn('⚠️ Share button not found');
+        }
         
         // Initialize new managers
         CanvasToggleManager.init();
