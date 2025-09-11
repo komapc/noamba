@@ -8,13 +8,13 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.11.1',
-    DEFAULT_FONT_SIZE: 32,
+    VERSION: '1.11.2',
+    DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
-        small: 28,
-        normal: 32,
-        large: 36
+        small: 84,
+        normal: 96,
+        large: 108
     },
     MIN_FONT_SIZE: 8,
     MAX_FONT_SIZE: 144,
