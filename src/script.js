@@ -434,7 +434,9 @@ const CanvasRenderer = {
         // Draw each line with selected alignment
         for (const line of lines) {
             if (line && line.trim()) {
-                ctx.fillText(line, drawX, y);
+                // Add RLM (Right-to-Left Mark) to ensure proper RTL rendering
+                const rtlLine = '\u200F' + line;
+                ctx.fillText(rtlLine, drawX, y);
             }
             y += dimensions.lineHeight;
         }
@@ -635,14 +637,14 @@ const TextAlignmentManager = {
             if (activeBtn) activeBtn.classList.add('active');
         }
         
-        // Update text area alignment
-        textInput.style.textAlign = alignment;
+        // Update text area alignment - always use RTL for Hebrew text
+        textInput.style.direction = 'rtl';
         if (alignment === 'right') {
-            textInput.style.direction = 'rtl';
+            textInput.style.textAlign = 'right';
         } else if (alignment === 'left') {
-            textInput.style.direction = 'ltr';
+            textInput.style.textAlign = 'left';
         } else { // center
-            textInput.style.direction = 'ltr';
+            textInput.style.textAlign = 'center';
         }
         
         // Regenerate canvas with new alignment
@@ -986,6 +988,10 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         textInput.addEventListener('input', (e) => {
             if (enforceHeightLimit()) {
+                // Add RLM to ensure proper RTL rendering in textarea
+                if (textInput.value && !textInput.value.startsWith('\u200F')) {
+                    textInput.value = '\u200F' + textInput.value;
+                }
                 debouncedGenerate();
             }
         });
