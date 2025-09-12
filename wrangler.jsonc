@@ -1,8 +1,22 @@
 {
   "name": "noamba-static",
   "compatibility_date": "2025-09-09",
-  "assets": {
-    "directory": "./src"
+  "pages_build_output_dir": "./src",
+  "env": {
+    "staging": {
+      "name": "noamba-static-staging",
+      "pages_build_output_dir": "./src",
+      "vars": {
+        "ENVIRONMENT": "staging"
+      }
+    },
+    "production": {
+      "name": "noamba-static-prod",
+      "pages_build_output_dir": "./src", 
+      "vars": {
+        "ENVIRONMENT": "production"
+      }
+    }
   }
 }
 

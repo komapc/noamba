@@ -6,7 +6,10 @@
   "scripts": {
     "start": "echo \"Open src/index.html in your browser - no server required!\"",
     "serve": "npx http-server src -p 8000 -o",
-    "build": "echo \"Static site - no build required\""
+    "build": "echo \"Static site - no build required\"",
+    "deploy:staging": "wrangler pages deploy src --project-name noamba-static-staging",
+    "deploy:production": "wrangler pages deploy src --project-name noamba-static-prod",
+    "deploy:preview": "wrangler pages deploy src --project-name noamba-static --compatibility-date 2025-01-15"
   },
   "keywords": ["hebrew", "multigender", "text", "image", "canvas", "client-side"],
   "author": "",

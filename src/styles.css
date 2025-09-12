@@ -54,6 +54,17 @@ h1 {
     display: inline-block;
 }
 
+.environment-indicator {
+    font-size: 0.6em;
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.1);
+    padding: 4px 8px;
+    border-radius: 4px;
+    margin-left: 8px;
+    font-weight: 600;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
 .mg-logo {
     display: block;
     text-align: center;

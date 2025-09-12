@@ -8,7 +8,13 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.15.5',
+    VERSION: '1.15.6',
+    // Environment detection
+    IS_STAGING: window.location.hostname.includes('staging') || 
+                window.location.hostname.includes('preview') ||
+                window.location.search.includes('staging=true'),
+    IS_PRODUCTION: window.location.hostname.includes('noamba') && 
+                   !window.location.hostname.includes('staging'),
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -1174,12 +1180,44 @@ const CheatSheetModal = {
 };
 
 // =============================================================================
+// ENVIRONMENT MANAGER
+// =============================================================================
+const EnvironmentManager = {
+    init() {
+        // Show staging indicator if in staging environment
+        if (CONFIG.IS_STAGING) {
+            const indicator = document.getElementById('environmentIndicator');
+            if (indicator) {
+                indicator.style.display = 'inline-block';
+                indicator.textContent = '[STAGING]';
+            }
+            console.log('🔧 Running in STAGING environment');
+        } else if (CONFIG.IS_PRODUCTION) {
+            console.log('🚀 Running in PRODUCTION environment');
+        } else {
+            console.log('💻 Running in LOCAL/DEVELOPMENT environment');
+        }
+        
+        // Add environment info to console
+        console.log('Environment details:', {
+            hostname: window.location.hostname,
+            isStaging: CONFIG.IS_STAGING,
+            isProduction: CONFIG.IS_PRODUCTION,
+            version: CONFIG.VERSION
+        });
+    }
+};
+
+// =============================================================================
 // APPLICATION INITIALIZATION
 // =============================================================================
 document.addEventListener('DOMContentLoaded', async function() {
     try {
         // Log startup information
         Utils.logStartup();
+        
+        // Initialize environment detection and UI
+        EnvironmentManager.init();
         
         // Run configuration validation first
         ConfigValidator.runStartupValidation();
