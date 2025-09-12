@@ -1323,11 +1323,12 @@ document.addEventListener('DOMContentLoaded', async function() {
                 // Use the same text processing as canvas for identical wrapping
                 const lines = textInput.value.split('\n');
                 const wrappedLines = [];
-                const maxLineWidth = (previewWidth - CONFIG.TEXTAREA_PADDING) - 24; // Account for padding
+                // Match canvas wrapping width but scaled to preview CSS pixels
+                const scaledMaxLineWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
                 
                 for (const line of lines) {
                     if (line.trim()) {
-                        const wrapped = TextProcessor.wrapText(line, maxLineWidth, tempCtx);
+                        const wrapped = TextProcessor.wrapText(line, scaledMaxLineWidth, tempCtx);
                         wrappedLines.push(...wrapped);
                     } else {
                         wrappedLines.push('');
