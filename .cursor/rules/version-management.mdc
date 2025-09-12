@@ -54,3 +54,13 @@ Always include version change in commit messages:
 - Both locations must be updated simultaneously
 - Include version change in commit message
 - Follow semantic versioning principles
+
+## New Version Management System
+
+The project now includes a `VersionManager` system that:
+- Automatically validates version consistency on startup
+- Provides centralized version update methods
+- Auto-syncs versions when mismatches are detected
+- Logs version changes for debugging
+
+Use `VersionManager.updateVersion(newVersion)` for centralized updates.

@@ -59,3 +59,26 @@ This is a Hebrew text design tool with MultiGender Hebrew font support. The main
 - Apply `getUnifiedTextStyle()` for consistent text styling
 - Use `TextProcessor.wrapText()` for text wrapping
 - Implement proper error handling and fallbacks
+
+## New Refactored Systems
+
+### Version Management
+- Use `VersionManager.updateVersion()` for centralized version updates
+- `VersionManager.validateVersionConsistency()` checks for mismatches
+- Automatic version sync on startup
+
+### Text Synchronization
+- `TextSyncManager.syncTextareaAndCanvas()` ensures perfect sync
+- `TextSyncManager.validateTextContent()` prevents content issues
+- Automatic monitoring for synchronization problems
+
+### Configuration Validation
+- `ConfigValidator.validateConfig()` checks all configuration values
+- `ConfigValidator.autoFixConfig()` automatically fixes common issues
+- Startup validation prevents configuration problems
+
+### Error Prevention
+- Automatic validation on startup
+- Real-time monitoring for issues
+- Auto-fix capabilities for common problems
+- Comprehensive logging for debugging

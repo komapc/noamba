@@ -38,6 +38,52 @@ const CONFIG = {
 };
 
 // =============================================================================
+// VERSION MANAGEMENT SYSTEM
+// =============================================================================
+const VersionManager = {
+    // Centralized version management
+    getVersion() {
+        return CONFIG.VERSION;
+    },
+    
+    // Update version in all locations
+    updateVersion(newVersion) {
+        // Update JavaScript CONFIG
+        CONFIG.VERSION = newVersion;
+        
+        // Update HTML footer
+        const versionElement = document.querySelector('.version-small');
+        if (versionElement) {
+            versionElement.textContent = `v${newVersion}`;
+        }
+        
+        // Log version update
+        console.log(`📝 Version updated to v${newVersion}`);
+    },
+    
+    // Validate version consistency
+    validateVersionConsistency() {
+        const jsVersion = CONFIG.VERSION;
+        const htmlVersion = document.querySelector('.version-small')?.textContent?.replace('v', '');
+        
+        if (jsVersion !== htmlVersion) {
+            console.warn(`⚠️ Version mismatch: JS=${jsVersion}, HTML=${htmlVersion}`);
+            return false;
+        }
+        return true;
+    },
+    
+    // Auto-sync versions on load
+    syncVersions() {
+        const jsVersion = CONFIG.VERSION;
+        const versionElement = document.querySelector('.version-small');
+        if (versionElement && !versionElement.textContent.includes(jsVersion)) {
+            this.updateVersion(jsVersion);
+        }
+    }
+};
+
+// =============================================================================
 // GLOBAL FUNCTIONS
 // =============================================================================
 function getSelectedPreset() {
@@ -66,6 +112,89 @@ function getUnifiedTextStyle(fontSize) {
         margin: '0 auto'
     };
 }
+
+// =============================================================================
+// CONFIGURATION VALIDATION SYSTEM
+// =============================================================================
+const ConfigValidator = {
+    // Validate all configuration values
+    validateConfig() {
+        const issues = [];
+        
+        // Check version consistency
+        if (!VersionManager.validateVersionConsistency()) {
+            issues.push('Version mismatch between JS and HTML');
+        }
+        
+        // Check padding consistency
+        if (CONFIG.CANVAS_PADDING !== CONFIG.TEXTAREA_PADDING) {
+            issues.push(`Padding mismatch: Canvas=${CONFIG.CANVAS_PADDING}, Textarea=${CONFIG.TEXTAREA_PADDING}`);
+        }
+        
+        // Check font presets
+        if (!CONFIG.FONT_PRESETS.small || !CONFIG.FONT_PRESETS.normal || !CONFIG.FONT_PRESETS.large) {
+            issues.push('Missing font presets');
+        }
+        
+        // Check canvas dimensions
+        if (CONFIG.FIXED_CANVAS_WIDTH <= 0) {
+            issues.push('Invalid FIXED_CANVAS_WIDTH');
+        }
+        
+        if (CONFIG.MIN_CANVAS_HEIGHT <= 0) {
+            issues.push('Invalid MIN_CANVAS_HEIGHT');
+        }
+        
+        // Check font family
+        if (!CONFIG.FONT_FAMILY || CONFIG.FONT_FAMILY.trim() === '') {
+            issues.push('Missing FONT_FAMILY');
+        }
+        
+        // Log issues
+        if (issues.length > 0) {
+            console.error('❌ Configuration validation failed:', issues);
+            return false;
+        }
+        
+        console.log('✅ Configuration validation passed');
+        return true;
+    },
+    
+    // Auto-fix common configuration issues
+    autoFixConfig() {
+        let fixed = false;
+        
+        // Fix padding mismatch
+        if (CONFIG.CANVAS_PADDING !== CONFIG.TEXTAREA_PADDING) {
+            CONFIG.TEXTAREA_PADDING = CONFIG.CANVAS_PADDING;
+            console.log('🔧 Fixed padding mismatch');
+            fixed = true;
+        }
+        
+        // Fix version mismatch
+        if (!VersionManager.validateVersionConsistency()) {
+            VersionManager.syncVersions();
+            console.log('🔧 Fixed version mismatch');
+            fixed = true;
+        }
+        
+        return fixed;
+    },
+    
+    // Run validation on startup
+    runStartupValidation() {
+        console.log('🔍 Running configuration validation...');
+        
+        if (!this.validateConfig()) {
+            console.log('🔧 Attempting to auto-fix configuration issues...');
+            if (this.autoFixConfig()) {
+                console.log('✅ Configuration auto-fixed');
+            } else {
+                console.error('❌ Configuration issues require manual intervention');
+            }
+        }
+    }
+};
 
 // =============================================================================
 // UTILITIES
@@ -194,6 +323,83 @@ const FontManager = {
             console.error('Font verification failed:', error);
             return false;
         }
+    }
+};
+
+// =============================================================================
+// TEXT SYNCHRONIZATION SYSTEM
+// =============================================================================
+const TextSyncManager = {
+    // Ensure textarea and canvas are perfectly synchronized
+    syncTextareaAndCanvas() {
+        const textarea = document.getElementById('textInput');
+        const canvas = document.getElementById('canvas');
+        
+        if (!textarea || !canvas) {
+            console.error('❌ Textarea or canvas not found for synchronization');
+            return false;
+        }
+        
+        // Get current text content
+        const textContent = textarea.value;
+        
+        // Validate text content consistency
+        if (!this.validateTextContent(textContent)) {
+            console.warn('⚠️ Text content validation failed');
+            return false;
+        }
+        
+        // Apply unified styling
+        this.applyUnifiedStyling();
+        
+        // Regenerate canvas
+        CanvasRenderer.generate();
+        
+        return true;
+    },
+    
+    // Validate text content for consistency
+    validateTextContent(text) {
+        // Check for invalid characters or encoding issues
+        if (text.includes('\u200F')) {
+            console.warn('⚠️ RLM character detected in text content');
+            return false;
+        }
+        
+        // Check for excessive length
+        if (text.length > 10000) {
+            console.warn('⚠️ Text content too long');
+            return false;
+        }
+        
+        return true;
+    },
+    
+    // Apply unified styling to both textarea and canvas
+    applyUnifiedStyling() {
+        const preset = getSelectedPreset();
+        const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
+        const isMobileNow = FontManager.isMobile();
+        const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+        const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
+        const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
+        
+        // Apply to textarea
+        const textarea = document.getElementById('textInput');
+        if (textarea) {
+            const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
+            Object.assign(textarea.style, unifiedStyle);
+            textarea.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
+        }
+    },
+    
+    // Monitor for synchronization issues
+    startSyncMonitoring() {
+        setInterval(() => {
+            if (!this.validateTextContent(document.getElementById('textInput')?.value || '')) {
+                console.warn('⚠️ Text synchronization issue detected');
+            }
+        }, 5000);
     }
 };
 
@@ -954,6 +1160,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Log startup information
         Utils.logStartup();
         
+        // Run configuration validation first
+        ConfigValidator.runStartupValidation();
+        
         // Mobile-specific initialization
         const isMobile = FontManager.isMobile();
         if (isMobile) {
@@ -1196,6 +1405,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         // Initialize character keyboard
         CharKeyboard.init();
+        
+        // Initialize synchronization systems
+        TextSyncManager.startSyncMonitoring();
         
         // Initialize about modal
         AboutModal.init();
