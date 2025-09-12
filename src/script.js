@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.6',
+    VERSION: '1.12.7',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -364,7 +364,7 @@ const CanvasRenderer = {
         canvas.width = dimensions.width * dpr; // always 1200 * dpr
         canvas.height = dimensions.height * dpr; // clamped between 200..(0.75*1200)
         
-        // Display size (responsive preview): scale down for on-screen viewing
+        // Display size (responsive preview): fixed preview widths for consistent wrapping
         const displayWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
         const displayScale = displayWidth / dimensions.width; // maintain aspect ratio
         canvas.style.width = Math.round(dimensions.width * displayScale) + 'px';
@@ -965,9 +965,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             const isMobileNow = FontManager.isMobile();
             const isDark = document.body.classList.contains('dark');
             
-            // Scale textarea font to on-screen preview width to avoid oversized input
-            const basePreviewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : Math.min(window.innerWidth - 40, CONFIG.FIXED_CANVAS_WIDTH);
-            const previewWidth = Math.min(basePreviewWidth, CONFIG.FIXED_CANVAS_WIDTH);
+            // Match textarea scale to canvas display scale for identical wrapping
+            const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
             const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
             const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
 
