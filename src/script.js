@@ -419,11 +419,11 @@ const CanvasRenderer = {
         
         if (alignment === 'center') {
             ctx.textAlign = 'center';
-            ctx.direction = 'ltr';
+            ctx.direction = 'rtl';
             drawX = dimensions.width / 2;
         } else if (alignment === 'left') {
             ctx.textAlign = 'left';
-            ctx.direction = 'ltr';
+            ctx.direction = 'rtl';
             drawX = dimensions.padding;
         } else { // right
             ctx.textAlign = 'right';
@@ -434,7 +434,6 @@ const CanvasRenderer = {
         // Draw each line with selected alignment
         for (const line of lines) {
             if (line && line.trim()) {
-                console.log('Drawing line with', alignment, 'alignment:', line, 'at x:', drawX, 'y:', y);
                 ctx.fillText(line, drawX, y);
             }
             y += dimensions.lineHeight;
