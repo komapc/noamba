@@ -1311,8 +1311,29 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Set width to match canvas preview
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
             
-            // Don't modify textarea content - let it display the original text
-            // Canvas will handle its own text processing
+            // Process textarea content to match canvas wrapping exactly
+            if (textInput.value) {
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
+                
+                // Use the same text processing as canvas for identical wrapping
+                const lines = textInput.value.split('\n');
+                const wrappedLines = [];
+                const maxLineWidth = (previewWidth - CONFIG.TEXTAREA_PADDING) - 24; // Account for padding
+                
+                for (const line of lines) {
+                    if (line.trim()) {
+                        const wrapped = TextProcessor.wrapText(line, maxLineWidth, tempCtx);
+                        wrappedLines.push(...wrapped);
+                    } else {
+                        wrappedLines.push('');
+                    }
+                }
+                
+                // Update textarea with processed text to match canvas exactly
+                textInput.value = wrappedLines.join('\n');
+            }
             
             // Dynamic textarea height - no scrollbars, hard cap by viewport
             textInput.style.height = 'auto';
