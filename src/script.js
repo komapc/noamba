@@ -48,6 +48,25 @@ function getSelectedPreset() {
     return 'normal';
 }
 
+// Unified text styling system for perfect sync
+function getUnifiedTextStyle(fontSize) {
+    const isMobileNow = FontManager.isMobile();
+    const isDark = document.body.classList.contains('dark');
+    
+    return {
+        fontFamily: CONFIG.FONT_FAMILY,
+        fontSize: `${fontSize}px`,
+        lineHeight: CONFIG.LINE_HEIGHT_MULTIPLIER,
+        direction: 'rtl',
+        textAlign: TextAlignmentManager.getCanvasAlignment(),
+        backgroundColor: isDark ? '#0b1220' : '#f8fafc',
+        color: isDark ? '#e5e7eb' : '#0b1020',
+        overflow: 'hidden',
+        resize: 'none',
+        margin: '0 auto'
+    };
+}
+
 // =============================================================================
 // UTILITIES
 // =============================================================================
@@ -1049,24 +1068,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
 
-        // Unified text styling system for perfect sync
-        function getUnifiedTextStyle(fontSize) {
-            const isMobileNow = FontManager.isMobile();
-            const isDark = document.body.classList.contains('dark');
-            
-            return {
-                fontFamily: CONFIG.FONT_FAMILY,
-                fontSize: `${fontSize}px`,
-                lineHeight: CONFIG.LINE_HEIGHT_MULTIPLIER,
-                direction: 'rtl',
-                textAlign: TextAlignmentManager.getCanvasAlignment(),
-                backgroundColor: isDark ? '#0b1220' : '#f8fafc',
-                color: isDark ? '#e5e7eb' : '#0b1020',
-                overflow: 'hidden',
-                resize: 'none',
-                margin: '0 auto'
-            };
-        }
 
         function applySelectedFontSize(triggerCanvasUpdate = true) {
             const preset = getSelectedPreset();
