@@ -200,7 +200,8 @@ body.dark .canvas-toggle:hover {
     width: 500px;
     max-width: 100%;
     min-height: 100px;
-    padding: 12px;
+    box-sizing: content-box; /* Ensure width represents content box for exact wrap width */
+    padding: 40px; /* Match CONFIG.CANVAS_PADDING for perfect sync */
     font-size: 32px; /* Will be updated by JavaScript to match canvas */
     line-height: 1.4; /* Match canvas line height */
     border: 1px solid var(--border-light);
@@ -699,6 +700,8 @@ body.dark .keyboard-label {
         width: 350px;
         max-width: calc(100vw - 24px);
         min-height: 80px;
+        box-sizing: content-box; /* Match desktop behavior */
+        padding: 16px; /* Mobile-optimized padding: 40px * 0.4 scale factor */
         font-size: max(16px, var(--current-font-size, 32px)); /* Prevent zoom on iOS */
         appearance: none;
         -webkit-appearance: none;

@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.15.4',
+    VERSION: '1.15.5',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -99,14 +99,25 @@ function getUnifiedTextStyle(fontSize) {
     const isMobileNow = FontManager.isMobile();
     const isDark = document.body.classList.contains('dark');
     
+    // Get alignment and convert to CSS text-align values
+    const canvasAlignment = TextAlignmentManager.getCanvasAlignment();
+    let textAlign;
+    if (canvasAlignment === 'center') {
+        textAlign = 'center';
+    } else if (canvasAlignment === 'left') {
+        textAlign = 'left';
+    } else { // right
+        textAlign = 'right';
+    }
+    
     return {
         fontFamily: CONFIG.FONT_FAMILY,
         fontSize: `${fontSize}px`,
         lineHeight: CONFIG.LINE_HEIGHT_MULTIPLIER,
         direction: 'rtl',
-        textAlign: TextAlignmentManager.getCanvasAlignment(),
-        backgroundColor: isDark ? '#0b1220' : '#f8fafc',
-        color: isDark ? '#e5e7eb' : '#0b1020',
+        textAlign: textAlign, // Properly sync with canvas alignment
+        backgroundColor: isDark ? '#0f172a' : '#ffffff', // Match canvas colors
+        color: isDark ? '#e5e7eb' : '#111827', // Match canvas colors
         overflow: 'hidden',
         resize: 'none',
         margin: '0 auto'
@@ -384,12 +395,22 @@ const TextSyncManager = {
         const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
         const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
         
+        // Calculate dynamic padding that matches canvas system
+        const canvasPadding = isMobileNow ? 
+            Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_MOBILE) : 
+            Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_DESKTOP);
+        const textareaPadding = Math.round(canvasPadding * displayScale);
+        
         // Apply to textarea
         const textarea = document.getElementById('textInput');
         if (textarea) {
             const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
             Object.assign(textarea.style, unifiedStyle);
-            textarea.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
+            // Horizontal padding mirrors canvas padding; vertical uses line-height multiplier
+            textarea.style.padding = `${textareaPadding}px`;
+            // With content-box sizing, width must equal exact scaled wrap width
+            const scaledWrapWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
+            textarea.style.width = `${Math.round(scaledWrapWidth)}px`;
         }
     },
     
@@ -633,12 +654,12 @@ const CanvasRenderer = {
         const isDark = document.body.classList.contains('dark');
         const isMobile = FontManager.isMobile();
         
-        // Clear canvas with theme-aware background (slightly brighter)
-        ctx.fillStyle = isDark ? '#0b1220' : '#f8fafc';
+        // Clear canvas with theme-aware background matching textarea
+        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff'; // Match control-bg-dark and control-bg-light
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
-        // Set text color
-        ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
+        // Set text color matching textarea
+        ctx.fillStyle = isDark ? '#e5e7eb' : '#111827'; // Match text-dark and text-light
         
         // Mobile-optimized text positioning using unified constants
         const totalTextHeight = lines.length * dimensions.lineHeight;
@@ -1300,6 +1321,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
             const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
 
+            // Calculate dynamic padding that matches canvas system
+            const canvasPadding = isMobileNow ? 
+                Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_MOBILE) : 
+                Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_DESKTOP);
+            const textareaPadding = Math.round(canvasPadding * displayScale);
+
             // Apply unified styling
             const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
             
@@ -1309,11 +1336,15 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Apply all styles to textarea
             Object.assign(textInput.style, unifiedStyle);
             
+            // Apply dynamic padding
+            textInput.style.padding = `${textareaPadding}px`;
+            
             // Force style recalc to ensure visual update
             textInput.offsetHeight;
             
-            // Set width to match canvas preview
-            textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
+            // Set width equal to scaled wrap width (content-box)
+            const scaledWrapWidth2 = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
+            textInput.style.width = `${Math.round(scaledWrapWidth2)}px`;
             
             // Process textarea content to match canvas wrapping exactly
             if (textInput.value) {
