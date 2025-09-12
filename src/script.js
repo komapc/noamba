@@ -19,7 +19,7 @@ const CONFIG = {
     MIN_FONT_SIZE: 8,
     MAX_FONT_SIZE: 144,
     // Fixed export dimensions policy (for WhatsApp image sharing)
-    FIXED_CANVAS_WIDTH: 1600,
+    FIXED_CANVAS_WIDTH: 1200,
     MIN_CANVAS_HEIGHT: 300,
     MAX_HEIGHT_RATIO: 4.0/3,
     MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
