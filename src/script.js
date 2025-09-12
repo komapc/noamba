@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.4',
+    VERSION: '1.12.5',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -397,8 +397,8 @@ const CanvasRenderer = {
         const isDark = document.body.classList.contains('dark');
         const isMobile = FontManager.isMobile();
         
-        // Clear canvas with theme-aware background (darker in dark mode)
-        ctx.fillStyle = isDark ? '#020617' : '#ffffff';
+        // Clear canvas with theme-aware background (slightly brighter)
+        ctx.fillStyle = isDark ? '#0b1220' : '#f8fafc';
         ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
         
         // Set text color
@@ -951,15 +951,19 @@ document.addEventListener('DOMContentLoaded', async function() {
             console.error('❌ Text input element not found during initialization');
             return;
         }
-        if (!fontSizeSelect) {
-            console.error('❌ Font size select element not found during initialization');
-            return;
-        }
+        // Size can come from select or new buttons (sizeButtons)
         
         textInput.addEventListener('input', debouncedGenerate);
         
+        function getSelectedPreset() {
+            const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
+            if (activeBtn) return activeBtn.getAttribute('data-size');
+            if (fontSizeSelect) return fontSizeSelect.value;
+            return 'normal';
+        }
+
         function applySelectedFontSize(triggerCanvasUpdate = true) {
-            const preset = fontSizeSelect.value || 'normal';
+            const preset = getSelectedPreset();
             const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
             const isMobileNow = FontManager.isMobile();
             const isDark = document.body.classList.contains('dark');
@@ -976,8 +980,8 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.style.lineHeight = '1.4';
             
             // Match canvas background and text colors
-            textInput.style.backgroundColor = isDark ? '#020617' : '#ffffff';
-            textInput.style.color = isDark ? '#e5e7eb' : '#111827';
+            textInput.style.backgroundColor = isDark ? '#0b1220' : '#f8fafc';
+            textInput.style.color = isDark ? '#e5e7eb' : '#0b1020';
             
             // Remove scrollbars and make resizable
             textInput.style.overflow = 'hidden';
@@ -1001,10 +1005,22 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         
         // React to preset changes
-        fontSizeSelect.addEventListener('change', () => applySelectedFontSize(true));
+        if (fontSizeSelect) {
+            fontSizeSelect.addEventListener('change', () => applySelectedFontSize(true));
+        }
+        const sizeButtons = document.getElementById('sizeButtons');
+        if (sizeButtons) {
+            sizeButtons.addEventListener('click', (e) => {
+                const btn = e.target.closest('.size-btn');
+                if (!btn) return;
+                sizeButtons.querySelectorAll('.size-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                applySelectedFontSize(true);
+            });
+        }
         
         // Initialize with default preset
-        fontSizeSelect.value = 'normal';
+        if (fontSizeSelect) fontSizeSelect.value = 'normal';
         applySelectedFontSize(false);
         
         // Update layout on orientation change or window resize
