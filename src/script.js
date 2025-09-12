@@ -330,16 +330,7 @@ const CanvasRenderer = {
         const unclampedHeight = textHeight + verticalPadding * 2;
         const calculatedHeight = Math.max(minHeight, Math.min(maxHeight, unclampedHeight));
 
-        console.log('Dimension calculation details:', {
-            isMobile,
-            size,
-            lineHeight,
-            verticalPadding,
-            textHeight,
-            fixedWidth,
-            calculatedHeight,
-            lines: lines.length
-        });
+        // Dimension calculation complete
 
         return {
             width: fixedWidth,
@@ -380,14 +371,7 @@ const CanvasRenderer = {
             ctx.imageSmoothingQuality = 'high';
         }
         
-        console.log('Canvas scaled for sharp rendering:', {
-            logicalSize: `${dimensions.width}x${dimensions.height}`,
-            actualSize: `${canvas.width}x${canvas.height}`,
-            devicePixelRatio: window.devicePixelRatio,
-            usedDPR: dpr,
-            isMobile,
-            memoryUsage: `${Math.round(canvas.width * canvas.height * 4 / 1024)}KB`
-        });
+        // Canvas scaled for sharp rendering
     },
 
     drawText(ctx, lines, size, dimensions) {
@@ -975,6 +959,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         function enforceHeightLimit() {
             const maxHeight = parseInt(textInput.dataset.maxHeight) || 200;
             const currentHeight = textInput.scrollHeight;
+            const isDark = document.body.classList.contains('dark');
             
             if (currentHeight > maxHeight) {
                 // Revert to previous valid content
@@ -992,10 +977,11 @@ document.addEventListener('DOMContentLoaded', async function() {
                 return false; // Input rejected
             }
             
-            // Store valid content
+            // Store valid content and allow growth up to max height
             textInput.dataset.lastValidValue = textInput.value;
             textInput.style.height = 'auto';
-            textInput.style.height = Math.min(maxHeight, textInput.scrollHeight) + 'px';
+            const newHeight = Math.min(maxHeight, textInput.scrollHeight);
+            textInput.style.height = newHeight + 'px';
             return true; // Input accepted
         }
         
@@ -1012,6 +998,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             const testValue = textInput.value + paste;
             const testHeight = measureTextHeight(testValue, textInput);
             const maxHeight = parseInt(textInput.dataset.maxHeight) || 200;
+            const isDark = document.body.classList.contains('dark');
             
             if (testHeight <= maxHeight) {
                 textInput.value = testValue;
@@ -1083,11 +1070,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             // Dynamic textarea height - no scrollbars, hard cap by viewport
             textInput.style.height = 'auto';
             const maxViewportHeight = Math.max(200, window.innerHeight * 0.4); // Max 40% of viewport
-            const cappedHeight = Math.min(maxViewportHeight, textInput.scrollHeight);
-            textInput.style.height = cappedHeight + 'px';
+            const currentContentHeight = textInput.scrollHeight;
+            const finalHeight = Math.min(maxViewportHeight, currentContentHeight);
+            textInput.style.height = finalHeight + 'px';
             
-            // Store max height for input validation
-            textInput.dataset.maxHeight = cappedHeight;
+            // Store max height for input validation (this is the limit, not current height)
+            textInput.dataset.maxHeight = maxViewportHeight;
             
             textInput.style.direction = 'rtl';
             textInput.style.textAlign = 'right';
