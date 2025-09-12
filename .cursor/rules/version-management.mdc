@@ -1,0 +1,56 @@
+---
+alwaysApply: true
+description: Version management and update requirements
+---
+
+# Version Management Rule
+
+## CRITICAL: Always Update Version
+
+Every time you make changes to this MultiGender Hebrew Text Designer project, you MUST update the version number in both locations:
+
+### 1. JavaScript CONFIG Object
+Update the version in [src/script.js](mdc:src/script.js) at line ~11:
+```javascript
+const CONFIG = {
+    VERSION: '1.14.2',  // ← ALWAYS UPDATE THIS
+    // ... rest of config
+};
+```
+
+### 2. HTML Footer Display
+Update the version in [src/index.html](mdc:src/index.html) in the footer section:
+```html
+<span class="version-small">v1.14.2</span>  <!-- ← ALWAYS UPDATE THIS -->
+```
+
+## Version Increment Rules
+
+Follow semantic versioning (MAJOR.MINOR.PATCH):
+
+- **PATCH** (+0.0.1): Bug fixes, small improvements, CSS tweaks, minor text changes
+- **MINOR** (+0.1.0): New features, UI improvements, significant functionality additions  
+- **MAJOR** (+1.0.0): Breaking changes, complete rewrites, major architecture changes
+
+## Commit Message Format
+
+Always include version change in commit messages:
+```
+[Type]: Brief description
+
+- Change 1
+- Change 2
+- Version: v{old} → v{new}
+```
+
+## Files That Require Version Updates
+
+- [src/script.js](mdc:src/script.js) - CONFIG.VERSION
+- [src/index.html](mdc:src/index.html) - Footer version display
+
+## Never Forget
+
+- Version updates are MANDATORY for every change
+- Both locations must be updated simultaneously
+- Include version change in commit message
+- Follow semantic versioning principles

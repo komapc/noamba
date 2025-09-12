@@ -1,0 +1,61 @@
+---
+globs: *.js,*.html,*.css
+description: MultiGender Hebrew Text Designer coding standards and patterns
+---
+
+# MultiGender Hebrew Text Designer - Coding Standards
+
+## Project Overview
+
+This is a Hebrew text design tool with MultiGender Hebrew font support. The main files are:
+- [src/index.html](mdc:src/index.html) - Main HTML structure
+- [src/script.js](mdc:src/script.js) - Core JavaScript functionality  
+- [src/styles.css](mdc:src/styles.css) - Styling and themes
+
+## Key Features
+
+- **MultiGender Hebrew Font**: Always use `AlefMultiGenderHebrew` font family
+- **RTL Text Support**: Proper right-to-left text rendering for Hebrew
+- **WhatsApp Export**: Fixed canvas width (1200px) for optimal sharing
+- **Responsive Design**: Mobile-first approach with desktop enhancements
+- **Dark/Light Themes**: Theme switching capability
+
+## Coding Standards
+
+### JavaScript (script.js)
+
+- Use modular architecture with objects (CONFIG, Utils, FontManager, etc.)
+- Always update CONFIG.VERSION when making changes
+- Use `CONFIG.FONT_FAMILY` for consistent font references
+- Implement proper RTL text handling with `ctx.direction = 'rtl'`
+- Use `requestAnimationFrame` for canvas rendering optimization
+- Follow the unified styling system for textarea-canvas sync
+
+### HTML (index.html)
+
+- Always update footer version display
+- Use semantic HTML with proper ARIA labels
+- Maintain RTL text direction with `dir="rtl"`
+- Include proper meta tags for mobile responsiveness
+
+### CSS (styles.css)
+
+- Use CSS custom properties for theming
+- Implement mobile-first responsive design
+- Maintain consistent spacing and typography
+- Support both light and dark themes
+
+## Critical Requirements
+
+1. **Version Management**: ALWAYS update both CONFIG.VERSION and HTML footer
+2. **RTL Support**: Ensure proper Hebrew text direction
+3. **Font Consistency**: Use MultiGender Hebrew font throughout
+4. **Canvas Synchronization**: Keep textarea and canvas perfectly aligned
+5. **WhatsApp Compatibility**: Maintain 1200px fixed width for exports
+
+## Common Patterns
+
+- Use `FontManager.isMobile()` for responsive behavior
+- Apply `getUnifiedTextStyle()` for consistent text styling
+- Use `TextProcessor.wrapText()` for text wrapping
+- Implement proper error handling and fallbacks
