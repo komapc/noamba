@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.7',
+    VERSION: '1.12.8',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -1034,6 +1034,12 @@ document.addEventListener('DOMContentLoaded', async function() {
             charButtons.forEach(button => {
                 button.style.fontFamily = "'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif";
                 button.style.fontFeatureSettings = '"liga" 1, "kern" 1';
+            });
+            const sizeLetterButtons = document.querySelectorAll('#sizeButtons .size-btn');
+            sizeLetterButtons.forEach(btn => {
+                btn.style.fontFamily = "'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif";
+                btn.style.fontFeatureSettings = '"liga" 1, "kern" 1';
+                btn.style.lineHeight = '1';
             });
         }, 100);
         // Initialize buttons with null checks
