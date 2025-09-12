@@ -38,6 +38,17 @@ const CONFIG = {
 };
 
 // =============================================================================
+// GLOBAL FUNCTIONS
+// =============================================================================
+function getSelectedPreset() {
+    const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
+    if (activeBtn) return activeBtn.getAttribute('data-size');
+    const fontSizeSelect = document.getElementById('fontSizeSelect');
+    if (fontSizeSelect) return fontSizeSelect.value;
+    return 'normal';
+}
+
+// =============================================================================
 // UTILITIES
 // =============================================================================
 const Utils = {
@@ -1032,12 +1043,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             return height;
         }
         
-        function getSelectedPreset() {
-            const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
-            if (activeBtn) return activeBtn.getAttribute('data-size');
-            if (fontSizeSelect) return fontSizeSelect.value;
-            return 'normal';
-        }
 
         // Unified text styling system for perfect sync
         function getUnifiedTextStyle(fontSize) {
