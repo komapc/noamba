@@ -205,7 +205,7 @@ const TextProcessor = {
         const isHebrew = Utils.hasHebrewChars(text);
         
         if (isHebrew) {
-            // Character-based wrapping for Hebrew
+            // Character-based wrapping for Hebrew - improved logic
             const chars = text.split('');
             const lines = [];
             let currentLine = '';
@@ -214,9 +214,16 @@ const TextProcessor = {
                 const testLine = currentLine + char;
                 const metrics = ctx.measureText(testLine);
                 
-                if (metrics.width > maxWidth && currentLine) {
-                    lines.push(currentLine);
-                    currentLine = char;
+                if (metrics.width > maxWidth) {
+                    // If currentLine is empty, the character itself is too wide
+                    if (currentLine) {
+                        lines.push(currentLine);
+                        currentLine = char;
+                    } else {
+                        // Single character is too wide, add it anyway
+                        lines.push(char);
+                        currentLine = '';
+                    }
                 } else {
                     currentLine = testLine;
                 }
@@ -228,18 +235,24 @@ const TextProcessor = {
             
             return lines;
         } else {
-            // Word-based wrapping for English
-            const words = text.split(' ');
+            // For non-Hebrew text, use character-based wrapping to avoid word boundary issues
+            const chars = text.split('');
             const lines = [];
             let currentLine = '';
             
-            for (const word of words) {
-                const testLine = currentLine ? currentLine + ' ' + word : word;
+            for (const char of chars) {
+                const testLine = currentLine + char;
                 const metrics = ctx.measureText(testLine);
                 
-                if (metrics.width > maxWidth && currentLine) {
-                    lines.push(currentLine);
-                    currentLine = word;
+                if (metrics.width > maxWidth) {
+                    if (currentLine) {
+                        lines.push(currentLine);
+                        currentLine = char;
+                    } else {
+                        // Single character is too wide, add it anyway
+                        lines.push(char);
+                        currentLine = '';
+                    }
                 } else {
                     currentLine = testLine;
                 }
