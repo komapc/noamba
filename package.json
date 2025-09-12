@@ -6,7 +6,9 @@
   "scripts": {
     "start": "echo \"Open src/index.html in your browser - no server required!\"",
     "serve": "npx http-server src -p 8000 -o",
+    "serve:staging": "npx http-server . -p 8000 -o test-staging.html",
     "build": "echo \"Static site - no build required\"",
+    "test:staging": "echo \"Visit http://localhost:8000/src/index.html?staging=true to test staging mode\"",
     "deploy:staging": "wrangler pages deploy src --project-name noamba-static-staging",
     "deploy:production": "wrangler pages deploy src --project-name noamba-static-prod",
     "deploy:preview": "wrangler pages deploy src --project-name noamba-static --compatibility-date 2025-01-15"

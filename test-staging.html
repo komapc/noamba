@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>Test Staging Environment</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+</head>
+<body>
+    <h1>Testing Staging Environment Detection</h1>
+    
+    <h2>Test URLs:</h2>
+    <ul>
+        <li><a href="src/index.html">Local Development</a></li>
+        <li><a href="src/index.html?staging=true">Local with Staging Flag</a></li>
+    </ul>
+    
+    <h2>Expected Behavior:</h2>
+    <ul>
+        <li><strong>Local Development:</strong> No staging indicator, console shows "💻 Running in LOCAL/DEVELOPMENT environment"</li>
+        <li><strong>Local with Staging Flag:</strong> Shows orange "[STAGING]" badge, console shows "🔧 Running in STAGING environment"</li>
+    </ul>
+    
+    <h2>Console Commands to Test:</h2>
+    <pre>
+// Check environment detection
+console.log('Is Staging:', window.location.hostname.includes('staging') || 
+                        window.location.hostname.includes('preview') ||
+                        window.location.search.includes('staging=true'));
+
+// Check if indicator is visible
+console.log('Staging Indicator Visible:', 
+    document.getElementById('environmentIndicator')?.style.display !== 'none');
+    </pre>
+    
+    <script>
+        // Auto-redirect to staging test
+        setTimeout(() => {
+            if (confirm('Click OK to test staging mode, Cancel for normal mode')) {
+                window.location.href = 'src/index.html?staging=true';
+            } else {
+                window.location.href = 'src/index.html';
+            }
+        }, 2000);
+    </script>
+</body>
+</html>
