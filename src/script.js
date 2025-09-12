@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.9',
+    VERSION: '1.12.10',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -987,9 +987,11 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.offsetHeight;
             
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
-            // Dynamic textarea height - no scrollbars
+            // Dynamic textarea height - no scrollbars, cap by viewport
             textInput.style.height = 'auto';
-            textInput.style.height = Math.min(2000, textInput.scrollHeight) + 'px';
+            const maxViewportHeight = Math.max(200, window.innerHeight * 0.4); // Max 40% of viewport
+            const cappedHeight = Math.min(maxViewportHeight, textInput.scrollHeight);
+            textInput.style.height = cappedHeight + 'px';
             
             textInput.style.direction = 'rtl';
             textInput.style.textAlign = 'right';
