@@ -19,7 +19,7 @@ const CONFIG = {
     MIN_FONT_SIZE: 8,
     MAX_FONT_SIZE: 144,
     // Fixed export dimensions policy (for WhatsApp image sharing)
-    FIXED_CANVAS_WIDTH: 1200,
+    FIXED_CANVAS_WIDTH: 1600,
     MIN_CANVAS_HEIGHT: 300,
     MAX_HEIGHT_RATIO: 4.0/3,
     MULTIGENDER_CHARS: '׭׬׌׎׫׊׏׋׉׮׍׈',
@@ -27,8 +27,14 @@ const CONFIG = {
     // Canvas dimensions
     MOBILE_CANVAS_WIDTH: 350,
     DESKTOP_CANVAS_WIDTH: 500,
-    CANVAS_PADDING: 20,
-    TEXTAREA_PADDING: 24
+    CANVAS_PADDING: 40,
+    TEXTAREA_PADDING: 24,
+    // Unified styling constants for perfect sync
+    LINE_HEIGHT_MULTIPLIER: 1.4,
+    FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
+    // Padding multipliers (relative to font size)
+    PADDING_MULTIPLIER_MOBILE: 0.2,
+    PADDING_MULTIPLIER_DESKTOP: 0.25
 };
 
 // =============================================================================
@@ -275,7 +281,7 @@ const CanvasRenderer = {
 
     setupCanvas(ctx, font, size) {
         // Always use MultiGender Hebrew font with fallbacks
-        ctx.font = `${size}px AlefMultiGenderHebrew, sans-serif`;
+        ctx.font = `${size}px ${CONFIG.FONT_FAMILY}`;
 
         // Set basic text properties (alignment will be set in drawText)
         ctx.textBaseline = 'alphabetic';
@@ -302,9 +308,9 @@ const CanvasRenderer = {
         }
 
         // Cap lines to prevent exceeding max height (3/4 ratio) with a min of 200px
-        const lineHeight = Math.round(fontSizePx * 1.4);
+        const lineHeight = Math.round(fontSizePx * CONFIG.LINE_HEIGHT_MULTIPLIER);
         const maxHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, Math.floor(CONFIG.FIXED_CANVAS_WIDTH * CONFIG.MAX_HEIGHT_RATIO));
-        const verticalPadding = Math.round(fontSizePx * (FontManager.isMobile() ? 0.2 : 0.25));
+        const verticalPadding = Math.round(fontSizePx * (FontManager.isMobile() ? CONFIG.PADDING_MULTIPLIER_MOBILE : CONFIG.PADDING_MULTIPLIER_DESKTOP));
         const availableHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, maxHeight) - verticalPadding * 2;
         const maxLines = Math.max(1, Math.floor(availableHeight / lineHeight));
 
@@ -313,13 +319,13 @@ const CanvasRenderer = {
 
     calculateDimensions(lines, size, ctx) {
         const isMobile = FontManager.isMobile();
-        const lineHeight = Math.round(size * 1.4);
+        const lineHeight = Math.round(size * CONFIG.LINE_HEIGHT_MULTIPLIER);
         
         // Always export at FIXED width
         const fixedWidth = CONFIG.FIXED_CANVAS_WIDTH;
         
         // Small vertical margins - keep minimal padding
-        const verticalPadding = isMobile ? Math.round(size * 0.2) : Math.round(size * 0.25);
+        const verticalPadding = isMobile ? Math.round(size * CONFIG.PADDING_MULTIPLIER_MOBILE) : Math.round(size * CONFIG.PADDING_MULTIPLIER_DESKTOP);
         
         // Height constraints
         const minHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, lineHeight + verticalPadding * 2);
@@ -385,7 +391,7 @@ const CanvasRenderer = {
         // Set text color
         ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
         
-        // Mobile-optimized text positioning
+        // Mobile-optimized text positioning using unified constants
         const totalTextHeight = lines.length * dimensions.lineHeight;
         
         // Different positioning strategy for mobile vs desktop
@@ -402,16 +408,6 @@ const CanvasRenderer = {
         
         let y = startY;
         
-        console.log('Mobile-optimized text positioning:', {
-            canvasHeight: ctx.canvas.height,
-            totalTextHeight,
-            startY,
-            lineHeight: dimensions.lineHeight,
-            lines: lines.length,
-            isMobile,
-            padding: dimensions.padding,
-            topMargin: isMobile ? Math.max(dimensions.padding, size * 0.5) : 'N/A'
-        });
         
         // Set text alignment based on user preference
         const alignment = TextAlignmentManager.getCanvasAlignment();
@@ -637,15 +633,16 @@ const TextAlignmentManager = {
             if (activeBtn) activeBtn.classList.add('active');
         }
         
-        // Update text area alignment - always use RTL for Hebrew text
-        textInput.style.direction = 'rtl';
-        if (alignment === 'right') {
-            textInput.style.textAlign = 'right';
-        } else if (alignment === 'left') {
-            textInput.style.textAlign = 'left';
-        } else { // center
-            textInput.style.textAlign = 'center';
-        }
+        // Update text area alignment using unified styling
+        const preset = getSelectedPreset();
+        const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
+        const isMobileNow = FontManager.isMobile();
+        const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+        const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
+        const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
+        
+        const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
+        Object.assign(textInput.style, unifiedStyle);
         
         // Regenerate canvas with new alignment
         CanvasRenderer.generate();
@@ -1044,34 +1041,50 @@ document.addEventListener('DOMContentLoaded', async function() {
             return 'normal';
         }
 
+        // Unified text styling system for perfect sync
+        function getUnifiedTextStyle(fontSize) {
+            const isMobileNow = FontManager.isMobile();
+            const isDark = document.body.classList.contains('dark');
+            
+            return {
+                fontFamily: CONFIG.FONT_FAMILY,
+                fontSize: `${fontSize}px`,
+                lineHeight: CONFIG.LINE_HEIGHT_MULTIPLIER,
+                direction: 'rtl',
+                textAlign: TextAlignmentManager.getCanvasAlignment(),
+                backgroundColor: isDark ? '#0b1220' : '#f8fafc',
+                color: isDark ? '#e5e7eb' : '#0b1020',
+                overflow: 'hidden',
+                resize: 'none',
+                margin: '0 auto'
+            };
+        }
+
         function applySelectedFontSize(triggerCanvasUpdate = true) {
             const preset = getSelectedPreset();
             const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
             const isMobileNow = FontManager.isMobile();
-            const isDark = document.body.classList.contains('dark');
             
             // Match textarea scale to canvas display scale for identical wrapping
             const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
             const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
             const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
 
+            // Apply unified styling
+            const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
+            
+            // Set CSS custom property for other elements
             document.documentElement.style.setProperty('--current-font-size', `${textAreaFontSize}px`);
             
-            textInput.style.fontSize = `${textAreaFontSize}px`;
-            textInput.style.lineHeight = '1.4';
-            
-            // Match canvas background and text colors
-            textInput.style.backgroundColor = isDark ? '#0b1220' : '#f8fafc';
-            textInput.style.color = isDark ? '#e5e7eb' : '#0b1020';
-            
-            // Remove scrollbars and make resizable
-            textInput.style.overflow = 'hidden';
-            textInput.style.resize = 'none';
+            // Apply all styles to textarea
+            Object.assign(textInput.style, unifiedStyle);
             
             // Force style recalc to ensure visual update
             textInput.offsetHeight;
             
+            // Set width to match canvas preview
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
+            
             // Dynamic textarea height - no scrollbars, hard cap by viewport
             textInput.style.height = 'auto';
             const maxViewportHeight = Math.max(200, window.innerHeight * (4/3)); // Max 4/3 of viewport
@@ -1081,10 +1094,6 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             // Store max height for input validation (this is the limit, not current height)
             textInput.dataset.maxHeight = maxViewportHeight;
-            
-            textInput.style.direction = 'rtl';
-            textInput.style.textAlign = 'right';
-            textInput.style.margin = '0 auto';
             
             if (triggerCanvasUpdate) {
                 CanvasRenderer.generate();
@@ -1126,12 +1135,12 @@ document.addEventListener('DOMContentLoaded', async function() {
         setTimeout(() => {
             const charButtons = document.querySelectorAll('.char-button');
             charButtons.forEach(button => {
-                button.style.fontFamily = "'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif";
+                button.style.fontFamily = CONFIG.FONT_FAMILY;
                 button.style.fontFeatureSettings = '"liga" 1, "kern" 1';
             });
             const sizeLetterButtons = document.querySelectorAll('#sizeButtons .size-btn');
             sizeLetterButtons.forEach(btn => {
-                btn.style.fontFamily = "'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif";
+                btn.style.fontFamily = CONFIG.FONT_FAMILY;
                 btn.style.fontFeatureSettings = '"liga" 1, "kern" 1';
                 btn.style.lineHeight = '1';
                 // Visually encode sizes so users can understand at a glance
