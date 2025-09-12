@@ -1163,6 +1163,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Run configuration validation first
         ConfigValidator.runStartupValidation();
         
+        // Set footer version text
+        VersionManager.syncVersions();
+        
         // Mobile-specific initialization
         const isMobile = FontManager.isMobile();
         if (isMobile) {
