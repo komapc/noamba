@@ -427,12 +427,14 @@ const CanvasRenderer = {
             drawX = dimensions.width - dimensions.padding;
         }
         
+        // Force RTL text rendering
+        ctx.textBaseline = 'alphabetic';
+        
         // Draw each line with selected alignment
         for (const line of lines) {
             if (line && line.trim()) {
-                // Add RLM (Right-to-Left Mark) to ensure proper RTL rendering
-                const rtlLine = '\u200F' + line;
-                ctx.fillText(rtlLine, drawX, y);
+                // Use proper RTL text rendering
+                ctx.fillText(line, drawX, y);
             }
             y += dimensions.lineHeight;
         }
@@ -985,10 +987,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         textInput.addEventListener('input', (e) => {
             if (enforceHeightLimit()) {
-                // Add RLM to ensure proper RTL rendering in textarea
-                if (textInput.value && !textInput.value.startsWith('\u200F')) {
-                    textInput.value = '\u200F' + textInput.value;
-                }
                 debouncedGenerate();
             }
         });
@@ -1084,6 +1082,30 @@ document.addEventListener('DOMContentLoaded', async function() {
             
             // Set width to match canvas preview
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
+            
+            // Process text the same way as canvas to ensure identical wrapping
+            if (textInput.value) {
+                const tempCanvas = document.createElement('canvas');
+                const tempCtx = tempCanvas.getContext('2d');
+                tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
+                
+                // Use the same text processing as canvas
+                const lines = textInput.value.split('\n');
+                const wrappedLines = [];
+                const maxLineWidth = (previewWidth - CONFIG.TEXTAREA_PADDING) - 24; // Account for padding
+                
+                for (const line of lines) {
+                    if (line.trim()) {
+                        const wrapped = TextProcessor.wrapText(line, maxLineWidth, tempCtx);
+                        wrappedLines.push(...wrapped);
+                    } else {
+                        wrappedLines.push('');
+                    }
+                }
+                
+                // Update textarea with processed text
+                textInput.value = wrappedLines.join('\n');
+            }
             
             // Dynamic textarea height - no scrollbars, hard cap by viewport
             textInput.style.height = 'auto';
