@@ -1242,6 +1242,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         textInput.addEventListener('input', (e) => {
             if (enforceHeightLimit()) {
+                wrapTextareaToCanvasWidth(textInput);
                 debouncedGenerate();
             }
         });
@@ -1480,3 +1481,42 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
     }
 });
+
+// Helper: wrap textarea content to match canvas wrapping exactly
+function wrapTextareaToCanvasWidth(textInput) {
+    if (!textInput) return;
+    const preset = getSelectedPreset();
+    const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
+    const isMobileNow = FontManager.isMobile();
+    const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+    const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
+    const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
+
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
+
+    const lines = textInput.value.split('\n');
+    const wrappedLines = [];
+    const scaledMaxLineWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
+
+    for (const line of lines) {
+        if (line.trim()) {
+            const wrapped = TextProcessor.wrapText(line, scaledMaxLineWidth, tempCtx);
+            wrappedLines.push(...wrapped);
+        } else {
+            wrappedLines.push('');
+        }
+    }
+
+    const newValue = wrappedLines.join('\n');
+    if (newValue !== textInput.value) {
+        const cursorAtEnd = textInput.selectionStart === textInput.value.length && textInput.selectionEnd === textInput.value.length;
+        textInput.value = newValue;
+        if (cursorAtEnd) {
+            const len = textInput.value.length;
+            textInput.selectionStart = len;
+            textInput.selectionEnd = len;
+        }
+    }
+}
