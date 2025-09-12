@@ -28,7 +28,7 @@ const CONFIG = {
     MOBILE_CANVAS_WIDTH: 350,
     DESKTOP_CANVAS_WIDTH: 500,
     CANVAS_PADDING: 40,
-    TEXTAREA_PADDING: 24,
+    TEXTAREA_PADDING: 40,
     // Unified styling constants for perfect sync
     LINE_HEIGHT_MULTIPLIER: 1.4,
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
@@ -476,9 +476,8 @@ const CanvasRenderer = {
         // Draw each line with selected alignment
         for (const line of lines) {
             if (line && line.trim()) {
-                // Add RLM (Right-to-Left Mark) at the beginning for proper RTL rendering
-                const rtlLine = '\u200F' + line;
-                ctx.fillText(rtlLine, drawX, y);
+                // Use proper RTL text rendering without RLM modification
+                ctx.fillText(line, drawX, y);
             }
             y += dimensions.lineHeight;
         }
@@ -1031,10 +1030,6 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         textInput.addEventListener('input', (e) => {
             if (enforceHeightLimit()) {
-                // Add RLM to ensure proper RTL rendering in textarea
-                if (textInput.value && !textInput.value.startsWith('\u200F')) {
-                    textInput.value = '\u200F' + textInput.value;
-                }
                 debouncedGenerate();
             }
         });
