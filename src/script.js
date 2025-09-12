@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.10',
+    VERSION: '1.13.0',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -613,12 +613,23 @@ const CanvasToggleManager = {
 // TEXT ALIGNMENT MANAGER
 // =============================================================================
 const TextAlignmentManager = {
-    currentAlignment: 'right',
+    currentAlignment: 'center',
     
     init() {
         const alignSelect = document.getElementById('textAlignSelect');
         if (alignSelect) {
             alignSelect.addEventListener('change', (e) => this.setAlignment(e.target.value));
+        }
+        
+        // Handle new visual alignment buttons
+        const alignmentButtons = document.getElementById('alignmentButtons');
+        if (alignmentButtons) {
+            alignmentButtons.addEventListener('click', (e) => {
+                const btn = e.target.closest('.align-btn');
+                if (!btn) return;
+                const alignment = btn.getAttribute('data-align');
+                this.setAlignment(alignment);
+            });
         }
     },
     
@@ -629,6 +640,16 @@ const TextAlignmentManager = {
         if (!textInput) {
             console.error('❌ Text input element not found in setAlignment');
             return;
+        }
+        
+        // Update visual button states
+        const alignmentButtons = document.getElementById('alignmentButtons');
+        if (alignmentButtons) {
+            alignmentButtons.querySelectorAll('.align-btn').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            const activeBtn = alignmentButtons.querySelector(`[data-align="${alignment}"]`);
+            if (activeBtn) activeBtn.classList.add('active');
         }
         
         // Update text area alignment
@@ -950,7 +971,79 @@ document.addEventListener('DOMContentLoaded', async function() {
         }
         // Size can come from select or new buttons (sizeButtons)
         
-        textInput.addEventListener('input', debouncedGenerate);
+        // Hard height limit enforcement
+        function enforceHeightLimit() {
+            const maxHeight = parseInt(textInput.dataset.maxHeight) || 200;
+            const currentHeight = textInput.scrollHeight;
+            
+            if (currentHeight > maxHeight) {
+                // Revert to previous valid content
+                textInput.value = textInput.dataset.lastValidValue || '';
+                textInput.style.height = maxHeight + 'px';
+                
+                // Visual feedback for limit reached
+                textInput.style.borderColor = '#ef4444';
+                textInput.style.backgroundColor = isDark ? '#1f1f2e' : '#fef2f2';
+                setTimeout(() => {
+                    textInput.style.borderColor = '';
+                    textInput.style.backgroundColor = isDark ? '#0b1220' : '#f8fafc';
+                }, 1000);
+                
+                return false; // Input rejected
+            }
+            
+            // Store valid content
+            textInput.dataset.lastValidValue = textInput.value;
+            textInput.style.height = 'auto';
+            textInput.style.height = Math.min(maxHeight, textInput.scrollHeight) + 'px';
+            return true; // Input accepted
+        }
+        
+        textInput.addEventListener('input', (e) => {
+            if (enforceHeightLimit()) {
+                debouncedGenerate();
+            }
+        });
+        
+        // Prevent paste if it would exceed limit
+        textInput.addEventListener('paste', (e) => {
+            e.preventDefault();
+            const paste = (e.clipboardData || window.clipboardData).getData('text');
+            const testValue = textInput.value + paste;
+            const testHeight = measureTextHeight(testValue, textInput);
+            const maxHeight = parseInt(textInput.dataset.maxHeight) || 200;
+            
+            if (testHeight <= maxHeight) {
+                textInput.value = testValue;
+                textInput.dataset.lastValidValue = testValue;
+                textInput.style.height = testHeight + 'px';
+                debouncedGenerate();
+            } else {
+                // Visual feedback for paste rejection
+                textInput.style.borderColor = '#ef4444';
+                textInput.style.backgroundColor = isDark ? '#1f1f2e' : '#fef2f2';
+                setTimeout(() => {
+                    textInput.style.borderColor = '';
+                    textInput.style.backgroundColor = isDark ? '#0b1220' : '#f8fafc';
+                }, 1000);
+            }
+        });
+        
+        function measureTextHeight(text, element) {
+            const testElement = element.cloneNode();
+            testElement.style.position = 'absolute';
+            testElement.style.visibility = 'hidden';
+            testElement.style.height = 'auto';
+            testElement.style.width = element.style.width;
+            testElement.style.fontSize = element.style.fontSize;
+            testElement.style.lineHeight = element.style.lineHeight;
+            testElement.style.padding = element.style.padding;
+            testElement.value = text;
+            document.body.appendChild(testElement);
+            const height = testElement.scrollHeight;
+            document.body.removeChild(testElement);
+            return height;
+        }
         
         function getSelectedPreset() {
             const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
@@ -987,11 +1080,14 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.offsetHeight;
             
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
-            // Dynamic textarea height - no scrollbars, cap by viewport
+            // Dynamic textarea height - no scrollbars, hard cap by viewport
             textInput.style.height = 'auto';
             const maxViewportHeight = Math.max(200, window.innerHeight * 0.4); // Max 40% of viewport
             const cappedHeight = Math.min(maxViewportHeight, textInput.scrollHeight);
             textInput.style.height = cappedHeight + 'px';
+            
+            // Store max height for input validation
+            textInput.dataset.maxHeight = cappedHeight;
             
             textInput.style.direction = 'rtl';
             textInput.style.textAlign = 'right';
@@ -1020,6 +1116,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Initialize with default preset
         if (fontSizeSelect) fontSizeSelect.value = 'normal';
         applySelectedFontSize(false);
+        
+        // Initialize height limit
+        textInput.dataset.lastValidValue = textInput.value;
         
         // Update layout on orientation change or window resize
         window.addEventListener('orientationchange', () => {

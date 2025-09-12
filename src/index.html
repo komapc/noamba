@@ -20,11 +20,23 @@
         <div class="header-controls">
             <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
             <button id="canvasToggle" class="canvas-toggle" aria-label="Toggle canvas">👁️</button>
-            <select id="textAlignSelect" class="text-align-select" aria-label="Text alignment">
-                <option value="right">יישור ימין</option>
-                <option value="center">יישור מרכז</option>
-                <option value="left">יישור שמאל</option>
-            </select>
+            <div class="alignment-controls" id="alignmentButtons" aria-label="Text alignment">
+                <button type="button" class="align-btn" data-align="left" title="יישור שמאל" aria-label="יישור שמאל">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 3h12v2H2V3zm0 3h8v2H2V6zm0 3h12v2H2V9zm0 3h8v2H2v-2z"/>
+                    </svg>
+                </button>
+                <button type="button" class="align-btn active" data-align="center" title="יישור מרכז" aria-label="יישור מרכז">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 3h12v2H2V3zm2 3h8v2H4V6zm-2 3h12v2H2V9zm2 3h8v2H4v-2z"/>
+                    </svg>
+                </button>
+                <button type="button" class="align-btn" data-align="right" title="יישור ימין" aria-label="יישור ימין">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
+                        <path d="M2 3h12v2H2V3zm4 3h8v2H6V6zm-4 3h12v2H2V9zm4 3h8v2H6v-2z"/>
+                    </svg>
+                </button>
+            </div>
             <div class="size-control-header" id="sizeButtons" aria-label="Font size">
                 <button type="button" class="size-btn" data-size="small" title="קטן" aria-label="קטן">׭</button>
                 <button type="button" class="size-btn active" data-size="normal" title="רגיל" aria-label="רגיל">׭</button>
@@ -67,7 +79,7 @@
 
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v1.12.10</span>
+        <span class="version-small">v1.13.0</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>
