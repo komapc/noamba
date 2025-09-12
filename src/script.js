@@ -1069,7 +1069,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             textInput.style.width = `${previewWidth - CONFIG.TEXTAREA_PADDING}px`;
             // Dynamic textarea height - no scrollbars, hard cap by viewport
             textInput.style.height = 'auto';
-            const maxViewportHeight = Math.max(200, window.innerHeight * 0.4); // Max 40% of viewport
+            const maxViewportHeight = Math.max(200, window.innerHeight * (4/3)); // Max 4/3 of viewport
             const currentContentHeight = textInput.scrollHeight;
             const finalHeight = Math.min(maxViewportHeight, currentContentHeight);
             textInput.style.height = finalHeight + 'px';
