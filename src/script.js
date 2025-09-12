@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '1.12.5',
+    VERSION: '1.12.6',
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {
@@ -235,7 +235,6 @@ const CanvasRenderer = {
         // Get elements and values with null checks
         const canvas = document.getElementById('canvas');
         const textInput = document.getElementById('textInput');
-        const fontSizeSelect = document.getElementById('fontSizeSelect');
         
         if (!canvas) {
             console.error('❌ Canvas element not found');
@@ -245,15 +244,13 @@ const CanvasRenderer = {
             console.error('❌ Text input element not found');
             return;
         }
-        if (!fontSizeSelect) {
-            console.error('❌ Font size select element not found');
-            return;
-        }
+        // font size will be derived from active size button or fallback to normal
         
         const ctx = canvas.getContext('2d');
         const text = textInput.value;
         const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
-        const selectedPreset = fontSizeSelect.value || 'normal';
+        const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
+        const selectedPreset = (activeBtn && activeBtn.getAttribute('data-size')) || 'normal';
         const size = CONFIG.FONT_PRESETS[selectedPreset] || CONFIG.DEFAULT_FONT_SIZE;
 
         // Ensure font is loaded
