@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.0.8',
+    VERSION: '2.0.9',
     // Environment detection based on domain
     IS_STAGING: window.location.hostname.includes('staging-amba') || 
                 window.location.hostname.includes('staging-noamba') ||
@@ -823,6 +823,9 @@ const ThemeManager = {
         const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
         this.setTheme(newTheme);
         
+        // Update textarea styles immediately with new theme
+        this.updateTextareaTheme();
+        
         // Regenerate canvas with new theme
         setTimeout(() => CanvasRenderer.generate(), 50);
     },
@@ -848,6 +851,21 @@ const ThemeManager = {
         }, 10);
         
         console.log('🎨 Theme set to:', theme, 'Body classes:', document.body.className);
+    },
+
+    updateTextareaTheme() {
+        const textInput = document.getElementById('textInput');
+        if (!textInput) return;
+        
+        // Get current font size from the textarea
+        const currentFontSize = parseInt(textInput.style.fontSize) || 32;
+        
+        // Apply updated theme-aware styles
+        const unifiedStyle = getUnifiedTextStyle(currentFontSize);
+        Object.assign(textInput.style, unifiedStyle);
+        
+        // Force a style recalculation
+        textInput.offsetHeight;
     }
 };
 
