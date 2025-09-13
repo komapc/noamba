@@ -10,6 +10,24 @@
     --control-bg-dark: #0f172a;
 }
 
+/* Theme transitions - make theme changes immediate */
+body {
+    transition: none;
+}
+
+/* Disable transitions during theme changes */
+body.theme-changing * {
+    transition: none !important;
+}
+
+/* Re-enable transitions after theme change */
+body:not(.theme-changing) button,
+body:not(.theme-changing) .char-button,
+body:not(.theme-changing) .about-link,
+body:not(.theme-changing) .cheat-sheet-link {
+    transition: all 0.2s ease;
+}
+
 * { box-sizing: border-box; }
 
 body {

@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.0.7',
+    VERSION: '2.0.8',
     // Environment detection based on domain
     IS_STAGING: window.location.hostname.includes('staging-amba') || 
                 window.location.hostname.includes('staging-noamba') ||
@@ -828,6 +828,9 @@ const ThemeManager = {
     },
 
     setTheme(theme) {
+        // Add theme-changing class to disable transitions
+        document.body.classList.add('theme-changing');
+        
         // Force remove both classes first to fix Chrome light mode issue
         document.body.classList.remove('dark', 'light');
         
@@ -838,6 +841,11 @@ const ThemeManager = {
         
         document.documentElement.setAttribute('data-theme', theme);
         localStorage.setItem('theme', theme);
+        
+        // Remove theme-changing class after a brief delay to re-enable transitions
+        setTimeout(() => {
+            document.body.classList.remove('theme-changing');
+        }, 10);
         
         console.log('🎨 Theme set to:', theme, 'Body classes:', document.body.className);
     }
