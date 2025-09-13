@@ -222,7 +222,7 @@ body.dark .canvas-toggle:hover {
     resize: vertical;
     font-family: 'Kedebideri', system-ui, sans-serif;
     direction: rtl;
-    text-align: right; /* Consistent right alignment with canvas */
+    text-align: left;
     word-wrap: break-word;
     white-space: pre-wrap;
     /* Match canvas line breaking behavior */
@@ -709,9 +709,7 @@ body.dark .keyboard-label {
         appearance: none;
         -webkit-appearance: none;
         border-radius: 8px;
-        /* Keep consistent right alignment on mobile too */
-        direction: rtl;
-        text-align: right;
+        text-align: left;
         margin: 0 auto; /* Center the text area */
     }
 
