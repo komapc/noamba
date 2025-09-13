@@ -1,0 +1,5 @@
+name = "staging-noamba"
+compatibility_date = "2025-01-15"
+
+[pages]
+build_output_dir = "src"
