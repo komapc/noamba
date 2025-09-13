@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    VERSION: '2.7.0',
+    VERSION: '2.7.1',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 82, normal: 96, large: 110 },
     CANVAS_WIDTH: 1200,
@@ -166,27 +166,28 @@ function generateCanvas() {
     const textareaPadding = Math.round(CONFIG.CANVAS_PADDING * displayScale);
     
     // Calculate textarea content width (excluding padding)
-    const textareaWidth = (isMobile ? 350 : 500) - (textareaPadding * 2);
+    const textareaContentWidth = textInput.offsetWidth - (textareaPadding * 2);
     
     // Wrap text to match textarea exactly
-    const wrappedLines = wrapTextToFitWidth(text, textareaWidth, textareaFontSize);
+    const wrappedLines = wrapTextToFitWidth(text, textareaContentWidth, textareaFontSize);
     
     // Calculate canvas dimensions
     const lineHeight = textareaFontSize * CONFIG.LINE_HEIGHT;
     const textHeight = wrappedLines.length * lineHeight;
     const canvasHeight = Math.max(100, textHeight + textareaPadding * 2);
     
-    // Set canvas size to match textarea exactly
-    const displayWidth = isMobile ? 350 : 500;
+    // Set canvas size to match textarea EXACTLY
+    const textareaWidth = textInput.offsetWidth;
+    const textareaHeight = textInput.offsetHeight;
     
-    canvas.width = displayWidth;
-    canvas.height = canvasHeight;
-    canvas.style.width = displayWidth + 'px';
-    canvas.style.height = canvasHeight + 'px';
+    canvas.width = textareaWidth;
+    canvas.height = textareaHeight;
+    canvas.style.width = textareaWidth + 'px';
+    canvas.style.height = textareaHeight + 'px';
     
     // Clear canvas with textarea background
     ctx.fillStyle = textareaStyle.backgroundColor;
-    ctx.fillRect(0, 0, displayWidth, canvasHeight);
+    ctx.fillRect(0, 0, textareaWidth, textareaHeight);
     
     // Set text properties to match textarea EXACTLY
     ctx.font = `${textareaFontSize}px ${CONFIG.FONT_FAMILY}`;
@@ -198,7 +199,7 @@ function generateCanvas() {
     // Calculate text position to match textarea exactly
     let startY;
     if (currentAlignment === 'center') {
-        startY = canvasHeight / 2 - (textHeight - lineHeight) / 2;
+        startY = textareaHeight / 2 - (textHeight - lineHeight) / 2;
     } else {
         startY = textareaPadding + lineHeight;
     }
@@ -209,11 +210,11 @@ function generateCanvas() {
         if (line.trim()) {
             let x;
             if (currentAlignment === 'center') {
-                x = displayWidth / 2;
+                x = textareaWidth / 2;
             } else if (currentAlignment === 'left') {
                 x = textareaPadding;
             } else {
-                x = displayWidth - textareaPadding;
+                x = textareaWidth - textareaPadding;
             }
             ctx.fillText(line, x, y);
         }
