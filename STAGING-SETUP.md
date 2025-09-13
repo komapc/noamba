@@ -12,9 +12,9 @@ This project now uses **domain-based environment detection** instead of URL para
 - **Visual**: No staging badge
 
 **Staging Environment:**
-- **Domain**: `staging-noamba.komapc.workers.dev` (current)
+- **Domain**: `staging-amba.komapc.workers.dev` (current)
 - **Alternative**: `preview.noamba.komapc.workers.dev`
-- **Detection**: `window.location.hostname.includes('staging-noamba')` or `window.location.hostname.includes('preview.')`
+- **Detection**: `window.location.hostname.includes('staging-amba')` or `window.location.hostname.includes('preview.')`
 - **Visual**: Orange `[STAGING]` badge in header
 
 ## Setup Steps
@@ -25,7 +25,7 @@ In Cloudflare Dashboard:
 
 1. **Go to**: DNS Settings for `komapc.workers.dev`
 2. **Add CNAME Record**:
-   - **Name**: `staging.noamba`
+   - **Name**: `staging-amba`
    - **Target**: `noamba.komapc.workers.dev`
    - **Proxy**: ✅ Enabled (orange cloud)
 
@@ -37,7 +37,7 @@ In Cloudflare Dashboard:
 - No staging badge
 
 **Staging Deployment:**
-- Deploy to `staging-noamba.komapc.workers.dev`
+- Deploy to `staging-amba.komapc.workers.dev`
 - Environment: Staging
 - Orange `[STAGING]` badge visible
 
@@ -52,7 +52,7 @@ curl -I https://noamba.komapc.workers.dev
 
 **Staging Test:**
 ```bash
-curl -I https://staging-noamba.komapc.workers.dev
+curl -I https://staging-amba.komapc.workers.dev
 # Should return 200 OK
 # Orange [STAGING] badge in header
 ```
@@ -86,7 +86,7 @@ Environment details: {
 ```
 🔧 Running in STAGING environment
 Environment details: {
-  hostname: "staging-noamba.komapc.workers.dev",
+  hostname: "staging-amba.komapc.workers.dev",
   isStaging: true,
   isProduction: false,
   version: "2.0.0"

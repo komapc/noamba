@@ -9,9 +9,10 @@
     "serve:staging": "npx http-server . -p 8000 -o test-staging.html",
     "build": "echo \"Static site - no build required\"",
     "test:staging": "echo \"Visit http://localhost:8000/src/index.html?staging=true to test staging mode\"",
-    "deploy:staging": "wrangler pages deploy src --project-name staging-noamba",
-    "deploy:production": "wrangler pages deploy src --project-name noamba",
-    "deploy:preview": "wrangler pages deploy src --project-name noamba-preview"
+    "deploy:staging": "wrangler pages deploy src --config wrangler.staging.toml --project-name staging-amba",
+    "deploy:production": "wrangler pages deploy src --config wrangler.production.toml --project-name noamba",
+    "deploy:preview": "wrangler pages deploy src --project-name noamba-preview",
+    "test:auto-deploy": "./test-auto-deploy.sh"
   },
   "keywords": ["hebrew", "multigender", "text", "image", "canvas", "client-side"],
   "author": "",

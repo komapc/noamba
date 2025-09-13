@@ -10,7 +10,8 @@
 const CONFIG = {
     VERSION: '2.0.6',
     // Environment detection based on domain
-    IS_STAGING: window.location.hostname.includes('staging-noamba') || 
+    IS_STAGING: window.location.hostname.includes('staging-amba') || 
+                window.location.hostname.includes('staging-noamba') ||
                 window.location.hostname.includes('staging.') ||
                 window.location.hostname.includes('.staging.') ||
                 window.location.hostname.includes('preview.') ||
