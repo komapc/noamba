@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    VERSION: '2.7.1',
+    VERSION: '2.7.2',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 82, normal: 96, large: 110 },
     CANVAS_WIDTH: 1200,
