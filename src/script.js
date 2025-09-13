@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.2.0',
+    VERSION: '2.2.1',
     // Environment detection based on domain
     IS_STAGING: window.location.hostname.includes('staging-amba') || 
                 window.location.hostname.includes('staging-noamba') ||
@@ -535,17 +535,27 @@ const CanvasRenderer = {
             // Sync hidden textarea with visible one
             this.syncHiddenTextarea(textInput, hiddenTextInput);
             
+            // Wait a moment for styles to apply
+            await new Promise(resolve => setTimeout(resolve, 100));
+            
             // Use html2canvas to capture the hidden textarea
             const canvasData = await html2canvas(hiddenTextInput, {
-                backgroundColor: null, // Transparent background
-                scale: 2, // High resolution for crisp text
+                backgroundColor: document.body.classList.contains('dark') ? '#0f172a' : '#ffffff',
+                scale: 1, // Use scale 1 for now to debug
                 useCORS: true,
                 allowTaint: true,
-                logging: false,
+                logging: true, // Enable logging for debugging
                 width: CONFIG.FIXED_CANVAS_WIDTH,
-                height: hiddenTextInput.scrollHeight,
+                height: Math.max(CONFIG.MIN_CANVAS_HEIGHT, hiddenTextInput.scrollHeight),
                 x: 0,
                 y: 0
+            });
+            
+            console.log('📊 html2canvas captured:', {
+                width: canvasData.width,
+                height: canvasData.height,
+                textareaScrollHeight: hiddenTextInput.scrollHeight,
+                textareaValue: hiddenTextInput.value
             });
             
             // Resize canvas to match the captured image
@@ -570,29 +580,33 @@ const CanvasRenderer = {
         hiddenTextarea.value = visibleTextarea.value;
         
         // Get current styling from visible textarea
-        const computedStyle = window.getComputedStyle(visibleTextarea);
         const preset = getSelectedPreset();
         const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
         const isMobileNow = FontManager.isMobile();
-        const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
-        const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
-        const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
+        const isDark = document.body.classList.contains('dark');
+        
+        // Use actual canvas font size for hidden textarea (not scaled)
+        const hiddenTextareaFontSize = canvasFontSize;
         
         // Calculate padding that matches canvas system
         const canvasPadding = isMobileNow ? 
             Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_MOBILE) : 
             Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_DESKTOP);
-        const textareaPadding = Math.round(canvasPadding * displayScale);
         
-        // Apply unified styling to hidden textarea
-        const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
-        Object.assign(hiddenTextarea.style, unifiedStyle);
+        // Reset all styles first
+        hiddenTextarea.style.cssText = '';
         
-        // Set exact dimensions for html2canvas capture
-        const scaledWrapWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
-        hiddenTextarea.style.width = `${Math.round(scaledWrapWidth)}px`;
+        // Apply styling for html2canvas capture
+        hiddenTextarea.style.fontFamily = CONFIG.FONT_FAMILY;
+        hiddenTextarea.style.fontSize = `${hiddenTextareaFontSize}px`;
+        hiddenTextarea.style.lineHeight = CONFIG.LINE_HEIGHT_MULTIPLIER;
+        hiddenTextarea.style.direction = 'rtl';
+        hiddenTextarea.style.textAlign = TextAlignmentManager.getCanvasAlignment();
+        hiddenTextarea.style.backgroundColor = isDark ? '#0f172a' : '#ffffff';
+        hiddenTextarea.style.color = isDark ? '#e5e7eb' : '#111827';
+        hiddenTextarea.style.width = `${CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)}px`;
         hiddenTextarea.style.height = 'auto';
-        hiddenTextarea.style.padding = `${textareaPadding}px`;
+        hiddenTextarea.style.padding = `${canvasPadding}px`;
         hiddenTextarea.style.border = 'none';
         hiddenTextarea.style.outline = 'none';
         hiddenTextarea.style.resize = 'none';
@@ -600,10 +614,21 @@ const CanvasRenderer = {
         hiddenTextarea.style.position = 'absolute';
         hiddenTextarea.style.left = '0';
         hiddenTextarea.style.top = '0';
-        hiddenTextarea.style.zIndex = '-1';
+        hiddenTextarea.style.zIndex = '1'; // Make sure it's visible for capture
+        hiddenTextarea.style.visibility = 'visible'; // Make sure it's visible
+        hiddenTextarea.style.opacity = '1'; // Make sure it's opaque
         
         // Force height calculation
         hiddenTextarea.style.height = hiddenTextarea.scrollHeight + 'px';
+        
+        console.log('🔧 Hidden textarea synced:', {
+            value: hiddenTextarea.value,
+            fontSize: hiddenTextarea.style.fontSize,
+            width: hiddenTextarea.style.width,
+            height: hiddenTextarea.style.height,
+            backgroundColor: hiddenTextarea.style.backgroundColor,
+            color: hiddenTextarea.style.color
+        });
     },
     
     resizeCanvasForHtml2Canvas(canvas, canvasData) {
@@ -615,6 +640,13 @@ const CanvasRenderer = {
             dpr = 2;
         }
         
+        console.log('📐 Resizing canvas:', {
+            originalWidth: canvasData.width,
+            originalHeight: canvasData.height,
+            dpr: dpr,
+            isMobile: isMobile
+        });
+        
         // Set actual canvas size in memory (scaled for pixel density)
         canvas.width = canvasData.width * dpr;
         canvas.height = canvasData.height * dpr;
@@ -624,6 +656,12 @@ const CanvasRenderer = {
         const displayScale = displayWidth / CONFIG.FIXED_CANVAS_WIDTH;
         canvas.style.width = Math.round(CONFIG.FIXED_CANVAS_WIDTH * displayScale) + 'px';
         canvas.style.height = Math.round(canvasData.height * displayScale) + 'px';
+        
+        console.log('📐 Canvas display size:', {
+            styleWidth: canvas.style.width,
+            styleHeight: canvas.style.height,
+            displayScale: displayScale
+        });
         
         // Scale drawing context
         const ctx = canvas.getContext('2d');
