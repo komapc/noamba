@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.2.1',
+    VERSION: '2.2.2',
     // Environment detection based on domain
     IS_STAGING: window.location.hostname.includes('staging-amba') || 
                 window.location.hostname.includes('staging-noamba') ||
@@ -1258,6 +1258,9 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Set initial text and generate canvas
         document.getElementById('textInput').value = 'ברוכ׊׉ הבא׊׉!';
         
+        // Apply initial styling to textarea
+        syncTextareaWithHtml2Canvas(document.getElementById('textInput'));
+        
         // Initial render with extra delay for mobile
         if (isMobile) {
             setTimeout(() => CanvasRenderer.generate(), 300);
@@ -1565,6 +1568,9 @@ document.addEventListener('DOMContentLoaded', async function() {
 function syncTextareaWithHtml2Canvas(textInput) {
     if (!textInput) return;
     
+    // Store original text content to prevent modification
+    const originalText = textInput.value;
+    
     // Apply unified styling to ensure consistency
     const preset = getSelectedPreset();
     const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
@@ -1587,4 +1593,7 @@ function syncTextareaWithHtml2Canvas(textInput) {
     const scaledWrapWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
     textInput.style.width = `${Math.round(scaledWrapWidth)}px`;
     textInput.style.padding = `${textareaPadding}px`;
+    
+    // Restore original text content
+    textInput.value = originalText;
 }
