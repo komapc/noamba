@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 2.6.1
+ * Version: 2.8.0
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '2.7.2',
+    VERSION: '2.8.0',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 82, normal: 96, large: 110 },
     CANVAS_WIDTH: 1200,
@@ -17,6 +17,7 @@ const CONFIG = {
 let currentFontSize = CONFIG.FONT_SIZES.normal;
 let currentAlignment = 'center';
 let isDark = false;
+let resizeTimeout;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
@@ -26,14 +27,12 @@ document.addEventListener('DOMContentLoaded', function() {
     const textInput = document.getElementById('textInput');
     textInput.value = 'ברוכ׊׉ הבא׊׉!';
     
-    // Apply initial styling
+    // Apply initial styling and generate canvas
     autoResizeTextarea();
     updateTextareaStyle();
-    
-    // Generate initial canvas
     generateCanvas();
     
-    // Event listeners
+    // Setup event listeners
     setupEventListeners();
 });
 
@@ -107,6 +106,15 @@ function setupEventListeners() {
     
     // Share button
     document.getElementById('shareWhatsApp').addEventListener('click', shareCanvas);
+    
+    // Window resize with debouncing
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(() => {
+            updateTextareaStyle();
+            generateCanvas();
+        }, 100);
+    });
 }
 
 // Auto-resize textarea to fit content
@@ -138,7 +146,7 @@ function updateTextareaStyle() {
     textInput.style.width = isMobile ? '350px' : '500px';
 }
 
-// Generate canvas with proper RTL text rendering
+// Generate canvas with proper word wrapping that matches textarea
 function generateCanvas() {
     const canvas = document.getElementById('canvas');
     const textInput = document.getElementById('textInput');
@@ -176,18 +184,17 @@ function generateCanvas() {
     const textHeight = wrappedLines.length * lineHeight;
     const canvasHeight = Math.max(100, textHeight + textareaPadding * 2);
     
-    // Set canvas size to match textarea EXACTLY
+    // Set canvas size to match textarea exactly
     const textareaWidth = textInput.offsetWidth;
-    const textareaHeight = textInput.offsetHeight;
     
     canvas.width = textareaWidth;
-    canvas.height = textareaHeight;
+    canvas.height = canvasHeight;
     canvas.style.width = textareaWidth + 'px';
-    canvas.style.height = textareaHeight + 'px';
+    canvas.style.height = canvasHeight + 'px';
     
     // Clear canvas with textarea background
     ctx.fillStyle = textareaStyle.backgroundColor;
-    ctx.fillRect(0, 0, textareaWidth, textareaHeight);
+    ctx.fillRect(0, 0, textareaWidth, canvasHeight);
     
     // Set text properties to match textarea EXACTLY
     ctx.font = `${textareaFontSize}px ${CONFIG.FONT_FAMILY}`;
@@ -199,7 +206,7 @@ function generateCanvas() {
     // Calculate text position to match textarea exactly
     let startY;
     if (currentAlignment === 'center') {
-        startY = textareaHeight / 2 - (textHeight - lineHeight) / 2;
+        startY = canvasHeight / 2 - (textHeight - lineHeight) / 2;
     } else {
         startY = textareaPadding + lineHeight;
     }
@@ -222,12 +229,16 @@ function generateCanvas() {
     }
 }
 
-// Wrap text to fit within the given width
+// Wrap text to fit within the given width - uses exact same font context as textarea
 function wrapTextToFitWidth(text, maxWidth, fontSize) {
-    // Create a temporary canvas to measure text
+    // Create a temporary canvas to measure text with exact same properties
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
+    
+    // Use exact same font properties as the textarea
     tempCtx.font = `${fontSize}px ${CONFIG.FONT_FAMILY}`;
+    tempCtx.textBaseline = 'alphabetic';
+    tempCtx.direction = 'rtl';
     
     // Split text into lines and wrap each line
     const inputLines = text.split('\n');
@@ -245,8 +256,9 @@ function wrapTextToFitWidth(text, maxWidth, fontSize) {
     return wrappedLines;
 }
 
-// Wrap a single line to fit within the given width
+// Wrap a single line to fit within the given width - matches browser behavior exactly
 function wrapLine(text, maxWidth, ctx) {
+    // First, try word-based wrapping (browser's preferred method)
     const words = text.split(' ');
     const lines = [];
     let currentLine = '';
@@ -267,7 +279,32 @@ function wrapLine(text, maxWidth, ctx) {
         lines.push(currentLine);
     }
     
-    return lines;
+    // If any line is still too wide, break it character by character
+    const finalLines = [];
+    for (const line of lines) {
+        if (ctx.measureText(line).width <= maxWidth) {
+            finalLines.push(line);
+        } else {
+            // Break this line character by character
+            let currentCharLine = '';
+            for (const char of line) {
+                const testCharLine = currentCharLine + char;
+                const metrics = ctx.measureText(testCharLine);
+                
+                if (metrics.width > maxWidth && currentCharLine) {
+                    finalLines.push(currentCharLine);
+                    currentCharLine = char;
+                } else {
+                    currentCharLine = testCharLine;
+                }
+            }
+            if (currentCharLine) {
+                finalLines.push(currentCharLine);
+            }
+        }
+    }
+    
+    return finalLines;
 }
 
 // Share canvas
@@ -282,13 +319,3 @@ function shareCanvas() {
         URL.revokeObjectURL(url);
     }, 'image/png');
 }
-
-// Handle window resize with debouncing
-let resizeTimeout;
-window.addEventListener('resize', () => {
-    clearTimeout(resizeTimeout);
-    resizeTimeout = setTimeout(() => {
-        updateTextareaStyle();
-        generateCanvas();
-    }, 100);
-});
