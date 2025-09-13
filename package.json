@@ -9,9 +9,9 @@
     "serve:staging": "npx http-server . -p 8000 -o test-staging.html",
     "build": "echo \"Static site - no build required\"",
     "test:staging": "echo \"Visit http://localhost:8000/src/index.html?staging=true to test staging mode\"",
-    "deploy:staging": "wrangler pages deploy src --project-name noamba-static-staging",
-    "deploy:production": "wrangler pages deploy src --project-name noamba-static-prod",
-    "deploy:preview": "wrangler pages deploy src --project-name noamba-static --compatibility-date 2025-01-15"
+    "deploy:staging": "echo 'Use Cloudflare Dashboard: https://dash.cloudflare.com/pages'",
+    "deploy:production": "echo 'Use Cloudflare Dashboard: https://dash.cloudflare.com/pages'",
+    "deploy:preview": "echo 'Use Cloudflare Dashboard: https://dash.cloudflare.com/pages'"
   },
   "keywords": ["hebrew", "multigender", "text", "image", "canvas", "client-side"],
   "author": "",
