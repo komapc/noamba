@@ -1,0 +1,31 @@
+# Push Rules
+
+## CRITICAL: Never Push to Master
+
+**NEVER push to master branch unless explicitly asked by the user.**
+
+### Rules:
+- Always work on feature/staging branches
+- Only push to master when user explicitly requests it
+- Ask for confirmation before any master push
+- Use `git push origin <branch-name>` instead of `git push` when on master
+
+### Safe Push Commands:
+```bash
+# Push current branch (safe)
+git push origin HEAD
+
+# Push specific branch (safe)
+git push origin staging
+
+# Push to master (REQUIRES EXPLICIT USER PERMISSION)
+git push origin master
+```
+
+### Workflow:
+1. Work on staging/feature branches
+2. Test changes thoroughly
+3. Ask user for explicit permission before master push
+4. Only then push to master
+
+This prevents accidental production deployments.
