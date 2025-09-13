@@ -52,13 +52,17 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 ### Project structure
 ```
 render-text/
-  .cursorrules                # Development guidelines and version management
-  package.json
-  README.md
+  .cursor/                   # Development rules and guidelines
+  .gitignore                 # Git ignore rules (protects API tokens)
+  wrangler.toml              # Cloudflare Pages configuration
+  package.json               # Project dependencies and scripts
+  README.md                  # This file
+  STAGING-SETUP.md           # Staging environment setup guide
+  CLOUDFLARE-PAGES-CONFIG.md # Cloudflare Pages configuration guide
   src/
     index.html              # Main interface with special character keyboard
     styles.css              # Complete styling with CSS variables and responsive design
-    script.js               # Modular JavaScript architecture
+    script.js               # Modular JavaScript architecture with environment detection
     fonts/
       AlefMultiGndr-Regular.ttf
       AlefMultiGndr-Regular.woff
@@ -124,6 +128,7 @@ Simply open `src/index.html` in a web browser. No server required!
 - Follows semantic versioning (major.minor.patch)
 - Automatic version increment on commits
 - Version displayed in footer with commit tracking
+- Current version: v2.0.4
 
 **Code Standards:**
 - Modular ES6+ JavaScript architecture
@@ -142,9 +147,25 @@ The app is purely client-side and works on any static file host:
 - **Vercel**: Connect repo, set root directory to `src`
 
 **Configuration Files:**
-- `wrangler.jsonc` provided for Cloudflare Pages
+- `wrangler.toml` provided for Cloudflare Pages
 - `package.json` configured for static deployment
 - No build process required
+
+### Staging Environment
+
+**Domain-Based Staging:**
+- **Production**: `noamba.komapc.workers.dev`
+- **Staging**: `staging-noamba.komapc.workers.dev`
+
+**Environment Detection:**
+- Automatically detects staging vs production based on domain
+- Staging shows orange `[STAGING]` badge in header
+- Console logging shows current environment
+
+**Deployment:**
+- Staging branch deploys to staging domain
+- Master branch deploys to production domain
+- Environment variables and visual indicators automatically configured
 
 ### Fonts and Licensing
 - `AlefMultiGndr-Regular.ttf/.woff` included with license in `src/fonts/`
