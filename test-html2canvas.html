@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="utf-8">
+    <title>HTML2Canvas Test</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .test-container { margin: 20px 0; }
+        .textarea { 
+            width: 400px; 
+            height: 100px; 
+            font-size: 24px; 
+            font-family: 'AlefMultiGenderHebrew', Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            padding: 20px;
+            border: 1px solid #ccc;
+        }
+        .canvas { border: 1px solid #000; margin-top: 10px; }
+        .hidden { position: absolute; left: -9999px; top: -9999px; visibility: hidden; }
+    </style>
+</head>
+<body>
+    <h1>HTML2Canvas Integration Test</h1>
+    
+    <div class="test-container">
+        <h3>Visible Textarea:</h3>
+        <textarea id="visibleTextarea" class="textarea" placeholder="הקלידו טקסט">ברוכ׊׉ הבא׊׉! זהו טקסט עברית רב־מגדרית</textarea>
+    </div>
+    
+    <div class="test-container">
+        <h3>Hidden Textarea (for html2canvas):</h3>
+        <textarea id="hiddenTextarea" class="textarea hidden"></textarea>
+    </div>
+    
+    <div class="test-container">
+        <h3>Canvas (rendered with html2canvas):</h3>
+        <canvas id="canvas" class="canvas"></canvas>
+    </div>
+    
+    <button onclick="testHtml2Canvas()">Test HTML2Canvas</button>
+    
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        async function testHtml2Canvas() {
+            const visibleTextarea = document.getElementById('visibleTextarea');
+            const hiddenTextarea = document.getElementById('hiddenTextarea');
+            const canvas = document.getElementById('canvas');
+            
+            // Sync hidden textarea with visible one
+            hiddenTextarea.value = visibleTextarea.value;
+            hiddenTextarea.style.fontSize = visibleTextarea.style.fontSize || '24px';
+            hiddenTextarea.style.fontFamily = visibleTextarea.style.fontFamily || 'Arial, sans-serif';
+            hiddenTextarea.style.direction = visibleTextarea.style.direction || 'rtl';
+            hiddenTextarea.style.textAlign = visibleTextarea.style.textAlign || 'right';
+            hiddenTextarea.style.padding = visibleTextarea.style.padding || '20px';
+            hiddenTextarea.style.width = visibleTextarea.style.width || '400px';
+            hiddenTextarea.style.height = 'auto';
+            hiddenTextarea.style.height = hiddenTextarea.scrollHeight + 'px';
+            
+            try {
+                // Use html2canvas to capture the hidden textarea
+                const canvasData = await html2canvas(hiddenTextarea, {
+                    backgroundColor: null,
+                    scale: 2,
+                    useCORS: true,
+                    allowTaint: true,
+                    logging: false
+                });
+                
+                // Set canvas size and draw the captured image
+                canvas.width = canvasData.width;
+                canvas.height = canvasData.height;
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(canvasData, 0, 0);
+                
+                console.log('✅ HTML2Canvas test successful!');
+                console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
+                
+            } catch (error) {
+                console.error('❌ HTML2Canvas test failed:', error);
+            }
+        }
+        
+        // Auto-test on load
+        window.addEventListener('load', () => {
+            setTimeout(testHtml2Canvas, 1000);
+        });
+    </script>
+</body>
+</html>

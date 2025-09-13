@@ -1,3 +1,6 @@
+/* =============================================================================
+   CSS VARIABLES & RESET
+   ============================================================================= */
 :root { 
     color-scheme: light dark; 
     --bg-light: #f7f7f8;
@@ -10,26 +13,32 @@
     --control-bg-dark: #0f172a;
 }
 
-/* Theme transitions - make theme changes immediate */
-body {
-    transition: none;
-}
-
-/* Disable transitions during theme changes */
-body.theme-changing * {
-    transition: none !important;
-}
-
-/* Re-enable transitions after theme change */
-body:not(.theme-changing) button,
-body:not(.theme-changing) .char-button,
-body:not(.theme-changing) .about-link,
-body:not(.theme-changing) .cheat-sheet-link {
-    transition: all 0.2s ease;
-}
-
 * { box-sizing: border-box; }
 
+/* =============================================================================
+   FONTS
+   ============================================================================= */
+@font-face {
+    font-family: "AlefMultiGenderHebrew";
+    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
+         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
+    font-display: swap;
+    font-weight: normal;
+    font-style: normal;
+}
+
+@font-face {
+    font-family: "AlefMultiGndr";
+    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
+         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
+    font-display: swap;
+    font-weight: normal;
+    font-style: normal;
+}
+
+/* =============================================================================
+   BASE STYLES
+   ============================================================================= */
 body {
     font-family: "AlefMultiGenderHebrew", -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Arial, sans-serif;
     margin: 0;
@@ -37,6 +46,7 @@ body {
     background: var(--bg-light);
     color: var(--text-light);
     line-height: 1.5;
+    transition: none;
 }
 
 body.dark { 
@@ -44,6 +54,18 @@ body.dark {
     color: var(--text-dark); 
 }
 
+body.theme-changing * { transition: none !important; }
+
+body:not(.theme-changing) button,
+body:not(.theme-changing) .char-button,
+body:not(.theme-changing) .about-link,
+body:not(.theme-changing) .cheat-sheet-link {
+    transition: all 0.2s ease;
+}
+
+/* =============================================================================
+   LAYOUT
+   ============================================================================= */
 .container {
     max-width: 1200px;
     margin: 0 auto;
@@ -72,35 +94,19 @@ h1 {
     display: inline-block;
 }
 
-.environment-indicator {
-    font-size: 0.3em;
-    color: #f59e0b;
-    background: rgba(245, 158, 11, 0.1);
-    padding: 4px 8px;
-    border-radius: 4px;
-    margin-left: 8px;
-    font-weight: 600;
-    border: 1px solid rgba(245, 158, 11, 0.3);
+/* =============================================================================
+   HEADER & FOOTER
+   ============================================================================= */
+.header-controls {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    z-index: 100;
+    display: flex;
+    gap: 8px;
+    align-items: center;
 }
 
-.mg-logo {
-    display: block;
-    text-align: center;
-    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif;
-    font-size: 16px;
-    color: var(--accent-color);
-    text-decoration: none;
-    margin-bottom: 20px;
-    transition: all 0.2s ease;
-    font-weight: 500;
-}
-
-.mg-logo:hover {
-    color: var(--primary-color);
-    text-decoration: underline;
-}
-
-/* Footer info styling */
 .footer-info {
     position: fixed;
     bottom: 10px;
@@ -148,64 +154,75 @@ body.dark .cheat-sheet-link {
     color: var(--text-dark);
 }
 
-.header-controls {
-    position: fixed;
-    top: 16px;
-    right: 16px;
-    z-index: 100;
+/* =============================================================================
+   CONTROLS
+   ============================================================================= */
+.size-control-header {
     display: flex;
     gap: 8px;
     align-items: center;
 }
 
-.theme-toggle,
-.canvas-toggle {
-    background: transparent;
-    border: 1px solid var(--border-light);
-    color: inherit;
-    padding: 8px 12px;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 14px;
-    transition: all 0.2s ease;
-}
-
-.text-align-select {
-    font-size: 12px;
+.size-btn {
     background: var(--control-bg-light);
     border: 1px solid var(--border-light);
     color: var(--text-light);
-    padding: 6px 8px;
+    padding: 8px 12px;
     border-radius: 6px;
     cursor: pointer;
-    font-family: 'AlefMultiGenderHebrew', system-ui, sans-serif;
+    font-family: "AlefMultiGenderHebrew", sans-serif;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-body.dark .theme-toggle,
-body.dark .canvas-toggle { 
-    border-color: var(--border-dark); 
+.size-btn[data-size="small"] {
+    font-size: 12px;
+    min-width: 35px;
+    height: 35px;
 }
 
-body.dark .text-align-select {
+.size-btn[data-size="normal"] {
+    font-size: 16px;
+    min-width: 40px;
+    height: 40px;
+}
+
+.size-btn[data-size="large"] {
+    font-size: 20px;
+    min-width: 45px;
+    height: 45px;
+}
+
+.size-btn:hover {
+    background: rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.size-btn.active {
+    background: var(--text-light);
+    color: var(--control-bg-light);
+    border-color: var(--text-light);
+}
+
+body.dark .size-btn {
     background: var(--control-bg-dark);
     border-color: var(--border-dark);
     color: var(--text-dark);
 }
 
-.theme-toggle:hover,
-.canvas-toggle:hover {
-    background: rgba(0,0,0,0.05);
-}
-
-body.dark .theme-toggle:hover,
-body.dark .canvas-toggle:hover {
+body.dark .size-btn:hover {
     background: rgba(255,255,255,0.05);
 }
 
-.canvas-toggle.hidden {
-    opacity: 0.5;
+body.dark .size-btn.active {
+    background: var(--text-dark);
+    color: var(--control-bg-dark);
+    border-color: var(--text-dark);
 }
-
 .controls {
     display: grid;
     grid-template-columns: 1fr;
@@ -224,30 +241,55 @@ body.dark .canvas-toggle:hover {
     align-items: center;
 }
 
+.theme-toggle,
+.canvas-toggle {
+    background: transparent;
+    border: 1px solid var(--border-light);
+    color: inherit;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.2s ease;
+}
+
+.theme-toggle:hover,
+.canvas-toggle:hover {
+    background: rgba(0,0,0,0.05);
+}
+
+body.dark .theme-toggle,
+body.dark .canvas-toggle { 
+    border-color: var(--border-dark); 
+}
+
+body.dark .theme-toggle:hover,
+body.dark .canvas-toggle:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+/* =============================================================================
+   TEXT INPUT
+   ============================================================================= */
 .text-input {
-    /* Match canvas width exactly */
     width: 500px;
     max-width: 100%;
     min-height: 100px;
-    box-sizing: content-box; /* Ensure width represents content box for exact wrap width */
-    padding: 40px; /* Match CONFIG.CANVAS_PADDING for perfect sync */
-    font-size: 32px; /* Will be updated by JavaScript to match canvas */
-    line-height: 1.4; /* Match canvas line height */
+    box-sizing: content-box;
+    overflow: hidden;
+    resize: none;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    padding: 40px;
+    font-size: 32px;
+    line-height: 1.4;
     border: 1px solid var(--border-light);
     border-radius: 8px;
     background: var(--control-bg-light);
     color: var(--text-light);
-    resize: vertical;
     font-family: 'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif;
     direction: rtl;
-    text-align: right; /* Consistent right alignment with canvas */
-    word-wrap: break-word;
-    white-space: pre-wrap;
-    /* Match canvas line breaking behavior */
-    overflow-wrap: break-word;
-    /* Prevent zoom on iOS while allowing dynamic sizing */
-    font-size: max(16px, var(--current-font-size, 32px));
-    /* Center the text area itself */
+    text-align: right;
     margin: 0 auto;
 }
 
@@ -257,202 +299,11 @@ body.dark .text-input {
     border-color: var(--border-dark);
 }
 
-/* Input section with text area and font size control */
-.input-section {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    align-items: center; /* Center the input section horizontally */
-}
-
-.size-control-compact {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    background: var(--control-bg-light);
-    padding: 8px 12px;
-    border-radius: 6px;
-    border: 1px solid var(--border-light);
-    align-self: flex-start;
-    max-width: fit-content;
-}
-
-/* Keyboard section */
-.keyboard-section {
-    margin-top: 16px;
-}
-
-.keyboard-label {
-    font-size: 14px;
-    font-weight: 500;
-    color: var(--text-light);
-    margin-bottom: 8px;
-}
-
-.size-label-compact {
-    font-size: 12px;
-    color: var(--text-light);
-    font-weight: 500;
-    white-space: nowrap;
-}
-
-.size-input-compact {
-    width: 50px;
-    padding: 4px 6px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    font-size: 14px;
-    font-weight: bold;
-    text-align: center;
-    outline: none;
-    appearance: textfield;
-    -moz-appearance: textfield;
-}
-
-.size-input-compact::-webkit-outer-spin-button,
-.size-input-compact::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-    margin: 0;
-}
-
-.size-unit {
-    font-size: 11px;
-    color: var(--text-light);
-    opacity: 0.7;
-}
-
-body.dark .keyboard-label {
-    color: var(--text-dark);
-}
-
-body.dark .size-control-compact {
-    background: var(--control-bg-dark);
-    border-color: var(--border-dark);
-}
-
-body.dark .size-label-compact,
-body.dark .size-input-compact,
-body.dark .size-unit {
-    color: var(--text-dark);
-}
-
-/* New centered size control with arrows */
-.size-control-centered {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    margin: 0 auto;
-    max-width: fit-content;
-}
-
-.size-label {
-    font-size: 14px;
-    color: var(--text-light);
-    font-weight: 500;
-    text-align: center;
-}
-
-.size-input-with-arrows {
-    display: flex;
-    align-items: center;
-    gap: 4px;
-    background: var(--control-bg-light);
-    padding: 6px 10px;
-    border-radius: 8px;
-    border: 1px solid var(--border-light);
-}
-
-.size-arrow {
-    background: transparent;
-    border: none;
-    color: var(--text-light);
-    font-size: 12px;
-    cursor: pointer;
-    padding: 4px;
-    border-radius: 4px;
-    transition: background 0.2s ease;
-    min-width: 24px;
-    height: 24px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.size-arrow:hover {
-    background: var(--border-light);
-}
-
-.size-input {
-    width: 40px;
-    border: none;
-    background: transparent;
-    color: var(--text-light);
-    font-size: 16px;
-    font-weight: bold;
-    text-align: center;
-    outline: none;
-    padding: 4px 2px;
-}
-
-body.dark .size-label {
-    color: var(--text-dark);
-}
-
-body.dark .size-input-with-arrows {
-    background: var(--control-bg-dark);
-    border-color: var(--border-dark);
-}
-
-body.dark .size-arrow {
-    color: var(--text-dark);
-}
-
-body.dark .size-arrow:hover {
-    background: var(--border-dark);
-}
-
-body.dark .size-input {
-    color: var(--text-dark);
-}
-
-.font-select {
-    flex: 1;
-    min-width: 200px;
-}
-
-.size-input {
-    width: 100px;
-}
-
-.share-button {
-    background-color: #25D366;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    padding: 12px 16px;
-    cursor: pointer;
-    font-size: 14px;
-    font-weight: 500;
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    transition: all 0.2s ease;
-}
-
-.share-button:hover {
-    background-color: #128C7E;
-    transform: translateY(-1px);
-}
-
-.share-button img {
-    width: 16px;
-    height: 16px;
-}
-
+/* =============================================================================
+   CANVAS
+   ============================================================================= */
 .canvas-container {
-    margin-top: 16px; /* Match input-section gap */
+    margin-top: 16px;
     display: flex;
     justify-content: center;
 }
@@ -466,14 +317,14 @@ canvas {
     border: 1px solid var(--border-light);
     border-radius: 12px;
     box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    /* Ensure crisp rendering on high-DPI displays */
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    /* Mobile-specific optimizations */
     touch-action: manipulation;
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     user-select: none;
+    display: block;
+    margin: 0 auto;
 }
 
 body.dark canvas { 
@@ -481,80 +332,9 @@ body.dark canvas {
     box-shadow: 0 4px 6px rgba(0,0,0,0.3);
 }
 
-/* Mobile-specific optimizations */
-body.mobile {
-    -webkit-text-size-adjust: 100%;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-}
-
-body.mobile canvas {
-    /* Force GPU acceleration on mobile */
-    transform: translate3d(0, 0, 0);
-    -webkit-transform: translate3d(0, 0, 0);
-    /* Optimize for mobile rendering */
-    image-rendering: optimizeQuality;
-}
-
-body.mobile .text-input {
-    /* Prevent zoom on focus for mobile */
-    font-size: 16px;
-    transform: translateZ(0);
-}
-
-/* Bottom share section */
-.bottom-share {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.bottom-share .share-button {
-    background-color: #25D366;
-    border: none;
-    border-radius: 25px;
-    padding: 12px 20px;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-    transition: all 0.3s ease;
-}
-
-.bottom-share .share-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
-}
-
-@media (max-width: 768px) {
-    .bottom-share {
-        bottom: 16px;
-        right: 16px;
-    }
-    
-    .bottom-share .share-button {
-        padding: 10px 16px;
-        font-size: 14px;
-    }
-}
-
-@font-face {
-    font-family: "AlefMultiGenderHebrew";
-    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
-         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
-    font-display: swap;
-    font-weight: normal;
-    font-style: normal;
-}
-
-@font-face {
-    font-family: "AlefMultiGndr";
-    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
-         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
-    font-display: swap;
-    font-weight: normal;
-    font-style: normal;
-}
-
-/* Special character keyboard */
+/* =============================================================================
+   CHARACTER KEYBOARD
+   ============================================================================= */
 .char-keyboard {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
@@ -581,23 +361,23 @@ body.mobile .text-input {
     justify-content: center;
 }
 
+.char-button:hover {
+    background: rgba(0,0,0,0.05);
+    transform: translateY(-1px);
+}
+
+.char-button:active {
+    transform: translateY(0);
+}
+
 body.dark .char-button {
     background: var(--control-bg-dark);
     border-color: var(--border-dark);
     color: var(--text-dark);
 }
 
-.char-button:hover {
-    background: rgba(0,0,0,0.05);
-    transform: translateY(-1px);
-}
-
 body.dark .char-button:hover {
     background: rgba(255,255,255,0.05);
-}
-
-.char-button:active {
-    transform: translateY(0);
 }
 
 .keyboard-label {
@@ -611,185 +391,53 @@ body.dark .keyboard-label {
     color: var(--text-dark);
 }
 
-@media (max-width: 768px) {
-    .char-keyboard {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 4px;
-        max-width: 360px;
-    }
-    
-    .char-button {
-        padding: 6px 3px;
+/* =============================================================================
+   SHARE BUTTON
+   ============================================================================= */
+.share-button {
+    background-color: #25D366;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    padding: 12px 16px;
+    cursor: pointer;
         font-size: 14px;
-        min-height: 32px;
-    }
-    
-    .controls-row {
-        flex-direction: row !important;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .font-select {
-        flex: 1;
-        min-width: 150px;
-    }
-    
-    .size-input {
-        width: 80px;
-        flex-shrink: 0;
-    }
-}
-
-@media (max-width: 480px) {
-    .char-keyboard {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 3px;
-        max-width: 300px;
-    }
-    
-    .char-button {
-        padding: 5px 2px;
-        font-size: 12px;
-        min-height: 28px;
-    }
-    
-    .controls-row {
-        flex-direction: row !important;
+    font-weight: 500;
+    display: inline-flex;
         align-items: center;
         gap: 6px;
-    }
-    
-    .font-select {
-        flex: 1;
-        min-width: 120px;
-    }
-    
-    .size-input {
-        width: 70px;
-        flex-shrink: 0;
-    }
+    transition: all 0.2s ease;
 }
 
-@media (max-width: 768px) {
-    .container {
-        padding: 60px 12px 32px; /* Extra top padding for fixed header controls */
-    }
-    
-    .header-controls {
-        top: 16px;
-        right: 12px;
-        gap: 6px;
-        /* Ensure it doesn't interfere with content */
-        max-width: calc(100vw - 24px);
-        flex-wrap: wrap;
-    }
-    
-    .theme-toggle,
-    .canvas-toggle {
-        padding: 6px 10px;
-        font-size: 13px;
-    }
-    
-    .text-align-select {
-        font-size: 10px;
-        padding: 4px 6px;
-        max-width: 80px;
-    }
-    
-    .controls {
-        gap: 12px;
-    }
-    
-    .controls-row {
-        flex-direction: row !important;
-        align-items: center;
-        gap: 8px;
-    }
-    
-    .font-select,
-    .size-input {
-        width: 100%;
-    }
+.share-button:hover {
+    background-color: #128C7E;
+    transform: translateY(-1px);
 }
 
-@media (max-width: 480px) {
-    .container {
-        padding: 70px 8px 24px; /* Extra top padding for fixed header controls */
-        min-height: 100vh;
-        overflow-x: hidden;
-    }
-    
-    .input-section {
-        gap: 8px;
-    }
-    
-    .text-input {
-        /* Match mobile canvas width */
-        width: 350px;
-        max-width: calc(100vw - 24px);
-        min-height: 80px;
-        box-sizing: content-box; /* Match desktop behavior */
-        padding: 16px; /* Mobile-optimized padding: 40px * 0.4 scale factor */
-        font-size: max(16px, var(--current-font-size, 32px)); /* Prevent zoom on iOS */
-        appearance: none;
-        -webkit-appearance: none;
-        border-radius: 8px;
-        /* Keep consistent right alignment on mobile too */
-        direction: rtl;
-        text-align: right;
-        margin: 0 auto; /* Center the text area */
-    }
-    
-    .size-control-compact {
-        padding: 6px 8px;
-        align-self: center;
-        margin: 0 auto;
-    }
-    
-    .size-label-compact {
-        font-size: 11px;
-    }
-    
-    .size-input-compact {
-        width: 40px;
-        font-size: 12px;
-        padding: 2px 4px;
-    }
-    
-    .size-unit {
-        font-size: 10px;
-    }
-    
-    .canvas-container {
-        margin-top: 16px;
-        padding: 0 4px;
-    }
-    
-    canvas {
-        max-width: calc(100vw - 24px);
-        height: auto;
-        /* Mobile canvas optimizations */
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        will-change: transform;
-    }
-    
-    .share-button {
-        width: 100%;
-        justify-content: center;
-    }
-    
-    /* Fix for mobile viewport issues */
-    .mg-icon {
-        font-size: 1.1em;
-    }
-    
-    h1 {
-        font-size: clamp(1.5rem, 5vw, 2rem);
-        flex-wrap: wrap;
-        gap: 0.3rem;
-    }
+.share-button img {
+    width: 16px;
+    height: 16px;
+}
+
+.bottom-share {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 1000;
+}
+
+.bottom-share .share-button {
+    background-color: #25D366;
+    border: none;
+    border-radius: 25px;
+    padding: 12px 20px;
+    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
+    transition: all 0.3s ease;
+}
+
+.bottom-share .share-button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
 }
 
 /* =============================================================================
@@ -884,7 +532,6 @@ body.dark .keyboard-label {
     text-decoration: underline;
 }
 
-/* Dark theme modal styles */
 body.dark .modal-content {
     background: var(--bg-dark);
 }
@@ -903,68 +550,9 @@ body.dark .close-button:hover {
     background: var(--border-dark);
 }
 
-/* Cheat sheet styles */
-.shortcuts-grid {
-    display: grid;
-    gap: 8px;
-    max-height: 400px;
-    overflow-y: auto;
-}
-
-.shortcut-item {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 12px;
-    background: var(--control-bg-light);
-    border-radius: 6px;
-    font-size: 13px;
-}
-
-.shortcut-key {
-    background: var(--border-light);
-    padding: 4px 8px;
-    border-radius: 4px;
-    font-family: monospace;
-    font-size: 11px;
-    font-weight: bold;
-    color: var(--text-light);
-    min-width: 70px;
-    text-align: center;
-}
-
-.shortcut-char {
-    font-family: 'AlefMultiGenderHebrew', system-ui, sans-serif;
-    font-size: 16px;
-    font-weight: bold;
-    color: var(--primary-color);
-    min-width: 20px;
-    text-align: center;
-}
-
-.shortcut-desc {
-    color: var(--text-light);
-    font-family: 'AlefMultiGenderHebrew', system-ui, sans-serif;
-    flex: 1;
-    direction: rtl;
-    text-align: right;
-}
-
-/* Dark theme cheat sheet styles */
-body.dark .shortcut-item {
-    background: var(--control-bg-dark);
-}
-
-body.dark .shortcut-key {
-    background: var(--border-dark);
-    color: var(--text-dark);
-}
-
-body.dark .shortcut-desc {
-    color: var(--text-dark);
-}
-
-/* Modal animations */
+/* =============================================================================
+   ANIMATIONS
+   ============================================================================= */
 @keyframes fadeIn {
     from { opacity: 0; }
     to { opacity: 1; }
@@ -981,57 +569,118 @@ body.dark .shortcut-desc {
     }
 }
 
-/* Tooltip font fix for MultiGender Hebrew characters */
-.char-button {
-    font-family: 'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, -apple-system, sans-serif !important;
-    font-feature-settings: "liga" 1, "kern" 1;
-    -webkit-font-feature-settings: "liga" 1, "kern" 1;
-    -moz-font-feature-settings: "liga" 1, "kern" 1;
+/* =============================================================================
+   MOBILE RESPONSIVE
+   ============================================================================= */
+@media (max-width: 768px) {
+    .container {
+        padding: 60px 12px 32px;
+    }
+    
+    .header-controls {
+        top: 16px;
+        right: 12px;
+        gap: 6px;
+        max-width: calc(100vw - 24px);
+        flex-wrap: wrap;
+    }
+    
+    .theme-toggle,
+    .canvas-toggle {
+        padding: 6px 10px;
+        font-size: 13px;
+    }
+    
+    .controls {
+        gap: 12px;
+    }
+    
+    .controls-row {
+        flex-direction: row !important;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .char-keyboard {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 4px;
+        max-width: 360px;
+    }
+    
+    .char-button {
+        padding: 6px 3px;
+        font-size: 14px;
+        min-height: 32px;
+    }
+    
+    .bottom-share {
+        bottom: 16px;
+        right: 16px;
+    }
+    
+    .bottom-share .share-button {
+        padding: 10px 16px;
+        font-size: 14px;
+    }
 }
 
-/* Custom tooltip styling to ensure proper font rendering */
-.char-button[title]:hover::after {
-    content: attr(title);
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    background: var(--bg-dark);
-    color: var(--text-dark);
-    padding: 8px 12px;
-    border-radius: 6px;
-    font-size: 12px;
-    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif;
-    white-space: nowrap;
-    z-index: 1000;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-    pointer-events: none;
-    margin-bottom: 5px;
-}
-
-.char-button[title]:hover::before {
-    content: '';
-    position: absolute;
-    bottom: 100%;
-    left: 50%;
-    transform: translateX(-50%);
-    border: 5px solid transparent;
-    border-top-color: var(--bg-dark);
-    z-index: 1000;
-    pointer-events: none;
-}
-
-body.dark .char-button[title]:hover::after {
-    background: var(--text-dark);
-    color: var(--bg-dark);
-}
-
-body.dark .char-button[title]:hover::before {
-    border-top-color: var(--text-dark);
-}
-
-/* Mobile modal adjustments */
 @media (max-width: 480px) {
+    .container {
+        padding: 70px 8px 24px;
+        min-height: 100vh;
+        overflow-x: hidden;
+    }
+    
+    .text-input {
+        width: 350px;
+        max-width: calc(100vw - 24px);
+        min-height: 80px;
+        padding: 16px;
+        font-size: max(16px, var(--current-font-size, 32px));
+        appearance: none;
+        -webkit-appearance: none;
+    }
+    
+    .char-keyboard {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 3px;
+        max-width: 300px;
+    }
+    
+    .char-button {
+        padding: 5px 2px;
+        font-size: 12px;
+        min-height: 28px;
+    }
+    
+    .canvas-container {
+        margin-top: 16px;
+        padding: 0 4px;
+    }
+    
+    canvas {
+        max-width: calc(100vw - 24px);
+        height: auto;
+        transform: translateZ(0);
+        -webkit-transform: translateZ(0);
+        will-change: transform;
+    }
+    
+    .share-button {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .mg-icon {
+        font-size: 1.1em;
+    }
+    
+    h1 {
+        font-size: clamp(1.5rem, 5vw, 2rem);
+        flex-wrap: wrap;
+        gap: 0.3rem;
+    }
+    
     .modal-content {
         margin: 20px;
         width: calc(100% - 40px);
