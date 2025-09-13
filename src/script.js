@@ -8,15 +8,16 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.0.0',
+    VERSION: '2.0.1',
     // Environment detection based on domain
-    IS_STAGING: window.location.hostname.includes('staging.') || 
+    IS_STAGING: window.location.hostname.includes('staging-noamba') || 
+                window.location.hostname.includes('staging.') ||
                 window.location.hostname.includes('.staging.') ||
                 window.location.hostname.includes('preview.') ||
                 window.location.hostname.includes('.preview.'),
     IS_PRODUCTION: window.location.hostname.includes('noamba.komapc.workers.dev') && 
-                   !window.location.hostname.includes('staging.') &&
-                   !window.location.hostname.includes('preview.'),
+                   !window.location.hostname.includes('staging') &&
+                   !window.location.hostname.includes('preview'),
     DEFAULT_FONT_SIZE: 96,
     // WhatsApp-like presets: small < normal (default) < large
     FONT_PRESETS: {

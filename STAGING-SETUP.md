@@ -12,9 +12,9 @@ This project now uses **domain-based environment detection** instead of URL para
 - **Visual**: No staging badge
 
 **Staging Environment:**
-- **Domain**: `staging.noamba.komapc.workers.dev` (recommended)
+- **Domain**: `staging-noamba.komapc.workers.dev` (current)
 - **Alternative**: `preview.noamba.komapc.workers.dev`
-- **Detection**: `window.location.hostname.includes('staging.')` or `window.location.hostname.includes('preview.')`
+- **Detection**: `window.location.hostname.includes('staging-noamba')` or `window.location.hostname.includes('preview.')`
 - **Visual**: Orange `[STAGING]` badge in header
 
 ## Setup Steps
@@ -37,7 +37,7 @@ In Cloudflare Dashboard:
 - No staging badge
 
 **Staging Deployment:**
-- Deploy to `staging.noamba.komapc.workers.dev`
+- Deploy to `staging-noamba.komapc.workers.dev`
 - Environment: Staging
 - Orange `[STAGING]` badge visible
 
@@ -52,7 +52,7 @@ curl -I https://noamba.komapc.workers.dev
 
 **Staging Test:**
 ```bash
-curl -I https://staging.noamba.komapc.workers.dev
+curl -I https://staging-noamba.komapc.workers.dev
 # Should return 200 OK
 # Orange [STAGING] badge in header
 ```
@@ -86,10 +86,10 @@ Environment details: {
 ```
 🔧 Running in STAGING environment
 Environment details: {
-  hostname: "staging.noamba.komapc.workers.dev",
+  hostname: "staging-noamba.komapc.workers.dev",
   isStaging: true,
   isProduction: false,
-  version: "1.15.8"
+  version: "2.0.0"
 }
 ```
 
