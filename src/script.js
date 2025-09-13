@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.1.0',
+    VERSION: '2.2.0',
     // Environment detection based on domain
     IS_STAGING: window.location.hostname.includes('staging-amba') || 
                 window.location.hostname.includes('staging-noamba') ||
@@ -348,10 +348,10 @@ const FontManager = {
 };
 
 // =============================================================================
-// TEXT SYNCHRONIZATION SYSTEM
+// TEXT SYNCHRONIZATION SYSTEM - HTML2CANVAS VERSION
 // =============================================================================
 const TextSyncManager = {
-    // Ensure textarea and canvas are perfectly synchronized
+    // Ensure textarea and canvas are perfectly synchronized using html2canvas
     syncTextareaAndCanvas() {
         const textarea = document.getElementById('textInput');
         const canvas = document.getElementById('canvas');
@@ -370,10 +370,10 @@ const TextSyncManager = {
             return false;
         }
         
-        // Apply unified styling
+        // Apply unified styling to visible textarea
         this.applyUnifiedStyling();
         
-        // Regenerate canvas
+        // Regenerate canvas using html2canvas
         CanvasRenderer.generate();
         
         return true;
@@ -396,7 +396,7 @@ const TextSyncManager = {
         return true;
     },
     
-    // Apply unified styling to both textarea and canvas
+    // Apply unified styling to visible textarea (hidden textarea is synced in CanvasRenderer)
     applyUnifiedStyling() {
         const preset = getSelectedPreset();
         const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
@@ -411,7 +411,7 @@ const TextSyncManager = {
             Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_DESKTOP);
         const textareaPadding = Math.round(canvasPadding * displayScale);
         
-        // Apply to textarea
+        // Apply to visible textarea
         const textarea = document.getElementById('textInput');
         if (textarea) {
             const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
@@ -505,7 +505,7 @@ const TextProcessor = {
 };
 
 // =============================================================================
-// CANVAS RENDERER
+// CANVAS RENDERER - HTML2CANVAS VERSION
 // =============================================================================
 const CanvasRenderer = {
     _rafId: null,
@@ -516,219 +516,161 @@ const CanvasRenderer = {
         }
         this._rafId = requestAnimationFrame(() => this._render());
     },
+    
     async _render() {
-        
-        // Get elements and values with null checks
-        const canvas = document.getElementById('canvas');
-        const textInput = document.getElementById('textInput');
-        
-        if (!canvas) {
-            console.error('❌ Canvas element not found');
-            return;
-        }
-        if (!textInput) {
-            console.error('❌ Text input element not found');
-            return;
-        }
-        // font size will be derived from active size button or fallback to normal
-        
-        const ctx = canvas.getContext('2d');
-        const text = textInput.value;
-        const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
-        const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
-        const selectedPreset = (activeBtn && activeBtn.getAttribute('data-size')) || 'normal';
-        const size = CONFIG.FONT_PRESETS[selectedPreset] || CONFIG.DEFAULT_FONT_SIZE;
-
-        // Ensure font is loaded
-        await FontManager.loadMultiGenderFont();
-
-        // Setup canvas
-        this.setupCanvas(ctx, font, size);
-
-        // Process text into lines using FIXED export width and current size
-        const lines = this.processText(text, ctx, size);
-
-        // Calculate dimensions and resize canvas
-        const dimensions = this.calculateDimensions(lines, size, ctx);
-        this.resizeCanvas(canvas, dimensions);
-
-        // Re-setup canvas after resize (context is reset)
-        this.setupCanvas(ctx, font, size);
-
-        // Draw the text
-        this.drawText(ctx, lines, size, dimensions);
-    },
-
-    setupCanvas(ctx, font, size) {
-        // Always use MultiGender Hebrew font with fallbacks
-        ctx.font = `${size}px ${CONFIG.FONT_FAMILY}`;
-
-        // Set basic text properties (alignment will be set in drawText)
-        ctx.textBaseline = 'alphabetic';
-        ctx.textRendering = 'optimizeLegibility';
-        ctx.fontKerning = 'normal';
-        
-    },
-
-    processText(text, ctx, fontSizePx) {
-        const lines = text.split('\n');
-        const wrappedLines = [];
-        
-        // Use FIXED export width for consistent wrapping in the final image
-        const fixedWidth = CONFIG.FIXED_CANVAS_WIDTH;
-        const maxLineWidth = fixedWidth - (CONFIG.CANVAS_PADDING * 2);
-
-        for (const line of lines) {
-            if (line.trim()) {
-                const wrapped = TextProcessor.wrapText(line, maxLineWidth, ctx);
-                wrappedLines.push(...wrapped);
-            } else {
-                wrappedLines.push('');
+        try {
+            // Get elements
+            const canvas = document.getElementById('canvas');
+            const textInput = document.getElementById('textInput');
+            const hiddenTextInput = document.getElementById('hiddenTextInput');
+            
+            if (!canvas || !textInput || !hiddenTextInput) {
+                console.error('❌ Required elements not found for html2canvas rendering');
+                return;
             }
+            
+            // Ensure font is loaded
+            await FontManager.loadMultiGenderFont();
+            
+            // Sync hidden textarea with visible one
+            this.syncHiddenTextarea(textInput, hiddenTextInput);
+            
+            // Use html2canvas to capture the hidden textarea
+            const canvasData = await html2canvas(hiddenTextInput, {
+                backgroundColor: null, // Transparent background
+                scale: 2, // High resolution for crisp text
+                useCORS: true,
+                allowTaint: true,
+                logging: false,
+                width: CONFIG.FIXED_CANVAS_WIDTH,
+                height: hiddenTextInput.scrollHeight,
+                x: 0,
+                y: 0
+            });
+            
+            // Resize canvas to match the captured image
+            this.resizeCanvasForHtml2Canvas(canvas, canvasData);
+            
+            // Draw the captured image to canvas
+            const ctx = canvas.getContext('2d');
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            ctx.drawImage(canvasData, 0, 0);
+            
+            console.log('✅ Canvas rendered with html2canvas');
+            
+        } catch (error) {
+            console.error('❌ html2canvas rendering failed:', error);
+            // Fallback to simple text rendering
+            this.fallbackRender();
         }
-
-        // Cap lines to prevent exceeding max height (3/4 ratio) with a min of 200px
-        const lineHeight = Math.round(fontSizePx * CONFIG.LINE_HEIGHT_MULTIPLIER);
-        const maxHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, Math.floor(CONFIG.FIXED_CANVAS_WIDTH * CONFIG.MAX_HEIGHT_RATIO));
-        const verticalPadding = Math.round(fontSizePx * (FontManager.isMobile() ? CONFIG.PADDING_MULTIPLIER_MOBILE : CONFIG.PADDING_MULTIPLIER_DESKTOP));
-        const availableHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, maxHeight) - verticalPadding * 2;
-        const maxLines = Math.max(1, Math.floor(availableHeight / lineHeight));
-
-        return wrappedLines.slice(0, maxLines);
     },
-
-    calculateDimensions(lines, size, ctx) {
+    
+    syncHiddenTextarea(visibleTextarea, hiddenTextarea) {
+        // Copy all content and styling from visible to hidden textarea
+        hiddenTextarea.value = visibleTextarea.value;
+        
+        // Get current styling from visible textarea
+        const computedStyle = window.getComputedStyle(visibleTextarea);
+        const preset = getSelectedPreset();
+        const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
+        const isMobileNow = FontManager.isMobile();
+        const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
+        const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
+        const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
+        
+        // Calculate padding that matches canvas system
+        const canvasPadding = isMobileNow ? 
+            Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_MOBILE) : 
+            Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_DESKTOP);
+        const textareaPadding = Math.round(canvasPadding * displayScale);
+        
+        // Apply unified styling to hidden textarea
+        const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
+        Object.assign(hiddenTextarea.style, unifiedStyle);
+        
+        // Set exact dimensions for html2canvas capture
+        const scaledWrapWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
+        hiddenTextarea.style.width = `${Math.round(scaledWrapWidth)}px`;
+        hiddenTextarea.style.height = 'auto';
+        hiddenTextarea.style.padding = `${textareaPadding}px`;
+        hiddenTextarea.style.border = 'none';
+        hiddenTextarea.style.outline = 'none';
+        hiddenTextarea.style.resize = 'none';
+        hiddenTextarea.style.overflow = 'hidden';
+        hiddenTextarea.style.position = 'absolute';
+        hiddenTextarea.style.left = '0';
+        hiddenTextarea.style.top = '0';
+        hiddenTextarea.style.zIndex = '-1';
+        
+        // Force height calculation
+        hiddenTextarea.style.height = hiddenTextarea.scrollHeight + 'px';
+    },
+    
+    resizeCanvasForHtml2Canvas(canvas, canvasData) {
         const isMobile = FontManager.isMobile();
-        const lineHeight = Math.round(size * CONFIG.LINE_HEIGHT_MULTIPLIER);
-        
-        // Always export at FIXED width
-        const fixedWidth = CONFIG.FIXED_CANVAS_WIDTH;
-        
-        // Small vertical margins - keep minimal padding
-        const verticalPadding = isMobile ? Math.round(size * CONFIG.PADDING_MULTIPLIER_MOBILE) : Math.round(size * CONFIG.PADDING_MULTIPLIER_DESKTOP);
-        
-        // Height constraints
-        const minHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, lineHeight + verticalPadding * 2);
-        const maxHeight = Math.max(CONFIG.MIN_CANVAS_HEIGHT, Math.floor(CONFIG.FIXED_CANVAS_WIDTH * CONFIG.MAX_HEIGHT_RATIO));
-        
-        // Calculate height with constraints
-        const textHeight = lines.length * lineHeight;
-        const unclampedHeight = textHeight + verticalPadding * 2;
-        const calculatedHeight = Math.max(minHeight, Math.min(maxHeight, unclampedHeight));
-
-        // Dimension calculation complete
-
-        return {
-            width: fixedWidth,
-            height: calculatedHeight,
-            lineHeight,
-            padding: verticalPadding
-        };
-    },
-
-    resizeCanvas(canvas, dimensions) {
-        // Get device pixel ratio with mobile-specific handling
         let dpr = window.devicePixelRatio || 1;
-        const isMobile = FontManager.isMobile();
         
-        // Limit DPR on mobile to prevent memory issues and rendering problems
+        // Limit DPR on mobile to prevent memory issues
         if (isMobile && dpr > 2) {
-            console.log('Mobile device with high DPR detected, limiting to 2x');
             dpr = 2;
         }
         
-        // Set actual export size in memory (scaled for pixel density)
-        canvas.width = dimensions.width * dpr; // always 1200 * dpr
-        canvas.height = dimensions.height * dpr; // clamped between 200..(0.75*1200)
+        // Set actual canvas size in memory (scaled for pixel density)
+        canvas.width = canvasData.width * dpr;
+        canvas.height = canvasData.height * dpr;
         
-        // Display size (responsive preview): fixed preview widths for consistent wrapping
+        // Set display size (responsive preview)
         const displayWidth = isMobile ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
-        const displayScale = displayWidth / dimensions.width; // maintain aspect ratio
-        canvas.style.width = Math.round(dimensions.width * displayScale) + 'px';
-        canvas.style.height = Math.round(dimensions.height * displayScale) + 'px';
+        const displayScale = displayWidth / CONFIG.FIXED_CANVAS_WIDTH;
+        canvas.style.width = Math.round(CONFIG.FIXED_CANVAS_WIDTH * displayScale) + 'px';
+        canvas.style.height = Math.round(canvasData.height * displayScale) + 'px';
         
         // Scale drawing context
         const ctx = canvas.getContext('2d');
         ctx.scale(dpr, dpr);
         
-        // Mobile-specific canvas optimizations
+        // Mobile-specific optimizations
         if (isMobile) {
             ctx.imageSmoothingEnabled = true;
             ctx.imageSmoothingQuality = 'high';
         }
-        
-        // Canvas scaled for sharp rendering
     },
-
-    drawText(ctx, lines, size, dimensions) {
+    
+    fallbackRender() {
+        // Simple fallback rendering if html2canvas fails
+        const canvas = document.getElementById('canvas');
+        const textInput = document.getElementById('textInput');
+        
+        if (!canvas || !textInput) return;
+        
+        const ctx = canvas.getContext('2d');
+        const text = textInput.value;
         const isDark = document.body.classList.contains('dark');
-        const isMobile = FontManager.isMobile();
         
-        // Clear canvas with theme-aware background matching textarea
-        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff'; // Match control-bg-dark and control-bg-light
-        ctx.fillRect(0, 0, ctx.canvas.width, ctx.canvas.height);
+        // Set canvas size
+        canvas.width = CONFIG.FIXED_CANVAS_WIDTH;
+        canvas.height = CONFIG.MIN_CANVAS_HEIGHT;
         
-        // Set text color matching textarea
-        ctx.fillStyle = isDark ? '#e5e7eb' : '#111827'; // Match text-dark and text-light
+        // Clear canvas
+        ctx.fillStyle = isDark ? '#0f172a' : '#ffffff';
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
         
-        // Mobile-optimized text positioning using unified constants
-        const totalTextHeight = lines.length * dimensions.lineHeight;
+        // Draw text
+        ctx.fillStyle = isDark ? '#e5e7eb' : '#111827';
+        ctx.font = `${CONFIG.DEFAULT_FONT_SIZE}px ${CONFIG.FONT_FAMILY}`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.direction = 'rtl';
         
-        // Different positioning strategy for mobile vs desktop
-        let startY;
-        if (isMobile) {
-            // On mobile: much tighter positioning, start closer to top
-            const topMargin = Math.max(dimensions.padding, size * 0.5);
-            startY = topMargin + dimensions.lineHeight * 0.7; // Reduced from 0.8 to 0.7
-        } else {
-            // Desktop: traditional center positioning
-            const textBlockTop = Math.round((ctx.canvas.height - totalTextHeight) / 2);
-            startY = textBlockTop + dimensions.lineHeight * 0.8;
-        }
+        const lines = text.split('\n');
+        const lineHeight = CONFIG.DEFAULT_FONT_SIZE * CONFIG.LINE_HEIGHT_MULTIPLIER;
+        const startY = canvas.height / 2 - (lines.length - 1) * lineHeight / 2;
         
-        let y = startY;
+        lines.forEach((line, index) => {
+            ctx.fillText(line, canvas.width / 2, startY + index * lineHeight);
+        });
         
-        
-        // Set text alignment based on user preference
-        const alignment = TextAlignmentManager.getCanvasAlignment();
-        let drawX;
-        
-        if (alignment === 'center') {
-            ctx.textAlign = 'center';
-            ctx.direction = 'rtl';
-            drawX = dimensions.width / 2;
-        } else if (alignment === 'left') {
-            ctx.textAlign = 'left';
-            ctx.direction = 'rtl';
-            drawX = dimensions.padding;
-        } else { // right
-            ctx.textAlign = 'right';
-            ctx.direction = 'rtl';
-            drawX = dimensions.width - dimensions.padding;
-        }
-        
-        // Force RTL text rendering
-        ctx.textBaseline = 'alphabetic';
-        
-        // Draw each line with selected alignment
-        for (const line of lines) {
-            if (line && line.trim()) {
-                // Use proper RTL text rendering without RLM modification
-                ctx.fillText(line, drawX, y);
-            }
-            y += dimensions.lineHeight;
-        }
-        
-        // Mobile debugging: draw canvas bounds
-        if (isMobile && window.location.search.includes('debug')) {
-            ctx.strokeStyle = 'red';
-            ctx.lineWidth = 1;
-            ctx.strokeRect(0, 0, ctx.canvas.width, ctx.canvas.height);
-            ctx.strokeStyle = 'blue';
-            ctx.strokeRect(dimensions.padding, dimensions.padding, 
-                         ctx.canvas.width - dimensions.padding * 2, 
-                         ctx.canvas.height - dimensions.padding * 2);
-        }
+        console.log('⚠️ Using fallback canvas rendering');
     }
 };
 
@@ -1331,7 +1273,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         
         textInput.addEventListener('input', (e) => {
             if (enforceHeightLimit()) {
-                wrapTextareaToCanvasWidth(textInput);
+                syncTextareaWithHtml2Canvas(textInput);
                 debouncedGenerate();
             }
         });
@@ -1581,41 +1523,30 @@ document.addEventListener('DOMContentLoaded', async function() {
     }
 });
 
-// Helper: wrap textarea content to match canvas wrapping exactly
-function wrapTextareaToCanvasWidth(textInput) {
+// Helper: sync textarea with html2canvas (no manual wrapping needed)
+function syncTextareaWithHtml2Canvas(textInput) {
     if (!textInput) return;
+    
+    // Apply unified styling to ensure consistency
     const preset = getSelectedPreset();
     const canvasFontSize = CONFIG.FONT_PRESETS[preset] || CONFIG.DEFAULT_FONT_SIZE;
     const isMobileNow = FontManager.isMobile();
     const previewWidth = isMobileNow ? CONFIG.MOBILE_CANVAS_WIDTH : CONFIG.DESKTOP_CANVAS_WIDTH;
     const displayScale = previewWidth / CONFIG.FIXED_CANVAS_WIDTH;
     const textAreaFontSize = Math.max(16, Math.round(canvasFontSize * displayScale));
-
-    const tempCanvas = document.createElement('canvas');
-    const tempCtx = tempCanvas.getContext('2d');
-    tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
-
-    const lines = textInput.value.split('\n');
-    const wrappedLines = [];
-    const scaledMaxLineWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
-
-    for (const line of lines) {
-        if (line.trim()) {
-            const wrapped = TextProcessor.wrapText(line, scaledMaxLineWidth, tempCtx);
-            wrappedLines.push(...wrapped);
-        } else {
-            wrappedLines.push('');
-        }
-    }
-
-    const newValue = wrappedLines.join('\n');
-    if (newValue !== textInput.value) {
-        const cursorAtEnd = textInput.selectionStart === textInput.value.length && textInput.selectionEnd === textInput.value.length;
-        textInput.value = newValue;
-        if (cursorAtEnd) {
-            const len = textInput.value.length;
-            textInput.selectionStart = len;
-            textInput.selectionEnd = len;
-        }
-    }
+    
+    // Calculate padding that matches canvas system
+    const canvasPadding = isMobileNow ? 
+        Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_MOBILE) : 
+        Math.round(canvasFontSize * CONFIG.PADDING_MULTIPLIER_DESKTOP);
+    const textareaPadding = Math.round(canvasPadding * displayScale);
+    
+    // Apply unified styling
+    const unifiedStyle = getUnifiedTextStyle(textAreaFontSize);
+    Object.assign(textInput.style, unifiedStyle);
+    
+    // Set exact dimensions for perfect sync
+    const scaledWrapWidth = (CONFIG.FIXED_CANVAS_WIDTH - (CONFIG.CANVAS_PADDING * 2)) * displayScale;
+    textInput.style.width = `${Math.round(scaledWrapWidth)}px`;
+    textInput.style.padding = `${textareaPadding}px`;
 }

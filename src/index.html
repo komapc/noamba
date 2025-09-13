@@ -74,12 +74,17 @@
         <div class="canvas-container">
             <canvas id="canvas" width="800" height="200"></canvas>
         </div>
+        
+        <!-- Hidden textarea for html2canvas capture - perfectly synchronized with visible textarea -->
+        <div id="hiddenTextareaContainer" style="position: absolute; left: -9999px; top: -9999px; visibility: hidden;">
+            <textarea id="hiddenTextInput" class="text-input" style="position: absolute;"></textarea>
+        </div>
     </div>
 
 
     <!-- Footer info -->
     <div class="footer-info">
-        <span class="version-small">v2.1.0</span>
+        <span class="version-small">v2.2.0</span>
         <span class="footer-divider">•</span>
         <a href="#" id="aboutLink" class="about-link">אודות</a>
         <span class="footer-divider">•</span>
@@ -129,6 +134,8 @@
         </div>
     </div>
 
+    <!-- html2canvas library for perfect textarea-canvas synchronization -->
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
     <script src="script.js"></script>
     </body>
     </html>
