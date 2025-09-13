@@ -8,7 +8,7 @@
 // CONFIGURATION
 // =============================================================================
 const CONFIG = {
-    VERSION: '2.0.9',
+    VERSION: '2.1.0',
     // Environment detection based on domain
     IS_STAGING: window.location.hostname.includes('staging-amba') || 
                 window.location.hostname.includes('staging-noamba') ||
