@@ -1,7 +1,7 @@
 {
   "name": "multigender-hebrew-text-designer",
-  "version": "2.8.0",
-  "description": "MultiGender Hebrew Text Designer",
+  "version": "0.2.0",
+  "description": "MultiGender Hebrew Text Designer - A modern text-to-image generator for Hebrew typography",
   "main": "src/script.js",
   "scripts": {
     "serve": "python3 -m http.server 8000",
@@ -13,8 +13,14 @@
     "multigender",
     "text",
     "designer",
-    "canvas"
+    "canvas",
+    "typography",
+    "rtl"
   ],
   "author": "Mark",
-  "license": "MIT"
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/komapc/noamba"
+  }
 }

@@ -2,6 +2,8 @@
 
 A modern, client-side text-to-image generator specifically designed for MultiGender Hebrew typography. Features real-time WYSIWYG editing, comprehensive character support, and professional-grade canvas rendering with perfect mobile responsiveness.
 
+**Version:** 0.2.0 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
+
                                
  _____     _____       _       
 |   | |___|  _  |_____| |_ ___ 
@@ -11,16 +13,27 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 ### ✨ Features
 
 **🎨 Advanced Text Rendering**
-- **WYSIWYG Editing**: Real-time synchronization between text area and canvas
-- **Professional Canvas**: High-DPI rendering with perfect font smoothing
-- **Smart Line Breaking**: Intelligent Hebrew text wrapping with consistent behavior
-- **WhatsApp-safe Export**: Fixed width 1200px; auto height 200–900px (max 3/4)
+- **WYSIWYG Editing**: Real-time text editing with instant canvas generation
+- **High-DPI Canvas**: 3x DPI scaling for crisp, professional-quality output
+- **Smart Height Limiting**: 1600px height limit with intelligent text truncation
+- **WhatsApp Export**: Fixed 1200px width, optimized for social sharing
 
 **🔤 MultiGender Hebrew Excellence**
 - **Native Font Support**: AlefMultiGenderHebrew with 12 special characters
 - **Interactive Character Keyboard**: Click buttons or use keyboard shortcuts
 - **Contextual Tooltips**: Hover hints with usage examples and typing instructions
+
+**🎛️ User Experience**
+- **Theme Toggle**: Dark/light mode with persistent preferences
+- **Smart Input Prevention**: Typing blocked when height limit exceeded
+- **WhatsApp Sharing**: Direct share to WhatsApp or download as PNG
+- **Debug Mode**: Press Ctrl+D to show/hide canvas for debugging
 - **RTL Optimization**: Perfect Hebrew text direction on all devices
+
+**⌨️ Keyboard Shortcuts**
+- **Ctrl+T**: Toggle dark/light theme
+- **Ctrl+D**: Toggle debug mode (show/hide canvas)
+- **Character buttons**: Click to insert special Hebrew characters
 
 **⚡ Modern Interface**
 - **Instant Font Size Control**: Three presets — קטן (small), רגיל (normal), גדול (large)

@@ -1,11 +1,11 @@
 /**
- * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.2.0
+ * MultiGender Hebrew Text Designer - Clean Production Version
+ * Version: 0.2.1
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.0',
+    VERSION: '0.2.1',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -143,7 +143,6 @@ function setupEventListeners() {
             debugMode = !debugMode;
             const canvas = document.getElementById('canvas');
             canvas.style.display = debugMode ? 'block' : 'none';
-            console.log('Debug mode:', debugMode ? 'ON' : 'OFF');
         }
     });
 }
@@ -157,11 +156,7 @@ function debouncedUpdate() {
 // Height limit functions - simplified CSS-based approach
 function isHeightExceeded() {
     const textDiv = document.getElementById('textDiv');
-    const exceeded = textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
-    if (exceeded) {
-        console.log('Height exceeded:', textDiv.scrollHeight, '>', CONFIG.CANVAS_HEIGHT_MAX);
-    }
-    return exceeded;
+    return textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
 }
 
 // Check if key is a deletion key (backspace, delete, etc.)
@@ -207,7 +202,6 @@ function truncateToFit() {
     
     // Truncate if needed
     if (maxLength < text.length) {
-        console.log('Truncating text from', text.length, 'to', maxLength, 'characters');
         textDiv.textContent = text.substring(0, maxLength);
         
         // Move cursor to end
