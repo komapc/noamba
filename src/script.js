@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.8
+ * Version: 0.1.9
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.8',
+    VERSION: '0.1.9',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -18,6 +18,7 @@ const CONFIG = {
 // Global state
 let currentFontSize = CONFIG.FONT_SIZES.normal;
 let isDark = false;
+let debugMode = false; // Set to true to show canvas for debugging
 
 // Load theme from localStorage
 function loadTheme() {
@@ -61,7 +62,7 @@ function setupEventListeners() {
         if (isHeightExceeded()) {
             // Find the maximum text that fits within height limit
             let text = textDiv.textContent;
-            let maxLength = text.length;
+            let maxLength = 0;
             
             // Binary search to find max length that fits
             let left = 0;
@@ -78,6 +79,7 @@ function setupEventListeners() {
                 temp.style.visibility = 'hidden';
                 temp.style.height = 'auto';
                 temp.style.maxHeight = 'none';
+                temp.style.width = textDiv.offsetWidth + 'px';
                 temp.textContent = testText;
                 document.body.appendChild(temp);
                 
@@ -95,6 +97,14 @@ function setupEventListeners() {
             if (maxLength < text.length) {
                 console.log('Truncating text from', text.length, 'to', maxLength, 'characters');
                 textDiv.textContent = text.substring(0, maxLength);
+                
+                // Move cursor to end
+                const range = document.createRange();
+                range.selectNodeContents(textDiv);
+                range.collapse(false);
+                const selection = window.getSelection();
+                selection.removeAllRanges();
+                selection.addRange(range);
             }
         }
         
@@ -152,11 +162,18 @@ function setupEventListeners() {
         shareCanvas();
     });
     
-    // Theme toggle keyboard shortcut
+    // Keyboard shortcuts
     document.addEventListener('keydown', (e) => {
         if (e.key === 't' && e.ctrlKey) {
             e.preventDefault();
             toggleTheme();
+        }
+        if (e.key === 'd' && e.ctrlKey) {
+            e.preventDefault();
+            debugMode = !debugMode;
+            const canvas = document.getElementById('canvas');
+            canvas.style.display = debugMode ? 'block' : 'none';
+            console.log('Debug mode:', debugMode ? 'ON' : 'OFF');
         }
     });
 }
@@ -241,6 +258,9 @@ async function generateCanvas() {
         canvas.height = canvasElement.height;
         canvas.style.width = (canvasElement.width / CONFIG.DPI_SCALE) + 'px';
         canvas.style.height = (canvasElement.height / CONFIG.DPI_SCALE) + 'px';
+        
+        // Show canvas only in debug mode
+        canvas.style.display = debugMode ? 'block' : 'none';
         
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, canvas.width, canvas.height);

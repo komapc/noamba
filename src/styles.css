@@ -219,7 +219,7 @@ canvas {
     margin-top: 20px;
     image-rendering: -webkit-optimize-contrast;
     image-rendering: crisp-edges;
-    display: block;
+    display: none; /* Hidden - only used for sharing */
 }
 
 body.dark canvas { 
