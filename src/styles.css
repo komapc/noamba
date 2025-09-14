@@ -128,7 +128,7 @@ h1 {
 .text-input {
     width: 100%;
     min-height: 80px;
-    max-height: 1600px;
+    max-height: 1200px;
     padding: 15px;
     border: 2px solid #3498db;
     border-radius: 8px;
@@ -138,7 +138,7 @@ h1 {
     white-space: normal;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    font-size: 16px;
+    font-size: 20px;
     line-height: 1.4;
     box-sizing: border-box;
     background: white;

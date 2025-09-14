@@ -1,15 +1,15 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.1
+ * Version: 0.1.2
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.1',
+    VERSION: '0.1.2',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
-    FONT_SIZES: { small: 14, normal: 16, large: 20 },
+    FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
-    CANVAS_HEIGHT_MAX: 1600, // 4/3 of 1200 = 1600
+    CANVAS_HEIGHT_MAX: 1200, // Reduced height limit for better UX
     CANVAS_PADDING: 40,
     LINE_HEIGHT: 1.4,
     DPI_SCALE: 2 // Higher DPI for better quality
@@ -118,7 +118,7 @@ function debouncedUpdate() {
 // Height limit functions
 function isHeightExceeded() {
     const textDiv = document.getElementById('textDiv');
-    return textDiv.scrollHeight > 1600;
+    return textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
 }
 
 function checkHeightLimit() {
