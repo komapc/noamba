@@ -24,9 +24,8 @@ let updateTimeout;
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 MultiGender Hebrew Text Designer v' + CONFIG.VERSION);
     
-    // Set initial text
+    // Initialize textarea (empty by default)
     const textDiv = document.getElementById('textDiv');
-    textDiv.textContent = 'ברוכ׊׉ הבא׊׉!';
     
     // Generate initial canvas
     generateCanvas();
