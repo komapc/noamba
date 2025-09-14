@@ -255,7 +255,7 @@ const Utils = {
 const FontManager = {
     loaded: false,
     async loadMultiGenderFont() {
-        try {
+/*        try {
             if (this.loaded) {
                 return true;
             }
@@ -311,6 +311,7 @@ const FontManager = {
             console.error('Font loading failed:', error);
             return false;
         }
+            */
     },
 
     isMobile() {
@@ -318,7 +319,7 @@ const FontManager = {
                (window.innerWidth <= 768 && 'ontouchstart' in window);
     },
 
-    async verifyFontLoading() {
+    /* async verifyFontLoading() {
         try {
             // Test 1: Element measurement
             const testText = CONFIG.MULTIGENDER_CHARS;
@@ -343,7 +344,7 @@ const FontManager = {
             console.error('Font verification failed:', error);
             return false;
         }
-    }
+    } */
 };
 
 // =============================================================================
@@ -533,16 +534,16 @@ const CanvasRenderer = {
 
         const ctx = canvas.getContext('2d');
         const text = textInput.value;
-        const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
+//        const font = 'AlefMultiGenderHebrew'; // Always use MultiGender Hebrew font
         const activeBtn = document.querySelector('#sizeButtons .size-btn.active');
         const selectedPreset = (activeBtn && activeBtn.getAttribute('data-size')) || 'normal';
         const size = CONFIG.FONT_PRESETS[selectedPreset] || CONFIG.DEFAULT_FONT_SIZE;
 
         // Ensure font is loaded
-        await FontManager.loadMultiGenderFont();
+//        await FontManager.loadMultiGenderFont();
 
         // Setup canvas
-        this.setupCanvas(ctx, font, size);
+        this.setupCanvas(ctx, size);
 
         // Process text into lines using FIXED export width and current size
         const lines = this.processText(text, ctx, size);
@@ -552,15 +553,15 @@ const CanvasRenderer = {
         this.resizeCanvas(canvas, dimensions);
 
         // Re-setup canvas after resize (context is reset)
-        this.setupCanvas(ctx, font, size);
+        this.setupCanvas(ctx, size);
 
         // Draw the text
         this.drawText(ctx, lines, size, dimensions);
     },
 
-    setupCanvas(ctx, font, size) {
+    setupCanvas(ctx, size) {
         // Always use MultiGender Hebrew font with fallbacks
-        ctx.font = `${size}px ${CONFIG.FONT_FAMILY}`;
+        //ctx.font = `${size}px ${CONFIG.FONT_FAMILY}`;
 
         // Set basic text properties (alignment will be set in drawText)
         ctx.textBaseline = 'alphabetic';
@@ -784,7 +785,7 @@ const FaviconManager = {
 
             // MultiGender Hebrew character
             ctx.fillStyle = '#10b981';
-            ctx.font = 'bold 18px serif';
+            //ctx.font = 'bold 18px serif';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'middle';
             ctx.fillText('׋', 16, 16);
@@ -1245,8 +1246,8 @@ document.addEventListener('DOMContentLoaded', async function() {
         ThemeManager.init();
 
         // Preload font before initial render (important for mobile)
-        console.log('🔤 Preloading fonts...');
-        await FontManager.loadMultiGenderFont();
+        //console.log('🔤 Preloading fonts...');
+        //await FontManager.loadMultiGenderFont();
 
         // Initial render with extra delay for mobile
         if (isMobile) {
@@ -1388,7 +1389,7 @@ document.addEventListener('DOMContentLoaded', async function() {
             if (textInput.value) {
                 const tempCanvas = document.createElement('canvas');
                 const tempCtx = tempCanvas.getContext('2d');
-                tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
+//                tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
 
                 // Use the same text processing as canvas for identical wrapping
                 const lines = textInput.value.split('\n');
@@ -1459,14 +1460,14 @@ document.addEventListener('DOMContentLoaded', async function() {
         setTimeout(() => {
             const charButtons = document.querySelectorAll('.char-button');
             charButtons.forEach(button => {
-                button.style.fontFamily = CONFIG.FONT_FAMILY;
-                button.style.fontFeatureSettings = '"liga" 1, "kern" 1';
+//                button.style.fontFamily = CONFIG.FONT_FAMILY;
+ //               button.style.fontFeatureSettings = '"liga" 1, "kern" 1';
             });
             const sizeLetterButtons = document.querySelectorAll('#sizeButtons .size-btn');
             sizeLetterButtons.forEach(btn => {
-                btn.style.fontFamily = CONFIG.FONT_FAMILY;
-                btn.style.fontFeatureSettings = '"liga" 1, "kern" 1';
-                btn.style.lineHeight = '1';
+                //btn.style.fontFamily = CONFIG.FONT_FAMILY;
+//                btn.style.fontFeatureSettings = '"liga" 1, "kern" 1';
+ //               btn.style.lineHeight = '1';
                 // Visually encode sizes so users can understand at a glance
                 const kind = btn.getAttribute('data-size');
                 if (kind === 'small') {
@@ -1563,7 +1564,7 @@ function wrapTextareaToCanvasWidth(textInput) {
 
     const tempCanvas = document.createElement('canvas');
     const tempCtx = tempCanvas.getContext('2d');
-    tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
+//    tempCtx.font = `${textAreaFontSize}px ${CONFIG.FONT_FAMILY}`;
 
     const lines = textInput.value.split('\n');
     const wrappedLines = [];
