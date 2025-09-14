@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.6
+ * Version: 0.1.7
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.6',
+    VERSION: '0.1.7',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -42,10 +42,6 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize textarea (empty by default)
     const textDiv = document.getElementById('textDiv');
     
-    // Initialize stored content for height limit checking
-    textDiv.dataset.lastContent = textDiv.textContent;
-    textDiv.dataset.lastLength = textDiv.textContent.length;
-    
     // Generate initial canvas
     generateCanvas();
     
@@ -59,23 +55,46 @@ function setupEventListeners() {
     const themeToggle = document.getElementById('themeToggle');
     const shareButton = document.getElementById('shareButton');
     
-    // Text input
+    // Text input - simple approach
     textDiv.addEventListener('input', function(e) {
-        // If height limit exceeded and content increased, prevent the change
-        if (isHeightExceeded() && textDiv.textContent.length > (textDiv.dataset.lastLength || 0)) {
-            // Revert to previous content
-            textDiv.textContent = textDiv.dataset.lastContent || '';
-            // Restore cursor position
-            const range = document.createRange();
-            range.selectNodeContents(textDiv);
-            range.collapse(false);
-            const selection = window.getSelection();
-            selection.removeAllRanges();
-            selection.addRange(range);
-        } else {
-            // Update stored content and length
-            textDiv.dataset.lastContent = textDiv.textContent;
-            textDiv.dataset.lastLength = textDiv.textContent.length;
+        // If height exceeded, truncate to fit
+        if (isHeightExceeded()) {
+            // Find the maximum text that fits within height limit
+            let text = textDiv.textContent;
+            let maxLength = text.length;
+            
+            // Binary search to find max length that fits
+            let left = 0;
+            let right = text.length;
+            
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                const testText = text.substring(0, mid);
+                
+                // Test height with temporary element
+                const temp = document.createElement('div');
+                temp.style.cssText = window.getComputedStyle(textDiv).cssText;
+                temp.style.position = 'absolute';
+                temp.style.visibility = 'hidden';
+                temp.style.height = 'auto';
+                temp.style.maxHeight = 'none';
+                temp.textContent = testText;
+                document.body.appendChild(temp);
+                
+                if (temp.scrollHeight <= CONFIG.CANVAS_HEIGHT_MAX) {
+                    maxLength = mid;
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+                
+                document.body.removeChild(temp);
+            }
+            
+            // Truncate if needed
+            if (maxLength < text.length) {
+                textDiv.textContent = text.substring(0, maxLength);
+            }
         }
         
         checkHeightLimit();
@@ -83,19 +102,15 @@ function setupEventListeners() {
     });
     
     textDiv.addEventListener('paste', function() {
+        // Let the input handler deal with height limiting
         setTimeout(() => {
-            checkHeightLimit();
             debouncedUpdate();
         }, 100);
     });
     
-    // Character buttons
+    // Character buttons - simplified
     document.querySelectorAll('.char-button').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (isHeightExceeded()) {
-                return; // Don't add characters if height limit exceeded
-            }
-            
             const char = btn.dataset.char;
             const selection = window.getSelection();
             
@@ -121,8 +136,8 @@ function setupEventListeners() {
             }
             
             textDiv.focus();
-            checkHeightLimit();
-            debouncedUpdate();
+            // Let input handler deal with height limiting
+            textDiv.dispatchEvent(new Event('input'));
         });
     });
     
