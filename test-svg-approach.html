@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTML2Canvas Text Wrapping Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: #f0f0f0;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-div {
+            width: 100%;
+            min-height: 80px;
+            padding: 15px;
+            border: 2px solid #3498db;
+            border-radius: 8px;
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: right;
+            white-space: normal;
+            word-wrap: break-word;
+            overflow-wrap: break-word;
+            font-size: 16px;
+            line-height: 1.4;
+            box-sizing: border-box;
+            background: white;
+            outline: none;
+        }
+        .test-div:focus {
+            border-color: #2980b9;
+            box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
+        }
+        #capturedCanvas {
+            border: 2px solid #34495e;
+            border-radius: 8px;
+            max-width: 100%;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>HTML2Canvas Text Wrapping Test</h1>
+        
+        <div id="testDiv" class="test-div" contenteditable="true">ברוכם הבא! זהו טקסט ארוך מאוד שיצטרך להיכתב במספר שורות כדי להתאים לגודל הטקסט</div>
+        
+        <canvas id="capturedCanvas" width="500" height="120"></canvas>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script>
+        async function captureWithHTML2Canvas() {
+            const testDiv = document.getElementById('testDiv');
+            const canvas = document.getElementById('capturedCanvas');
+            
+            try {
+                const canvasElement = await html2canvas(testDiv, {
+                    scale: 1,
+                    letterRendering: true,
+                    useCORS: true,
+                    allowTaint: true,
+                    backgroundColor: '#ffffff'
+                });
+                
+                canvas.width = canvasElement.width;
+                canvas.height = canvasElement.height;
+                canvas.style.width = canvasElement.width + 'px';
+                canvas.style.height = canvasElement.height + 'px';
+                
+                const ctx = canvas.getContext('2d');
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                ctx.drawImage(canvasElement, 0, 0);
+                
+            } catch (error) {
+                console.error('Error capturing with HTML2Canvas:', error);
+            }
+        }
+
+        let updateTimeout;
+        function debouncedUpdate() {
+            clearTimeout(updateTimeout);
+            updateTimeout = setTimeout(captureWithHTML2Canvas, 300);
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const testDiv = document.getElementById('testDiv');
+            
+            testDiv.addEventListener('input', function() {
+                debouncedUpdate();
+            });
+            
+            testDiv.addEventListener('paste', function() {
+                setTimeout(debouncedUpdate, 100);
+            });
+            
+            setTimeout(captureWithHTML2Canvas, 1000);
+        });
+    </script>
+</body>
+</html>
