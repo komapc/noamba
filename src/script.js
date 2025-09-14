@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.0.100
+ * Version: 0.1.0
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.0.100',
+    VERSION: '0.1.0',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 14, normal: 16, large: 20 },
     CANVAS_WIDTH: 1200,
@@ -42,22 +42,50 @@ function setupEventListeners() {
     
     // Text input
     textDiv.addEventListener('input', function() {
+        checkHeightLimit();
         debouncedUpdate();
     });
     
     textDiv.addEventListener('paste', function() {
-        setTimeout(debouncedUpdate, 100);
+        setTimeout(() => {
+            checkHeightLimit();
+            debouncedUpdate();
+        }, 100);
     });
     
     // Character buttons
     document.querySelectorAll('.char-button').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (isHeightExceeded()) {
+                return; // Don't add characters if height limit exceeded
+            }
+            
             const char = btn.dataset.char;
             const selection = window.getSelection();
-            const range = selection.getRangeAt(0);
-            range.deleteContents();
-            range.insertNode(document.createTextNode(char));
+            
+            if (selection.rangeCount > 0) {
+                const range = selection.getRangeAt(0);
+                range.deleteContents();
+                range.insertNode(document.createTextNode(char));
+                
+                // Move cursor to end of inserted text
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            } else {
+                // If no selection, append to end
+                textDiv.textContent += char;
+                
+                // Move cursor to end
+                const range = document.createRange();
+                range.selectNodeContents(textDiv);
+                range.collapse(false);
+                selection.removeAllRanges();
+                selection.addRange(range);
+            }
+            
             textDiv.focus();
+            checkHeightLimit();
             debouncedUpdate();
         });
     });
@@ -85,6 +113,25 @@ function setupEventListeners() {
 function debouncedUpdate() {
     clearTimeout(updateTimeout);
     updateTimeout = setTimeout(generateCanvas, 300);
+}
+
+// Height limit functions
+function isHeightExceeded() {
+    const textDiv = document.getElementById('textDiv');
+    return textDiv.scrollHeight > 1600;
+}
+
+function checkHeightLimit() {
+    const textDiv = document.getElementById('textDiv');
+    if (isHeightExceeded()) {
+        textDiv.style.borderColor = '#e74c3c';
+        textDiv.style.backgroundColor = '#fdf2f2';
+        textDiv.contentEditable = 'false';
+    } else {
+        textDiv.style.borderColor = '#3498db';
+        textDiv.style.backgroundColor = 'white';
+        textDiv.contentEditable = 'true';
+    }
 }
 
 // Toggle theme
@@ -141,8 +188,33 @@ async function generateCanvas() {
     }
 }
 
-// Share canvas
+// Share canvas to WhatsApp
 function shareCanvas() {
+    const canvas = document.getElementById('canvas');
+    canvas.toBlob((blob) => {
+        // Create a file from the blob
+        const file = new File([blob], 'multigender-hebrew-text.png', { type: 'image/png' });
+        
+        // Check if Web Share API is supported
+        if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
+            navigator.share({
+                files: [file],
+                title: 'עברית רב-מגדרית',
+                text: 'תמונה שנוצרה עם כלי העברית הרב-מגדרית'
+            }).catch((error) => {
+                console.log('Error sharing:', error);
+                // Fallback to download
+                downloadCanvas();
+            });
+        } else {
+            // Fallback to download
+            downloadCanvas();
+        }
+    }, 'image/png');
+}
+
+// Fallback download function
+function downloadCanvas() {
     const canvas = document.getElementById('canvas');
     canvas.toBlob((blob) => {
         const url = URL.createObjectURL(blob);
