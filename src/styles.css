@@ -27,15 +27,6 @@
     font-style: normal;
 }
 
-@font-face {
-    font-family: "AlefMultiGndr";
-    src: url("fonts/AlefMultiGndr-Regular.woff") format("woff"),
-         url("fonts/AlefMultiGndr-Regular.ttf") format("truetype");
-    font-display: swap;
-    font-weight: normal;
-    font-style: normal;
-}
-
 /* =============================================================================
    BASE STYLES
    ============================================================================= */
@@ -46,7 +37,6 @@ body {
     background: var(--bg-light);
     color: var(--text-light);
     line-height: 1.5;
-    transition: none;
 }
 
 body.dark { 
@@ -54,49 +44,16 @@ body.dark {
     color: var(--text-dark); 
 }
 
-body.theme-changing * { transition: none !important; }
-
-body:not(.theme-changing) button,
-body:not(.theme-changing) .char-button,
-body:not(.theme-changing) .about-link,
-body:not(.theme-changing) .cheat-sheet-link {
-    transition: all 0.2s ease;
-}
-
 /* =============================================================================
    LAYOUT
    ============================================================================= */
 .container {
-    max-width: 1200px;
+    max-width: 600px;
     margin: 0 auto;
-    padding: 20px 16px 40px;
+    padding: 20px;
     text-align: center;
 }
 
-h1 {
-    margin: 0 0 16px 0;
-    font-size: clamp(1.75rem, 4vw, 2.5rem);
-    font-weight: 600;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-}
-
-.mg-icon {
-    font-family: 'AlefMultiGenderHebrew', system-ui, -apple-system, sans-serif;
-    font-size: 1.2em;
-    color: var(--accent-color);
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    background-clip: text;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    display: inline-block;
-}
-
-/* =============================================================================
-   HEADER & FOOTER
-   ============================================================================= */
 .header-controls {
     position: fixed;
     top: 16px;
@@ -107,190 +64,92 @@ h1 {
     align-items: center;
 }
 
-.footer-info {
-    position: fixed;
-    bottom: 10px;
-    left: 20px;
-    z-index: 50;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-}
-
-.version-small {
-    font-size: 12px;
-    font-weight: 400;
-    opacity: 0.5;
-    color: var(--text-light);
-    font-family: 'AlefMultiGenderHebrew', monospace;
-}
-
-.footer-divider {
-    font-size: 12px;
-    opacity: 0.3;
-    color: var(--text-light);
-}
-
-.about-link,
-.cheat-sheet-link {
-    font-size: 12px;
-    color: var(--text-light);
-    text-decoration: none;
-    opacity: 0.6;
-    font-family: 'AlefMultiGenderHebrew', monospace;
-    transition: opacity 0.2s ease;
-}
-
-.about-link:hover,
-.cheat-sheet-link:hover {
-    opacity: 1;
-    text-decoration: underline;
-}
-
-body.dark .version-small,
-body.dark .footer-divider,
-body.dark .about-link,
-body.dark .cheat-sheet-link {
-    color: var(--text-dark);
-}
-
-/* =============================================================================
-   CONTROLS
-   ============================================================================= */
-.size-control-header {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-}
-
-.size-btn {
+.theme-toggle {
     background: var(--control-bg-light);
     border: 1px solid var(--border-light);
     color: var(--text-light);
-    padding: 8px 12px;
-    border-radius: 6px;
-    cursor: pointer;
-    font-family: "AlefMultiGenderHebrew", sans-serif;
-    transition: all 0.2s ease;
-    min-width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.size-btn[data-size="small"] {
-    font-size: 12px;
-    min-width: 35px;
-    height: 35px;
-}
-
-.size-btn[data-size="normal"] {
-    font-size: 16px;
-    min-width: 40px;
-    height: 40px;
-}
-
-.size-btn[data-size="large"] {
-    font-size: 20px;
-    min-width: 45px;
-    height: 45px;
-}
-
-.size-btn:hover {
-    background: rgba(0,0,0,0.05);
-    transform: translateY(-1px);
-}
-
-.size-btn.active {
-    background: var(--text-light);
-    color: var(--control-bg-light);
-    border-color: var(--text-light);
-}
-
-body.dark .size-btn {
-    background: var(--control-bg-dark);
-    border-color: var(--border-dark);
-    color: var(--text-dark);
-}
-
-body.dark .size-btn:hover {
-    background: rgba(255,255,255,0.05);
-}
-
-body.dark .size-btn.active {
-    background: var(--text-dark);
-    color: var(--control-bg-dark);
-    border-color: var(--text-dark);
-}
-.controls {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 16px;
-    margin: 24px 0;
-    max-width: 800px;
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.controls-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 12px;
-    justify-content: center;
-    align-items: center;
-}
-
-.theme-toggle,
-.canvas-toggle {
-    background: transparent;
-    border: 1px solid var(--border-light);
-    color: inherit;
     padding: 8px 12px;
     border-radius: 8px;
     cursor: pointer;
     font-size: 14px;
     transition: all 0.2s ease;
+    font-family: "AlefMultiGenderHebrew", sans-serif;
 }
 
-.theme-toggle:hover,
-.canvas-toggle:hover {
+.theme-toggle:hover {
     background: rgba(0,0,0,0.05);
+    transform: translateY(-1px);
 }
 
-body.dark .theme-toggle,
-body.dark .canvas-toggle { 
-    border-color: var(--border-dark); 
+body.dark .theme-toggle {
+    background: var(--control-bg-dark);
+    border-color: var(--border-dark);
+    color: var(--text-dark);
 }
 
-body.dark .theme-toggle:hover,
-body.dark .canvas-toggle:hover {
+body.dark .theme-toggle:hover {
     background: rgba(255,255,255,0.05);
 }
 
+.share-button {
+    background-color: #25D366;
+    border: none;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    font-family: "AlefMultiGenderHebrew", sans-serif;
+    box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3);
+}
+
+.share-button:hover {
+    background-color: #128C7E;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(37, 211, 102, 0.4);
+}
+
+.share-button:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 4px rgba(37, 211, 102, 0.3);
+}
+
+h1 {
+    margin: 0 0 20px 0;
+    font-size: 2rem;
+    font-weight: 600;
+}
+
 /* =============================================================================
-   TEXT INPUT
+   TEXT INPUT (Simplified like test file)
    ============================================================================= */
 .text-input {
-    width: 500px;
-    max-width: 100%;
-    min-height: 100px;
-    box-sizing: content-box;
-    overflow: hidden;
-    resize: none;
-    white-space: pre-wrap;
-    overflow-wrap: break-word;
-    padding: 40px;
-    font-size: 32px;
-    line-height: 1.4;
-    border: 1px solid var(--border-light);
+    width: 100%;
+    min-height: 80px;
+    padding: 15px;
+    border: 2px solid #3498db;
     border-radius: 8px;
-    background: var(--control-bg-light);
-    color: var(--text-light);
-    font-family: 'AlefMultiGenderHebrew', 'AlefMultiGndr', system-ui, sans-serif;
+    font-family: "AlefMultiGenderHebrew", sans-serif;
     direction: rtl;
     text-align: right;
-    margin: 0 auto;
+    white-space: normal;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    font-size: 16px;
+    line-height: 1.4;
+    box-sizing: border-box;
+    background: white;
+    outline: none;
+    margin-bottom: 20px;
+    overflow: visible;
+    resize: none;
+}
+
+.text-input:focus {
+    border-color: #2980b9;
+    box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
 body.dark .text-input {
@@ -300,46 +159,13 @@ body.dark .text-input {
 }
 
 /* =============================================================================
-   CANVAS
-   ============================================================================= */
-.canvas-container {
-    margin-top: 16px;
-    display: flex;
-    justify-content: center;
-}
-
-.canvas-container.hidden {
-    display: none;
-}
-
-canvas {
-    max-width: 100%;
-    border: 1px solid var(--border-light);
-    border-radius: 12px;
-    box-shadow: 0 4px 6px rgba(0,0,0,0.05);
-    image-rendering: -webkit-optimize-contrast;
-    image-rendering: crisp-edges;
-    touch-action: manipulation;
-    -webkit-touch-callout: none;
-    -webkit-user-select: none;
-    user-select: none;
-    display: block;
-    margin: 0 auto;
-}
-
-body.dark canvas { 
-    border-color: var(--border-dark); 
-    box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-}
-
-/* =============================================================================
    CHARACTER KEYBOARD
    ============================================================================= */
 .char-keyboard {
     display: grid;
     grid-template-columns: repeat(6, 1fr);
     gap: 6px;
-    margin: 8px 0;
+    margin: 20px 0;
     max-width: 480px;
     margin-left: auto;
     margin-right: auto;
@@ -366,10 +192,6 @@ body.dark canvas {
     transform: translateY(-1px);
 }
 
-.char-button:active {
-    transform: translateY(0);
-}
-
 body.dark .char-button {
     background: var(--control-bg-dark);
     border-color: var(--border-dark);
@@ -380,193 +202,68 @@ body.dark .char-button:hover {
     background: rgba(255,255,255,0.05);
 }
 
-.keyboard-label {
-    font-size: 13px;
-    font-weight: 500;
-    margin: 12px 0 4px 0;
-    color: var(--text-light);
-}
-
-body.dark .keyboard-label {
-    color: var(--text-dark);
-}
-
 /* =============================================================================
-   SHARE BUTTON
+   CANVAS
    ============================================================================= */
-.share-button {
-    background-color: #25D366;
-    color: white;
+canvas {
     border: none;
     border-radius: 8px;
-    padding: 12px 16px;
-    cursor: pointer;
-        font-size: 14px;
-    font-weight: 500;
-    display: inline-flex;
-        align-items: center;
-        gap: 6px;
-    transition: all 0.2s ease;
+    max-width: 100%;
+    margin-top: 20px;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
+    display: block;
 }
 
-.share-button:hover {
-    background-color: #128C7E;
-    transform: translateY(-1px);
-}
-
-.share-button img {
-    width: 16px;
-    height: 16px;
-}
-
-.bottom-share {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.bottom-share .share-button {
-    background-color: #25D366;
-    border: none;
-    border-radius: 25px;
-    padding: 12px 20px;
-    box-shadow: 0 4px 12px rgba(37, 211, 102, 0.3);
-    transition: all 0.3s ease;
-}
-
-.bottom-share .share-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 6px 16px rgba(37, 211, 102, 0.4);
+body.dark canvas { 
+    /* No border styling needed */
 }
 
 /* =============================================================================
-   MODAL STYLES
+   FOOTER
    ============================================================================= */
-.modal {
-    display: none;
+.footer-info {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 1000;
-    backdrop-filter: blur(4px);
-}
-
-.modal.show {
+    bottom: 10px;
+    left: 20px;
+    z-index: 50;
     display: flex;
     align-items: center;
-    justify-content: center;
-    animation: fadeIn 0.2s ease;
+    gap: 8px;
 }
 
-.modal-content {
-    background: var(--bg-light);
-    border-radius: 12px;
-    max-width: 400px;
-    width: 90%;
-    max-height: 80%;
-    overflow-y: auto;
-    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-    animation: slideIn 0.3s ease;
-}
-
-.modal-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 20px 24px 16px;
-    border-bottom: 1px solid var(--border-light);
-}
-
-.modal-header h3 {
-    margin: 0;
-    font-size: 18px;
+.version-small {
+    font-size: 12px;
+    font-weight: 400;
+    opacity: 0.5;
     color: var(--text-light);
-    font-family: 'AlefMultiGenderHebrew', system-ui, sans-serif;
+    font-family: 'AlefMultiGenderHebrew', monospace;
 }
 
-.close-button {
-    background: none;
-    border: none;
-    font-size: 24px;
+.footer-divider {
+    font-size: 12px;
+    opacity: 0.3;
     color: var(--text-light);
-    cursor: pointer;
-    padding: 0;
-    width: 30px;
-    height: 30px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 50%;
-    transition: background-color 0.2s ease;
 }
 
-.close-button:hover {
-    background: var(--border-light);
-}
-
-.modal-body {
-    padding: 20px 24px 24px;
-    line-height: 1.6;
-}
-
-.modal-body p {
-    margin: 0 0 16px 0;
+.mg-logo {
+    font-size: 12px;
     color: var(--text-light);
-    font-size: 14px;
-}
-
-.modal-body p:last-child {
-    margin-bottom: 0;
-}
-
-.modal-body a {
-    color: var(--primary-color);
     text-decoration: none;
+    opacity: 0.6;
+    font-family: 'AlefMultiGenderHebrew', monospace;
+    transition: opacity 0.2s ease;
 }
 
-.modal-body a:hover {
+.mg-logo:hover {
+    opacity: 1;
     text-decoration: underline;
 }
 
-body.dark .modal-content {
-    background: var(--bg-dark);
-}
-
-body.dark .modal-header {
-    border-bottom-color: var(--border-dark);
-}
-
-body.dark .modal-header h3,
-body.dark .modal-body p,
-body.dark .close-button {
+body.dark .version-small,
+body.dark .footer-divider,
+body.dark .mg-logo {
     color: var(--text-dark);
-}
-
-body.dark .close-button:hover {
-    background: var(--border-dark);
-}
-
-/* =============================================================================
-   ANIMATIONS
-   ============================================================================= */
-@keyframes fadeIn {
-    from { opacity: 0; }
-    to { opacity: 1; }
-}
-
-@keyframes slideIn {
-    from { 
-        opacity: 0;
-        transform: translateY(-20px) scale(0.95);
-    }
-    to { 
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
 }
 
 /* =============================================================================
@@ -575,30 +272,6 @@ body.dark .close-button:hover {
 @media (max-width: 768px) {
     .container {
         padding: 60px 12px 32px;
-    }
-    
-    .header-controls {
-        top: 16px;
-        right: 12px;
-        gap: 6px;
-        max-width: calc(100vw - 24px);
-        flex-wrap: wrap;
-    }
-    
-    .theme-toggle,
-    .canvas-toggle {
-        padding: 6px 10px;
-        font-size: 13px;
-    }
-    
-    .controls {
-        gap: 12px;
-    }
-    
-    .controls-row {
-        flex-direction: row !important;
-        align-items: center;
-        gap: 8px;
     }
     
     .char-keyboard {
@@ -613,82 +286,13 @@ body.dark .close-button:hover {
         min-height: 32px;
     }
     
-    .bottom-share {
-        bottom: 16px;
-        right: 16px;
-    }
-    
-    .bottom-share .share-button {
-        padding: 10px 16px;
-        font-size: 14px;
-    }
-}
-
-@media (max-width: 480px) {
-    .container {
-        padding: 70px 8px 24px;
-        min-height: 100vh;
-        overflow-x: hidden;
-    }
-    
     .text-input {
-        width: 350px;
-        max-width: calc(100vw - 24px);
-        min-height: 80px;
-        padding: 16px;
-        font-size: max(16px, var(--current-font-size, 32px));
-        appearance: none;
-        -webkit-appearance: none;
-    }
-    
-    .char-keyboard {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 3px;
-        max-width: 300px;
-    }
-    
-    .char-button {
-        padding: 5px 2px;
-        font-size: 12px;
-        min-height: 28px;
-    }
-    
-    .canvas-container {
-        margin-top: 16px;
-        padding: 0 4px;
+        font-size: 14px;
+        padding: 12px;
     }
     
     canvas {
-        max-width: calc(100vw - 24px);
-        height: auto;
-        transform: translateZ(0);
-        -webkit-transform: translateZ(0);
-        will-change: transform;
-    }
-    
-    .share-button {
         width: 100%;
-        justify-content: center;
-    }
-    
-    .mg-icon {
-        font-size: 1.1em;
-    }
-    
-    h1 {
-        font-size: clamp(1.5rem, 5vw, 2rem);
-        flex-wrap: wrap;
-        gap: 0.3rem;
-    }
-    
-    .modal-content {
-        margin: 20px;
-        width: calc(100% - 40px);
-    }
-    
-    .modal-header,
-    .modal-body {
-        padding-left: 16px;
-        padding-right: 16px;
+        max-width: 100%;
     }
 }
