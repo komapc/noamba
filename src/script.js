@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.3
+ * Version: 0.1.4
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.3',
+    VERSION: '0.1.4',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -36,8 +36,6 @@ let updateTimeout;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
-    console.log('🚀 MultiGender Hebrew Text Designer v' + CONFIG.VERSION);
-    
     // Load saved theme
     loadTheme();
     
@@ -73,10 +71,6 @@ function setupEventListeners() {
     // Character buttons
     document.querySelectorAll('.char-button').forEach(btn => {
         btn.addEventListener('click', () => {
-            if (isHeightExceeded()) {
-                return; // Don't add characters if height limit exceeded
-            }
-            
             const char = btn.dataset.char;
             const selection = window.getSelection();
             
@@ -102,7 +96,7 @@ function setupEventListeners() {
             }
             
             textDiv.focus();
-            checkHeightLimit();
+            checkHeightLimit(); // Just for visual feedback
             debouncedUpdate();
         });
     });
@@ -132,7 +126,7 @@ function debouncedUpdate() {
     updateTimeout = setTimeout(generateCanvas, 300);
 }
 
-// Height limit functions
+// Height limit functions - simplified CSS-based approach
 function isHeightExceeded() {
     const textDiv = document.getElementById('textDiv');
     return textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
@@ -142,54 +136,14 @@ function checkHeightLimit() {
     const textDiv = document.getElementById('textDiv');
     const exceeded = isHeightExceeded();
     
+    // Just provide visual feedback - CSS handles the actual limiting
     if (exceeded) {
         textDiv.style.borderColor = '#e74c3c';
         textDiv.style.backgroundColor = isDark ? '#2d1b1b' : '#fdf2f2';
-        textDiv.contentEditable = 'false';
-        
-        // If height exceeded, truncate content
-        if (textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX) {
-            const maxHeight = CONFIG.CANVAS_HEIGHT_MAX;
-            const currentText = textDiv.textContent;
-            
-            // Binary search to find the right amount of text
-            let left = 0;
-            let right = currentText.length;
-            let bestFit = 0;
-            
-            while (left <= right) {
-                const mid = Math.floor((left + right) / 2);
-                const testText = currentText.substring(0, mid);
-                
-                // Create temporary element to test height
-                const temp = document.createElement('div');
-                temp.style.cssText = window.getComputedStyle(textDiv).cssText;
-                temp.style.position = 'absolute';
-                temp.style.visibility = 'hidden';
-                temp.style.height = 'auto';
-                temp.style.maxHeight = 'none';
-                temp.textContent = testText;
-                document.body.appendChild(temp);
-                
-                if (temp.scrollHeight <= maxHeight) {
-                    bestFit = mid;
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
-                
-                document.body.removeChild(temp);
-            }
-            
-            if (bestFit < currentText.length) {
-                textDiv.textContent = currentText.substring(0, bestFit);
-            }
-        }
     } else {
         // Reset to theme-appropriate colors
         textDiv.style.borderColor = '';
         textDiv.style.backgroundColor = '';
-        textDiv.contentEditable = 'true';
     }
 }
 
@@ -247,9 +201,7 @@ async function generateCanvas() {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         ctx.drawImage(canvasElement, 0, 0);
         
-        console.log('Canvas generated with html2canvas (DPI scaled)');
-        console.log('Canvas dimensions:', canvas.width, 'x', canvas.height);
-        console.log('Display dimensions:', canvas.style.width, 'x', canvas.style.height);
+        // Canvas generated successfully
         
     } catch (error) {
         console.error('Error capturing with HTML2Canvas:', error);
@@ -270,7 +222,6 @@ function shareCanvas() {
                 title: 'עברית רב-מגדרית',
                 text: 'תמונה שנוצרה עם כלי העברית הרב-מגדרית'
             }).catch((error) => {
-                console.log('Error sharing:', error);
                 // Fallback to download
                 downloadCanvas();
             });
