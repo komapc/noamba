@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.0
+ * Version: 0.1.1
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.0',
+    VERSION: '0.1.1',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 14, normal: 16, large: 20 },
     CANVAS_WIDTH: 1200,
@@ -125,11 +125,12 @@ function checkHeightLimit() {
     const textDiv = document.getElementById('textDiv');
     if (isHeightExceeded()) {
         textDiv.style.borderColor = '#e74c3c';
-        textDiv.style.backgroundColor = '#fdf2f2';
+        textDiv.style.backgroundColor = isDark ? '#2d1b1b' : '#fdf2f2';
         textDiv.contentEditable = 'false';
     } else {
-        textDiv.style.borderColor = '#3498db';
-        textDiv.style.backgroundColor = 'white';
+        // Reset to theme-appropriate colors
+        textDiv.style.borderColor = '';
+        textDiv.style.backgroundColor = '';
         textDiv.contentEditable = 'true';
     }
 }
@@ -138,6 +139,14 @@ function checkHeightLimit() {
 function toggleTheme() {
     isDark = !isDark;
     document.body.classList.toggle('dark', isDark);
+    
+    // Reset textarea styles to let CSS take over
+    const textDiv = document.getElementById('textDiv');
+    if (!isHeightExceeded()) {
+        textDiv.style.borderColor = '';
+        textDiv.style.backgroundColor = '';
+    }
+    
     generateCanvas();
 }
 
