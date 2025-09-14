@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.5
+ * Version: 0.1.6
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.5',
+    VERSION: '0.1.6',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -42,6 +42,10 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize textarea (empty by default)
     const textDiv = document.getElementById('textDiv');
     
+    // Initialize stored content for height limit checking
+    textDiv.dataset.lastContent = textDiv.textContent;
+    textDiv.dataset.lastLength = textDiv.textContent.length;
+    
     // Generate initial canvas
     generateCanvas();
     
@@ -56,7 +60,24 @@ function setupEventListeners() {
     const shareButton = document.getElementById('shareButton');
     
     // Text input
-    textDiv.addEventListener('input', function() {
+    textDiv.addEventListener('input', function(e) {
+        // If height limit exceeded and content increased, prevent the change
+        if (isHeightExceeded() && textDiv.textContent.length > (textDiv.dataset.lastLength || 0)) {
+            // Revert to previous content
+            textDiv.textContent = textDiv.dataset.lastContent || '';
+            // Restore cursor position
+            const range = document.createRange();
+            range.selectNodeContents(textDiv);
+            range.collapse(false);
+            const selection = window.getSelection();
+            selection.removeAllRanges();
+            selection.addRange(range);
+        } else {
+            // Update stored content and length
+            textDiv.dataset.lastContent = textDiv.textContent;
+            textDiv.dataset.lastLength = textDiv.textContent.length;
+        }
+        
         checkHeightLimit();
         debouncedUpdate();
     });
@@ -143,12 +164,11 @@ function checkHeightLimit() {
     if (exceeded) {
         textDiv.style.borderColor = '#e74c3c';
         textDiv.style.backgroundColor = isDark ? '#2d1b1b' : '#fdf2f2';
-        textDiv.contentEditable = 'false'; // Disable typing
+        // Keep contentEditable true so user can delete content to get under limit
     } else {
         // Reset to theme-appropriate colors
         textDiv.style.borderColor = '';
         textDiv.style.backgroundColor = '';
-        textDiv.contentEditable = 'true'; // Re-enable typing
     }
 }
 
