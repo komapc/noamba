@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.9
+ * Version: 0.2.0
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.9',
+    VERSION: '0.2.0',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -56,72 +56,42 @@ function setupEventListeners() {
     const themeToggle = document.getElementById('themeToggle');
     const shareButton = document.getElementById('shareButton');
     
-    // Text input - simple approach
+    // Text input - prevent typing when height exceeded
     textDiv.addEventListener('input', function(e) {
-        // If height exceeded, truncate to fit
+        // Always truncate if height exceeded
         if (isHeightExceeded()) {
-            // Find the maximum text that fits within height limit
-            let text = textDiv.textContent;
-            let maxLength = 0;
-            
-            // Binary search to find max length that fits
-            let left = 0;
-            let right = text.length;
-            
-            while (left <= right) {
-                const mid = Math.floor((left + right) / 2);
-                const testText = text.substring(0, mid);
-                
-                // Test height with temporary element
-                const temp = document.createElement('div');
-                temp.style.cssText = window.getComputedStyle(textDiv).cssText;
-                temp.style.position = 'absolute';
-                temp.style.visibility = 'hidden';
-                temp.style.height = 'auto';
-                temp.style.maxHeight = 'none';
-                temp.style.width = textDiv.offsetWidth + 'px';
-                temp.textContent = testText;
-                document.body.appendChild(temp);
-                
-                if (temp.scrollHeight <= CONFIG.CANVAS_HEIGHT_MAX) {
-                    maxLength = mid;
-                    left = mid + 1;
-                } else {
-                    right = mid - 1;
-                }
-                
-                document.body.removeChild(temp);
-            }
-            
-            // Truncate if needed
-            if (maxLength < text.length) {
-                console.log('Truncating text from', text.length, 'to', maxLength, 'characters');
-                textDiv.textContent = text.substring(0, maxLength);
-                
-                // Move cursor to end
-                const range = document.createRange();
-                range.selectNodeContents(textDiv);
-                range.collapse(false);
-                const selection = window.getSelection();
-                selection.removeAllRanges();
-                selection.addRange(range);
-            }
+            truncateToFit();
         }
         
         checkHeightLimit();
         debouncedUpdate();
     });
     
-    textDiv.addEventListener('paste', function() {
-        // Let the input handler deal with height limiting
-        setTimeout(() => {
-            debouncedUpdate();
-        }, 100);
+    // Prevent typing when height limit is already exceeded
+    textDiv.addEventListener('keydown', function(e) {
+        if (isHeightExceeded() && !isDeletionKey(e)) {
+            e.preventDefault();
+            return false;
+        }
     });
+    
+    // Prevent pasting when height limit is already exceeded
+    textDiv.addEventListener('paste', function(e) {
+        if (isHeightExceeded()) {
+            e.preventDefault();
+            return false;
+        }
+    });
+    
     
     // Character buttons - simplified
     document.querySelectorAll('.char-button').forEach(btn => {
         btn.addEventListener('click', () => {
+            // Don't add characters if height limit exceeded
+            if (isHeightExceeded()) {
+                return;
+            }
+            
             const char = btn.dataset.char;
             const selection = window.getSelection();
             
@@ -192,6 +162,62 @@ function isHeightExceeded() {
         console.log('Height exceeded:', textDiv.scrollHeight, '>', CONFIG.CANVAS_HEIGHT_MAX);
     }
     return exceeded;
+}
+
+// Check if key is a deletion key (backspace, delete, etc.)
+function isDeletionKey(e) {
+    return e.key === 'Backspace' || e.key === 'Delete' || 
+           (e.ctrlKey && (e.key === 'a' || e.key === 'x' || e.key === 'c'));
+}
+
+// Truncate text to fit within height limit
+function truncateToFit() {
+    const textDiv = document.getElementById('textDiv');
+    let text = textDiv.textContent;
+    let maxLength = 0;
+    
+    // Binary search to find max length that fits
+    let left = 0;
+    let right = text.length;
+    
+    while (left <= right) {
+        const mid = Math.floor((left + right) / 2);
+        const testText = text.substring(0, mid);
+        
+        // Test height with temporary element
+        const temp = document.createElement('div');
+        temp.style.cssText = window.getComputedStyle(textDiv).cssText;
+        temp.style.position = 'absolute';
+        temp.style.visibility = 'hidden';
+        temp.style.height = 'auto';
+        temp.style.maxHeight = 'none';
+        temp.style.width = textDiv.offsetWidth + 'px';
+        temp.textContent = testText;
+        document.body.appendChild(temp);
+        
+        if (temp.scrollHeight <= CONFIG.CANVAS_HEIGHT_MAX) {
+            maxLength = mid;
+            left = mid + 1;
+        } else {
+            right = mid - 1;
+        }
+        
+        document.body.removeChild(temp);
+    }
+    
+    // Truncate if needed
+    if (maxLength < text.length) {
+        console.log('Truncating text from', text.length, 'to', maxLength, 'characters');
+        textDiv.textContent = text.substring(0, maxLength);
+        
+        // Move cursor to end
+        const range = document.createRange();
+        range.selectNodeContents(textDiv);
+        range.collapse(false);
+        const selection = window.getSelection();
+        selection.removeAllRanges();
+        selection.addRange(range);
+    }
 }
 
 function checkHeightLimit() {
