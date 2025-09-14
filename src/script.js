@@ -1,28 +1,45 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.2
+ * Version: 0.1.3
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.2',
+    VERSION: '0.1.3',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
     CANVAS_HEIGHT_MAX: 1200, // Reduced height limit for better UX
     CANVAS_PADDING: 40,
     LINE_HEIGHT: 1.4,
-    DPI_SCALE: 2 // Higher DPI for better quality
+    DPI_SCALE: 3 // Higher DPI for better quality
 };
 
 // Global state
 let currentFontSize = CONFIG.FONT_SIZES.normal;
 let isDark = false;
+
+// Load theme from localStorage
+function loadTheme() {
+    const savedTheme = localStorage.getItem('multigender-theme');
+    if (savedTheme === 'dark') {
+        isDark = true;
+        document.body.classList.add('dark');
+    }
+}
+
+// Save theme to localStorage
+function saveTheme() {
+    localStorage.setItem('multigender-theme', isDark ? 'dark' : 'light');
+}
 let updateTimeout;
 
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     console.log('🚀 MultiGender Hebrew Text Designer v' + CONFIG.VERSION);
+    
+    // Load saved theme
+    loadTheme();
     
     // Initialize textarea (empty by default)
     const textDiv = document.getElementById('textDiv');
@@ -123,10 +140,51 @@ function isHeightExceeded() {
 
 function checkHeightLimit() {
     const textDiv = document.getElementById('textDiv');
-    if (isHeightExceeded()) {
+    const exceeded = isHeightExceeded();
+    
+    if (exceeded) {
         textDiv.style.borderColor = '#e74c3c';
         textDiv.style.backgroundColor = isDark ? '#2d1b1b' : '#fdf2f2';
         textDiv.contentEditable = 'false';
+        
+        // If height exceeded, truncate content
+        if (textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX) {
+            const maxHeight = CONFIG.CANVAS_HEIGHT_MAX;
+            const currentText = textDiv.textContent;
+            
+            // Binary search to find the right amount of text
+            let left = 0;
+            let right = currentText.length;
+            let bestFit = 0;
+            
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                const testText = currentText.substring(0, mid);
+                
+                // Create temporary element to test height
+                const temp = document.createElement('div');
+                temp.style.cssText = window.getComputedStyle(textDiv).cssText;
+                temp.style.position = 'absolute';
+                temp.style.visibility = 'hidden';
+                temp.style.height = 'auto';
+                temp.style.maxHeight = 'none';
+                temp.textContent = testText;
+                document.body.appendChild(temp);
+                
+                if (temp.scrollHeight <= maxHeight) {
+                    bestFit = mid;
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+                
+                document.body.removeChild(temp);
+            }
+            
+            if (bestFit < currentText.length) {
+                textDiv.textContent = currentText.substring(0, bestFit);
+            }
+        }
     } else {
         // Reset to theme-appropriate colors
         textDiv.style.borderColor = '';
@@ -139,6 +197,7 @@ function checkHeightLimit() {
 function toggleTheme() {
     isDark = !isDark;
     document.body.classList.toggle('dark', isDark);
+    saveTheme(); // Save theme preference
     
     // Reset textarea styles to let CSS take over
     const textDiv = document.getElementById('textDiv');
