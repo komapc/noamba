@@ -1,15 +1,15 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.7
+ * Version: 0.1.8
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.7',
+    VERSION: '0.1.8',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
-    CANVAS_HEIGHT_MAX: 1200, // Reduced height limit for better UX
+    CANVAS_HEIGHT_MAX: 1600, // Height limit for textarea
     CANVAS_PADDING: 40,
     LINE_HEIGHT: 1.4,
     DPI_SCALE: 3 // Higher DPI for better quality
@@ -93,6 +93,7 @@ function setupEventListeners() {
             
             // Truncate if needed
             if (maxLength < text.length) {
+                console.log('Truncating text from', text.length, 'to', maxLength, 'characters');
                 textDiv.textContent = text.substring(0, maxLength);
             }
         }
@@ -169,7 +170,11 @@ function debouncedUpdate() {
 // Height limit functions - simplified CSS-based approach
 function isHeightExceeded() {
     const textDiv = document.getElementById('textDiv');
-    return textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
+    const exceeded = textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
+    if (exceeded) {
+        console.log('Height exceeded:', textDiv.scrollHeight, '>', CONFIG.CANVAS_HEIGHT_MAX);
+    }
+    return exceeded;
 }
 
 function checkHeightLimit() {
