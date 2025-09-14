@@ -1,6 +1,6 @@
 {
   "name": "multigender-hebrew-text-designer",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "MultiGender Hebrew Text Designer - A modern text-to-image generator for Hebrew typography",
   "main": "src/script.js",
   "scripts": {
