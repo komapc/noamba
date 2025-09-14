@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Simplified Version
- * Version: 0.1.4
+ * Version: 0.1.5
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.1.4',
+    VERSION: '0.1.5',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -71,6 +71,10 @@ function setupEventListeners() {
     // Character buttons
     document.querySelectorAll('.char-button').forEach(btn => {
         btn.addEventListener('click', () => {
+            if (isHeightExceeded()) {
+                return; // Don't add characters if height limit exceeded
+            }
+            
             const char = btn.dataset.char;
             const selection = window.getSelection();
             
@@ -96,7 +100,7 @@ function setupEventListeners() {
             }
             
             textDiv.focus();
-            checkHeightLimit(); // Just for visual feedback
+            checkHeightLimit();
             debouncedUpdate();
         });
     });
@@ -136,14 +140,15 @@ function checkHeightLimit() {
     const textDiv = document.getElementById('textDiv');
     const exceeded = isHeightExceeded();
     
-    // Just provide visual feedback - CSS handles the actual limiting
     if (exceeded) {
         textDiv.style.borderColor = '#e74c3c';
         textDiv.style.backgroundColor = isDark ? '#2d1b1b' : '#fdf2f2';
+        textDiv.contentEditable = 'false'; // Disable typing
     } else {
         // Reset to theme-appropriate colors
         textDiv.style.borderColor = '';
         textDiv.style.backgroundColor = '';
+        textDiv.contentEditable = 'true'; // Re-enable typing
     }
 }
 
