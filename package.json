@@ -4,17 +4,9 @@
   "description": "MultiGender Hebrew Text Designer",
   "main": "src/script.js",
   "scripts": {
-    "test": "cypress run",
-    "test:open": "cypress open",
-    "test:headed": "cypress run --headed",
-    "serve": "python3 -m http.server 8001",
-    "serve:test": "python3 -m http.server 8001"
-  },
-  "devDependencies": {
-    "cypress": "^13.6.0",
-    "jsdom": "^27.0.0",
-    "phantomjs-prebuilt": "^2.1.16",
-    "puppeteer": "^24.20.0"
+    "serve": "python3 -m http.server 8000",
+    "deploy:staging": "wrangler pages deploy src --project-name staging-amba",
+    "deploy:production": "wrangler pages deploy src --project-name noamba"
   },
   "keywords": [
     "hebrew",

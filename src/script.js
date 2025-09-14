@@ -5,7 +5,7 @@
 
 // Configuration
 const CONFIG = {
-    VERSION: '2.8.0',
+    VERSION: '2.8.1',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 82, normal: 96, large: 110 },
     CANVAS_WIDTH: 1200,
@@ -146,7 +146,7 @@ function updateTextareaStyle() {
     textInput.style.width = isMobile ? '350px' : '500px';
 }
 
-// Generate canvas with proper word wrapping that matches textarea
+// Generate canvas using html2canvas with letterRendering - NO manual wrapping logic
 async function generateCanvas() {
     const canvas = document.getElementById('canvas');
     const textInput = document.getElementById('textInput');
@@ -200,7 +200,6 @@ async function generateCanvas() {
         ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
 }
-
 
 // Share canvas
 function shareCanvas() {
