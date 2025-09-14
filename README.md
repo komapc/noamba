@@ -2,7 +2,7 @@
 
 A modern, client-side text-to-image generator specifically designed for MultiGender Hebrew typography. Features real-time WYSIWYG editing, comprehensive character support, and professional-grade canvas rendering with perfect mobile responsiveness.
 
-**Version:** 0.2.0 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
+**Version:** 0.2.1 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
 
                                
  _____     _____       _       
@@ -65,13 +65,13 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 ### Project structure
 ```
 render-text/
-  .cursor/                   # Development rules and guidelines
   .gitignore                 # Git ignore rules (protects API tokens)
-  wrangler.toml              # Cloudflare Pages configuration
+  wrangler.toml              # Cloudflare Pages staging configuration
+  wrangler.staging.toml      # Cloudflare Pages staging configuration
+  wrangler.production.toml   # Cloudflare Pages production configuration
   package.json               # Project dependencies and scripts
+  package-lock.json          # Dependency lock file
   README.md                  # This file
-  STAGING-SETUP.md           # Staging environment setup guide
-  CLOUDFLARE-PAGES-CONFIG.md # Cloudflare Pages configuration guide
   src/
     index.html              # Main interface with special character keyboard
     styles.css              # Complete styling with CSS variables and responsive design
@@ -141,7 +141,7 @@ Simply open `src/index.html` in a web browser. No server required!
 - Follows semantic versioning (major.minor.patch)
 - Automatic version increment on commits
 - Version displayed in footer with commit tracking
-- Current version: v2.0.4
+- Current version: v0.2.1
 
 **Code Standards:**
 - Modular ES6+ JavaScript architecture
@@ -160,15 +160,17 @@ The app is purely client-side and works on any static file host:
 - **Vercel**: Connect repo, set root directory to `src`
 
 **Configuration Files:**
-- `wrangler.toml` provided for Cloudflare Pages
+- `wrangler.toml` - Staging configuration for Cloudflare Pages
+- `wrangler.staging.toml` - Staging environment configuration
+- `wrangler.production.toml` - Production environment configuration
 - `package.json` configured for static deployment
 - No build process required
 
 ### Staging Environment
 
 **Domain-Based Staging:**
-- **Production**: `noamba.komapc.workers.dev`
-- **Staging**: `staging-noamba.komapc.workers.dev`
+- **Production**: `noamba.pages.dev`
+- **Staging**: `staging-amba.pages.dev`
 
 **Environment Detection:**
 - Automatically detects staging vs production based on domain

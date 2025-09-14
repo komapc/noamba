@@ -130,7 +130,7 @@ h1 {
     min-height: 80px;
     max-height: 1600px;
     padding: 15px;
-    border: 2px solid #3498db;
+    border: none;
     border-radius: 8px;
     font-family: "AlefMultiGenderHebrew", sans-serif;
     direction: rtl;
@@ -155,14 +155,13 @@ h1 {
 }
 
 .text-input:focus {
-    border-color: #2980b9;
+    outline: none;
     box-shadow: 0 0 5px rgba(52, 152, 219, 0.3);
 }
 
 body.dark .text-input {
     background: var(--control-bg-dark);
     color: var(--text-dark);
-    border-color: var(--border-dark);
 }
 
 /* =============================================================================

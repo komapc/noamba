@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.1
+ * Version: 0.2.2
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.1',
+    VERSION: '0.2.2',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -219,12 +219,9 @@ function checkHeightLimit() {
     const exceeded = isHeightExceeded();
     
     if (exceeded) {
-        textDiv.style.borderColor = '#e74c3c';
         textDiv.style.backgroundColor = isDark ? '#2d1b1b' : '#fdf2f2';
-        // Keep contentEditable true so user can delete content to get under limit
     } else {
         // Reset to theme-appropriate colors
-        textDiv.style.borderColor = '';
         textDiv.style.backgroundColor = '';
     }
 }
