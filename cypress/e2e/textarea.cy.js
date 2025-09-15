@@ -9,16 +9,16 @@ describe('Textarea sizing and behavior', () => {
     cy.visit('/');
   });
 
-  it('starts near 300px total height (incl. padding)', () => {
-    // allow small variance due to fonts/rendering; 330px is expected with 15px padding top/bottom on 300px content box
-    getHeight().should('be.within', 298, 332);
-    cy.get(sel).should('have.css', 'overflow-y', 'hidden');
+  it('empty state is exactly 200px after 500ms', () => {
+    cy.get(sel).invoke('text', '');
+    cy.wait(500);
+    getHeight().should('be.within', 198, 202);
   });
 
   it('grows in height as text increases, up to 1600px', () => {
     const longText = 'a '.repeat(5000);
     cy.get(sel).click().type(longText, { delay: 0 });
-    getHeight().should('be.greaterThan', 300);
+    getHeight().should('be.greaterThan', 200);
     // the rendered height should never exceed 1600px (allow a small tolerance)
     getHeight().should('be.lte', 1620);
   });

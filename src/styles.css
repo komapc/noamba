@@ -127,7 +127,7 @@ h1 {
    ============================================================================= */
 .text-input {
     width: 100%;
-    min-height: 270px;
+    min-height: 170px;
     max-height: 1600px;
     padding: 15px;
     border: none;
@@ -292,7 +292,7 @@ body.dark .mg-logo {
     .text-input {
         font-size: 14px;
         padding: 12px;
-        min-height: 270px;
+        min-height: 170px;
         overflow-y: hidden;
     }
     
