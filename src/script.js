@@ -79,6 +79,16 @@ document.addEventListener('DOMContentLoaded', function() {
         updateShareButtonText();
         resizeTextAreaHeight();
     });
+
+    // Ensure layout stabilizes after fonts load (desktop Chrome may shift metrics)
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(() => {
+            resizeTextAreaHeight();
+            generateCanvas();
+        }).catch(() => {
+            // noop
+        });
+    }
 });
 
 // Setup all event listeners

@@ -40,4 +40,16 @@ describe('Textarea sizing and behavior', () => {
     cy.get(sel).click().type(longText, { delay: 0 });
     cy.get(sel).should('have.css', 'overflow-y', 'hidden');
   });
+
+  it('shows Copy on desktop and Share on mobile', () => {
+    // Desktop
+    cy.viewport(1280, 800);
+    cy.visit('/');
+    cy.get('#shareButton').invoke('text').should('contain', 'העתיקו');
+
+    // Mobile
+    cy.viewport(375, 667);
+    cy.visit('/');
+    cy.get('#shareButton').invoke('text').should('contain', 'שתפו');
+  });
 });
