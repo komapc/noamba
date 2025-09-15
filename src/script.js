@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.13
+ * Version: 0.2.14
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.13',
+    VERSION: '0.2.14',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -335,6 +335,24 @@ async function generateCanvas() {
         
         // Draw the captured content onto our canvas
         ctx.drawImage(canvasElement, 0, 0);
+
+        // Signature (bottom-right): "עבמה-{version}"
+        try {
+            const sigText = `עבמה-${CONFIG.VERSION}`;
+            ctx.save();
+            ctx.direction = 'rtl';
+            ctx.font = `${14 * CONFIG.DPI_SCALE}px ${CONFIG.FONT_FAMILY}`;
+            ctx.fillStyle = 'rgba(0,0,0,0.6)';
+            const padding = 10 * CONFIG.DPI_SCALE;
+            const metrics = ctx.measureText(sigText);
+            const textWidth = metrics.width;
+            const x = canvas.width - padding - textWidth;
+            const y = canvas.height - padding;
+            ctx.fillText(sigText, x, y);
+            ctx.restore();
+        } catch (e) {
+            // ignore signature errors
+        }
         
         // Canvas generated successfully
         
