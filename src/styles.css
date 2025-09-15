@@ -138,7 +138,7 @@ h1 {
     white-space: normal;
     word-wrap: break-word;
     overflow-wrap: break-word;
-    font-size: 20px;
+    font-size: 22px;
     line-height: 1.4;
     box-sizing: border-box;
     background: white;
@@ -290,7 +290,7 @@ body.dark .mg-logo {
     }
     
     .text-input {
-        font-size: 14px;
+        font-size: 22px;
         padding: 10px;
         min-height: 180px;
         overflow-y: hidden;

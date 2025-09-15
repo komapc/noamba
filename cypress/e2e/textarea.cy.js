@@ -15,6 +15,14 @@ describe('Textarea sizing and behavior', () => {
     getHeight().should('be.within', 198, 202);
   });
 
+  it('mobile: empty state is 200px after 500ms too', () => {
+    cy.viewport(375, 667);
+    cy.visit('/');
+    cy.get(sel).invoke('text', '');
+    cy.wait(500);
+    getHeight().should('be.within', 198, 202);
+  });
+
   it('grows in height as text increases, up to 1600px', () => {
     const longText = 'a '.repeat(5000);
     cy.get(sel).click().type(longText, { delay: 0 });
