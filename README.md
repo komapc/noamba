@@ -149,6 +149,20 @@ Simply open `src/index.html` in a web browser. No server required!
 - Comprehensive error handling and fallbacks
 - Debug logging for troubleshooting
 
+### Textarea Behavior Specification
+
+- Minimum height: 300px
+- Grows with content up to 1600px
+- Typing is disabled once content would exceed 1600px
+- Vertical scrollbar is never shown; height expands instead
+
+Automated end-to-end tests enforce this behavior (Cypress). Run locally:
+
+```
+npm ci
+npm run test:e2e
+```
+
 ### Deploying (Free Static Hosting)
 
 The app is purely client-side and works on any static file host:
