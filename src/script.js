@@ -1,14 +1,15 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.2
+ * Version: 0.2.10
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.2',
+    VERSION: '0.2.10',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
+    CANVAS_HEIGHT_MIN: 300, // Minimum canvas height
     CANVAS_HEIGHT_MAX: 1600, // Height limit for textarea
     CANVAS_PADDING: 40,
     LINE_HEIGHT: 1.4,
@@ -19,6 +20,12 @@ const CONFIG = {
 let currentFontSize = CONFIG.FONT_SIZES.normal;
 let isDark = false;
 let debugMode = false; // Set to true to show canvas for debugging
+
+// Mobile detection utility
+function isMobile() {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+           (window.innerWidth <= 768);
+}
 
 // Load theme from localStorage
 function loadTheme() {
@@ -35,6 +42,18 @@ function saveTheme() {
 }
 let updateTimeout;
 
+// Update share button text based on device type
+function updateShareButtonText() {
+    const shareButton = document.getElementById('shareButton');
+    if (isMobile()) {
+        shareButton.innerHTML = '📤 שתפו';
+        shareButton.setAttribute('aria-label', 'Share');
+    } else {
+        shareButton.innerHTML = '📋 העתיקו';
+        shareButton.setAttribute('aria-label', 'Copy to clipboard');
+    }
+}
+
 // Initialize app
 document.addEventListener('DOMContentLoaded', function() {
     // Load saved theme
@@ -43,11 +62,23 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize textarea (empty by default)
     const textDiv = document.getElementById('textDiv');
     
+    // Auto-size to min 300 and up to 1600 without scrollbar
+    resizeTextAreaHeight();
+    
+    // Update share button text based on device
+    updateShareButtonText();
+    
     // Generate initial canvas
     generateCanvas();
     
     // Setup event listeners
     setupEventListeners();
+    
+    // Update button text on window resize (for device rotation)
+    window.addEventListener('resize', () => {
+        updateShareButtonText();
+        resizeTextAreaHeight();
+    });
 });
 
 // Setup all event listeners
@@ -62,6 +93,9 @@ function setupEventListeners() {
         if (isHeightExceeded()) {
             truncateToFit();
         }
+        
+        // Auto-resize height based on content
+        resizeTextAreaHeight();
         
         checkHeightLimit();
         debouncedUpdate();
@@ -127,9 +161,13 @@ function setupEventListeners() {
         toggleTheme();
     });
     
-    // Share button
+    // Share button - different behavior for mobile vs desktop
     shareButton.addEventListener('click', () => {
-        shareCanvas();
+        if (isMobile()) {
+            shareCanvas();
+        } else {
+            copyCanvasToClipboard();
+        }
     });
     
     // Keyboard shortcuts
@@ -247,14 +285,29 @@ async function generateCanvas() {
     const canvas = document.getElementById('canvas');
     const textDiv = document.getElementById('textDiv');
     
+    // Ensure height reflects current content before measuring
+    resizeTextAreaHeight();
+    
+    // Always match textarea dimensions exactly
+    const textareaHeight = textDiv.offsetHeight;
+    const textareaWidth = textDiv.offsetWidth;
+    
+    // Set canvas dimensions to exactly match textarea
+    canvas.width = textareaWidth * CONFIG.DPI_SCALE;
+    canvas.height = textareaHeight * CONFIG.DPI_SCALE;
+    canvas.style.width = textareaWidth + 'px';
+    canvas.style.height = textareaHeight + 'px';
+    
+    // Show canvas only in debug mode
+    canvas.style.display = debugMode ? 'block' : 'none';
+    
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     // Get text and process it
     const text = textDiv.textContent;
     if (!text.trim()) {
-        canvas.width = textDiv.offsetWidth * CONFIG.DPI_SCALE;
-        canvas.height = textDiv.offsetHeight * CONFIG.DPI_SCALE;
-        canvas.style.width = textDiv.offsetWidth + 'px';
-        canvas.style.height = textDiv.offsetHeight + 'px';
-        const ctx = canvas.getContext('2d');
+        // Empty text - just fill with background color
         ctx.fillStyle = window.getComputedStyle(textDiv).backgroundColor;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
         return;
@@ -270,24 +323,32 @@ async function generateCanvas() {
             backgroundColor: window.getComputedStyle(textDiv).backgroundColor
         });
         
-        // Set canvas dimensions to match the captured element
-        canvas.width = canvasElement.width;
-        canvas.height = canvasElement.height;
-        canvas.style.width = (canvasElement.width / CONFIG.DPI_SCALE) + 'px';
-        canvas.style.height = (canvasElement.height / CONFIG.DPI_SCALE) + 'px';
-        
-        // Show canvas only in debug mode
-        canvas.style.display = debugMode ? 'block' : 'none';
-        
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        // Draw the captured content onto our canvas
         ctx.drawImage(canvasElement, 0, 0);
         
         // Canvas generated successfully
         
     } catch (error) {
         console.error('Error capturing with HTML2Canvas:', error);
+        // Fallback: fill with background color
+        ctx.fillStyle = window.getComputedStyle(textDiv).backgroundColor;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
     }
+}
+
+// Auto-resize textarea height between 300 and 1600 without scrollbar
+function resizeTextAreaHeight() {
+    const textDiv = document.getElementById('textDiv');
+    if (!textDiv) return;
+    // Temporarily set height to auto to measure scrollHeight
+    textDiv.style.height = 'auto';
+    const paddingTop = parseFloat(getComputedStyle(textDiv).paddingTop) || 0;
+    const paddingBottom = parseFloat(getComputedStyle(textDiv).paddingBottom) || 0;
+    const contentHeight = textDiv.scrollHeight + paddingTop + paddingBottom;
+    const minHeight = 300;
+    const maxHeight = CONFIG.CANVAS_HEIGHT_MAX;
+    const nextHeight = Math.min(Math.max(contentHeight, minHeight), maxHeight);
+    textDiv.style.height = nextHeight + 'px';
 }
 
 // Share canvas to WhatsApp
@@ -312,6 +373,39 @@ function shareCanvas() {
             downloadCanvas();
         }
     }, 'image/png');
+}
+
+// Copy canvas to clipboard
+function copyCanvasToClipboard() {
+    const canvas = document.getElementById('canvas');
+    canvas.toBlob((blob) => {
+        if (navigator.clipboard && navigator.clipboard.write) {
+            const item = new ClipboardItem({ 'image/png': blob });
+            navigator.clipboard.write([item]).then(() => {
+                showCopySuccess();
+            }).catch((error) => {
+                console.error('Failed to copy to clipboard:', error);
+                // Fallback to download
+                downloadCanvas();
+            });
+        } else {
+            // Fallback to download
+            downloadCanvas();
+        }
+    }, 'image/png');
+}
+
+// Show copy success feedback
+function showCopySuccess() {
+    const shareButton = document.getElementById('shareButton');
+    const originalText = shareButton.innerHTML;
+    shareButton.innerHTML = '✅ הועתק!';
+    shareButton.style.background = '#10b981';
+    
+    setTimeout(() => {
+        shareButton.innerHTML = originalText;
+        shareButton.style.background = '';
+    }, 2000);
 }
 
 // Fallback download function

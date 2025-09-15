@@ -127,7 +127,7 @@ h1 {
    ============================================================================= */
 .text-input {
     width: 100%;
-    min-height: 80px;
+    min-height: 300px;
     max-height: 1600px;
     padding: 15px;
     border: none;
@@ -144,7 +144,7 @@ h1 {
     background: white;
     outline: none;
     margin-bottom: 20px;
-    overflow-y: auto;
+    overflow-y: hidden;
     resize: none;
 }
 
@@ -221,9 +221,6 @@ canvas {
     display: none; /* Hidden - only used for sharing */
 }
 
-body.dark canvas { 
-    /* No border styling needed */
-}
 
 /* =============================================================================
    FOOTER
@@ -295,6 +292,8 @@ body.dark .mg-logo {
     .text-input {
         font-size: 14px;
         padding: 12px;
+        min-height: 300px;
+        overflow-y: hidden;
     }
     
     canvas {
