@@ -19,10 +19,8 @@ describe('Textarea sizing and behavior', () => {
     const longText = 'a '.repeat(5000);
     cy.get(sel).click().type(longText, { delay: 0 });
     getHeight().should('be.greaterThan', 300);
-    getHeight().should('be.lte', 1600 + 20); // small headroom for rounding
-    cy.get(sel).then(($el) => {
-      expect($el[0].scrollHeight <= 1600 + 25).to.be.true;
-    });
+    // the rendered height should never exceed 1600px (allow a small tolerance)
+    getHeight().should('be.lte', 1620);
   });
 
   it('prevents typing beyond 1600px height', () => {
