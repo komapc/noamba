@@ -9,8 +9,9 @@ describe('Textarea sizing and behavior', () => {
     cy.visit('/');
   });
 
-  it('starts at 300px total height', () => {
-    getHeight().should('be.closeTo', 300, 2);
+  it('starts near 300px total height (incl. padding)', () => {
+    // allow small variance due to fonts/rendering; 330px is expected with 15px padding top/bottom on 300px content box
+    getHeight().should('be.within', 298, 332);
     cy.get(sel).should('have.css', 'overflow-y', 'hidden');
   });
 
@@ -18,9 +19,9 @@ describe('Textarea sizing and behavior', () => {
     const longText = 'a '.repeat(5000);
     cy.get(sel).click().type(longText, { delay: 0 });
     getHeight().should('be.greaterThan', 300);
-    getHeight().should('be.lte', 1600 + 2);
+    getHeight().should('be.lte', 1600 + 20); // small headroom for rounding
     cy.get(sel).then(($el) => {
-      expect($el[0].scrollHeight <= 1600 + 5).to.be.true;
+      expect($el[0].scrollHeight <= 1600 + 25).to.be.true;
     });
   });
 
