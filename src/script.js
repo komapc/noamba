@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.12
+ * Version: 0.2.13
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.12',
+    VERSION: '0.2.13',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 16, normal: 20, large: 24 },
     CANVAS_WIDTH: 1200,
@@ -355,7 +355,7 @@ function resizeTextAreaHeight() {
     const paddingTop = parseFloat(getComputedStyle(textDiv).paddingTop) || 0;
     const paddingBottom = parseFloat(getComputedStyle(textDiv).paddingBottom) || 0;
     const contentHeight = textDiv.scrollHeight + paddingTop + paddingBottom;
-    const minHeight = 300;
+    const minHeight = 200;
     const maxHeight = CONFIG.CANVAS_HEIGHT_MAX;
     const nextHeight = Math.min(Math.max(contentHeight, minHeight), maxHeight);
     textDiv.style.height = nextHeight + 'px';
