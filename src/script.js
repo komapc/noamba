@@ -1,19 +1,17 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.16
+ * Version: 0.4.1
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.16',
+    VERSION: '0.4.1',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
-    CANVAS_HEIGHT_MIN: 300, // Minimum canvas height
-    CANVAS_HEIGHT_MAX: 1600, // Height limit for textarea
-    CANVAS_PADDING: 40,
     LINE_HEIGHT: 1.4,
-    DPI_SCALE: 3 // Higher DPI for better quality
+    DPI_SCALE: 3, // Higher DPI for better quality
+    DESIRED_EXPORT_FONT_PX: 24
 };
 
 // Global state
@@ -42,6 +40,59 @@ function saveTheme() {
 }
 let updateTimeout;
 
+// ----- Responsive sizing helpers (width-based height rules) -----
+
+function getContainerContentWidth() {
+    const container = document.querySelector('.container');
+    if (!container) return Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+    const styles = window.getComputedStyle(container);
+    const paddingLeft = parseFloat(styles.paddingLeft) || 0;
+    const paddingRight = parseFloat(styles.paddingRight) || 0;
+    return Math.max(0, container.clientWidth - paddingLeft - paddingRight);
+}
+
+function getWidthBasedHeights(widthPx) {
+    // 4) minimal textarea height is 1/6 of its width
+    // 5) maximal textarea height is 4/3 of its width
+    const minHeight = widthPx / 6;
+    const maxHeight = (4 / 3) * widthPx;
+    return { minHeight, maxHeight };
+}
+
+function adjustFontSizeForExport(textDiv, captureScale) {
+    // 7) font size should be adjusted such that it will be 24px on the exported image
+    const desiredExportPx = CONFIG.DESIRED_EXPORT_FONT_PX;
+    const displayFontPx = desiredExportPx / Math.max(1, captureScale);
+    textDiv.style.fontSize = displayFontPx + 'px';
+}
+
+function updateTextAreaDimensions() {
+    const textDiv = document.getElementById('textDiv');
+    if (!textDiv) return;
+
+    // 3) textarea width is max possible (screen size - padding)
+    const availableWidth = getContainerContentWidth();
+    if (availableWidth <= 0) return;
+    textDiv.style.width = availableWidth + 'px';
+
+    // Compute export capture scale relative to fixed canvas width (1200)
+    const captureScale = CONFIG.CANVAS_WIDTH / Math.max(1, textDiv.offsetWidth);
+
+    // Adjust font size BEFORE measuring height so layout is correct
+    adjustFontSizeForExport(textDiv, captureScale);
+
+    // Height rules based on current width
+    const { minHeight, maxHeight } = getWidthBasedHeights(textDiv.offsetWidth);
+
+    // Measure content height and clamp between min and max
+    textDiv.style.height = 'auto';
+    const paddingTop = parseFloat(getComputedStyle(textDiv).paddingTop) || 0;
+    const paddingBottom = parseFloat(getComputedStyle(textDiv).paddingBottom) || 0;
+    const contentHeight = textDiv.scrollHeight + paddingTop + paddingBottom;
+    const nextHeight = Math.min(Math.max(contentHeight, minHeight), maxHeight);
+    textDiv.style.height = nextHeight + 'px';
+}
+
 // Update share button text based on device type
 function updateShareButtonText() {
     const shareButton = document.getElementById('shareButton');
@@ -62,8 +113,8 @@ document.addEventListener('DOMContentLoaded', function() {
     // Initialize textarea (empty by default)
     const textDiv = document.getElementById('textDiv');
     
-    // Auto-size to min 300 and up to 1600 without scrollbar
-    resizeTextAreaHeight();
+    // Apply initial responsive sizing and font adjustment
+    updateTextAreaDimensions();
     
     // Update share button text based on device
     updateShareButtonText();
@@ -74,16 +125,17 @@ document.addEventListener('DOMContentLoaded', function() {
     // Setup event listeners
     setupEventListeners();
     
-    // Update button text on window resize (for device rotation)
+    // Update button text and responsive sizing on window resize (for device rotation)
     window.addEventListener('resize', () => {
         updateShareButtonText();
-        resizeTextAreaHeight();
+        updateTextAreaDimensions();
+        debouncedUpdate();
     });
 
     // Ensure layout stabilizes after fonts load (desktop Chrome may shift metrics)
     if (document.fonts && document.fonts.ready) {
         document.fonts.ready.then(() => {
-            resizeTextAreaHeight();
+            updateTextAreaDimensions();
             generateCanvas();
         }).catch(() => {
             // noop
@@ -104,8 +156,8 @@ function setupEventListeners() {
             truncateToFit();
         }
         
-        // Auto-resize height based on content
-        resizeTextAreaHeight();
+        // Auto-resize height and enforce new rules
+        updateTextAreaDimensions();
         
         checkHeightLimit();
         debouncedUpdate();
@@ -204,7 +256,9 @@ function debouncedUpdate() {
 // Height limit functions - simplified CSS-based approach
 function isHeightExceeded() {
     const textDiv = document.getElementById('textDiv');
-    return textDiv.scrollHeight > CONFIG.CANVAS_HEIGHT_MAX;
+    if (!textDiv) return false;
+    const { maxHeight } = getWidthBasedHeights(textDiv.offsetWidth || getContainerContentWidth());
+    return (textDiv.scrollHeight) > maxHeight;
 }
 
 // Check if key is a deletion key (backspace, delete, etc.)
@@ -238,7 +292,8 @@ function truncateToFit() {
         temp.textContent = testText;
         document.body.appendChild(temp);
         
-        if (temp.scrollHeight <= CONFIG.CANVAS_HEIGHT_MAX) {
+        const { maxHeight } = getWidthBasedHeights(textDiv.offsetWidth);
+        if (temp.scrollHeight <= maxHeight) {
             maxLength = mid;
             left = mid + 1;
         } else {
@@ -295,15 +350,16 @@ async function generateCanvas() {
     const canvas = document.getElementById('canvas');
     const textDiv = document.getElementById('textDiv');
     
-    // Ensure height reflects current content before measuring
-    resizeTextAreaHeight();
+    // Ensure dimensions and font reflect current rules before measuring
+    updateTextAreaDimensions();
     
     // Always match textarea dimensions exactly
     const textareaHeight = textDiv.offsetHeight;
     const textareaWidth = textDiv.offsetWidth;
     
-    // Export policy: fixed backing width 1200px for WhatsApp; scale capture accordingly
-    const exportWidth = CONFIG.CANVAS_WIDTH; // 1200
+    // 1) canvas size width is 1200 (fixed export width)
+    const exportWidth = CONFIG.CANVAS_WIDTH;
+    // 6) canvas is scaled textarea (preserve aspect)
     const captureScale = Math.max(1, exportWidth / Math.max(1, textareaWidth));
     const exportHeight = Math.round(textareaHeight * captureScale);
 
@@ -342,7 +398,7 @@ async function generateCanvas() {
     }
     
     try {
-        // Use html2canvas directly on textarea - exactly like working test file
+        // Use html2canvas directly on textarea
         const canvasElement = await html2canvas(textDiv, {
             // Scale capture so backing store width becomes 1200 regardless of CSS width
             scale: captureScale,
@@ -353,7 +409,6 @@ async function generateCanvas() {
         });
         
         // Draw the captured content onto our canvas
-        // Draw the captured content onto our fixed-size export canvas
         ctx.drawImage(canvasElement, 0, 0, exportWidth, exportHeight);
 
         // Signature (bottom-right): "עבמה-{version}"

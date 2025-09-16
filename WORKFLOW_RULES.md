@@ -37,6 +37,11 @@
 - **`master`**: Production-ready code, production deployments
 - **Feature branches**: New features, experiments
 
+### Version Management Reminder
+
+- Always bump the version in both `src/script.js` (`CONFIG.VERSION`) and `src/index.html` (footer `span.version-small`) with every change.
+- Follow semantic versioning (major.minor.patch). Patch for docs or minor fixes.
+
 ---
 
 **Created**: January 2025  

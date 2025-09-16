@@ -233,5 +233,5 @@ For deployment issues:
 
 ---
 
-**Last Updated**: January 2025  
-**Version**: 1.0.0
+**Last Updated**: September 2025  
+**Version**: 1.0.1

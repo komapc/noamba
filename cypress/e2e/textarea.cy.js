@@ -1,42 +1,56 @@
-describe('Textarea sizing and behavior', () => {
+describe('Textarea sizing and behavior (width-based)', () => {
   const sel = '#textDiv';
 
-  const getHeight = () => {
-    return cy.get(sel).then(($el) => $el[0].getBoundingClientRect().height);
-  };
+  const getRect = () => cy.get(sel).then(($el) => $el[0].getBoundingClientRect());
+  const getWidth = () => getRect().then((r) => r.width);
+  const getHeight = () => getRect().then((r) => r.height);
 
   beforeEach(() => {
+    cy.viewport(1280, 800);
     cy.visit('/');
   });
 
-  it('empty state is exactly 200px after 500ms', () => {
+  it('initial height clamps between width/6 and width*4/3', () => {
     cy.get(sel).invoke('text', '');
-    cy.wait(500);
-    getHeight().should('be.within', 198, 202);
+    cy.wait(300);
+    cy.then(async () => {
+      const r = await getRect();
+      const minH = r.width / 6;
+      const maxH = (4 / 3) * r.width;
+      expect(r.height).to.be.gte(minH - 2);
+      expect(r.height).to.be.lte(maxH + 2);
+    });
   });
 
-  it('mobile: empty state is 200px after 500ms too', () => {
+  it('respects width/6..width*4/3 on mobile too', () => {
     cy.viewport(375, 667);
     cy.visit('/');
     cy.get(sel).invoke('text', '');
-    cy.wait(500);
-    getHeight().should('be.within', 198, 202);
+    cy.wait(300);
+    cy.then(async () => {
+      const r = await getRect();
+      const minH = r.width / 6;
+      const maxH = (4 / 3) * r.width;
+      expect(r.height).to.be.gte(minH - 2);
+      expect(r.height).to.be.lte(maxH + 2);
+    });
   });
 
-  it('grows in height as text increases, up to 1600px', () => {
-    // Use shorter text to reduce typing time
-    const longText = 'a '.repeat(2000);
+  it('grows with text but never exceeds width*4/3', () => {
+    const longText = 'x '.repeat(4000);
     cy.get(sel).click().type(longText, { delay: 0 });
-    getHeight().should('be.greaterThan', 200);
-    // the rendered height should never exceed 1600px (allow a small tolerance)
-    getHeight().should('be.lte', 1620);
+    getHeight().then((h1) => {
+      expect(h1).to.be.greaterThan(0);
+    });
+    getRect().then((r) => {
+      const maxH = (4 / 3) * r.width;
+      expect(r.height).to.be.lte(maxH + 20);
+    });
   });
 
-  it('prevents typing beyond 1600px height', () => {
-    // Use shorter text and test typing prevention more efficiently
-    const longText = 'b '.repeat(3000);
+  it('prevents typing when beyond width*4/3 height', () => {
+    const longText = 'y '.repeat(6000);
     cy.get(sel).click().type(longText, { delay: 0 });
-    // Capture length after typing attempts
     cy.get(sel).invoke('text').then((text1) => {
       cy.get(sel).type('more more more', { delay: 0 });
       cy.get(sel).invoke('text').should((text2) => {
@@ -46,8 +60,7 @@ describe('Textarea sizing and behavior', () => {
   });
 
   it('never shows a vertical scrollbar', () => {
-    // Use shorter text to reduce typing time
-    const longText = 'c '.repeat(3000);
+    const longText = 'z '.repeat(4000);
     cy.get(sel).click().type(longText, { delay: 0 });
     cy.get(sel).should('have.css', 'overflow-y', 'hidden');
   });
