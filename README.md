@@ -2,7 +2,7 @@
 
 A modern, client-side text-to-image generator specifically designed for MultiGender Hebrew typography. Features real-time WYSIWYG editing, comprehensive character support, and professional-grade canvas rendering with perfect mobile responsiveness.
 
-**Version:** 0.2.16 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
+**Version:** 0.2.17 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
 
                                
  _____     _____       _       
@@ -144,7 +144,7 @@ Simply open `src/index.html` in a web browser. No server required!
 - Follows semantic versioning (major.minor.patch)
 - Automatic version increment on commits
 - Version displayed in footer with commit tracking
-- Current version: v0.2.16
+- Current version: v0.2.17
 
 **Code Standards:**
 - Modular ES6+ JavaScript architecture
