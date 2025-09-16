@@ -127,7 +127,9 @@ h1 {
    ============================================================================= */
 .text-input {
     width: 100%;
-    min-height: 180px;
+    max-width: 1200px;
+    height: 200px;
+    min-height: 200px;
     max-height: 1600px;
     padding: 10px;
     border: none;
@@ -143,9 +145,11 @@ h1 {
     box-sizing: border-box;
     background: white;
     outline: none;
-    margin-bottom: 20px;
+    margin: 0 auto 20px auto;
     overflow-y: hidden;
     resize: none;
+    /* Maintain 1:6 aspect ratio on smaller screens */
+    aspect-ratio: 6 / 1;
 }
 
 .text-input:empty:before {
@@ -270,6 +274,30 @@ body.dark .mg-logo {
 }
 
 /* =============================================================================
+   RESPONSIVE BREAKPOINTS
+   ============================================================================= */
+
+/* Large screens - maintain 1200px max width with 200px height */
+@media (min-width: 1200px) {
+    .text-input {
+        width: 1200px;
+        height: 200px;
+        margin: 0 auto 20px auto;
+    }
+}
+
+/* Medium screens - proportional sizing */
+@media (max-width: 1199px) and (min-width: 769px) {
+    .text-input {
+        width: 100%;
+        max-width: 1200px;
+        height: calc(100vw / 6);
+        min-height: 200px;
+        margin: 0 auto 20px auto;
+    }
+}
+
+/* =============================================================================
    MOBILE RESPONSIVE
    ============================================================================= */
 @media (max-width: 768px) {
@@ -292,12 +320,25 @@ body.dark .mg-logo {
     .text-input {
         font-size: 22px;
         padding: 10px;
-        min-height: 180px;
+        /* Maintain 1:6 aspect ratio on mobile */
+        width: 100%;
+        height: calc(100vw / 6 - 20px); /* Account for container padding */
+        min-height: calc(100vw / 6 - 20px);
+        max-height: 1600px;
+        aspect-ratio: 6 / 1;
         overflow-y: hidden;
     }
     
     canvas {
         width: 100%;
         max-width: 100%;
+    }
+}
+
+/* Very small screens - ensure minimum usable height */
+@media (max-width: 480px) {
+    .text-input {
+        min-height: 60px; /* Minimum usable height on very small screens */
+        height: max(calc(100vw / 6 - 20px), 60px);
     }
 }
