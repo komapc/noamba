@@ -25,7 +25,7 @@ jobs:
       - name: Run Cypress tests
         uses: cypress-io/github-action@v6
         with:
-          build: npm run dev:serve -- --yes
-          start: npx http-server ./src -p 8080 -c-1
+          build: echo "no build"
+          start: npx http-server ./src -p 8080 -c-1 | cat
           wait-on: 'http://127.0.0.1:8080'
           browser: chrome
