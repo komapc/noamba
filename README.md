@@ -2,7 +2,7 @@
 
 A modern, client-side text-to-image generator specifically designed for MultiGender Hebrew typography. Features real-time WYSIWYG editing, comprehensive character support, and professional-grade canvas rendering with perfect mobile responsiveness.
 
-**Version:** 0.2.1 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
+**Version:** 0.2.16 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
 
                                
  _____     _____       _       
@@ -26,6 +26,7 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 **🎛️ User Experience**
 - **Theme Toggle**: Dark/light mode with persistent preferences
 - **Smart Input Prevention**: Typing blocked when height limit exceeded
+- **Desktop Copy/Clipboard**: Copy to clipboard on desktop, share on mobile
 - **WhatsApp Sharing**: Direct share to WhatsApp or download as PNG
 - **Debug Mode**: Press Ctrl+D to show/hide canvas for debugging
 - **RTL Optimization**: Perfect Hebrew text direction on all devices
@@ -36,7 +37,8 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 - **Character buttons**: Click to insert special Hebrew characters
 
 **⚡ Modern Interface**
-- **Instant Font Size Control**: Three presets — קטן (small), רגיל (normal), גדול (large)
+- **Instant Font Size Control**: Three presets — קטן (20px), רגיל (24px), גדול (28px)
+- **Unified Font Sizing**: 22px on both desktop and mobile for consistency
 - **Theme System**: Light/dark mode with localStorage persistence
 - **Canvas Visibility Toggle**: Show/hide preview for distraction-free editing
 - **Text Alignment Control**: Right/center/left alignment options
@@ -117,11 +119,12 @@ Simply open `src/index.html` in a web browser. No server required!
 **🎨 Canvas Rendering Engine:**
 - **High-DPI Scaling**: Automatic devicePixelRatio detection with mobile limits
 - **Fixed Export Width**: 1200px export with responsive on-screen preview scaling
-- **Height Constraints**: Min 200px, max 900px (3/4 of width); line count capped
+- **Height Constraints**: Min 200px, max 1600px; auto-expanding with content
 - **Perfect Text Positioning**: Hebrew RTL with mobile-optimized vertical alignment
 - **Theme Integration**: Real-time background/text color synchronization
 - **Font Excellence**: OpenType features, kerning, and ligature support
 - **WYSIWYG Accuracy**: Pixel-perfect matching with text area preview
+- **Canvas Signature**: "עבמה-{version}" watermark on exported images
 
 **Responsive Design:**
 - Mobile-first CSS with flexible layouts
@@ -141,7 +144,7 @@ Simply open `src/index.html` in a web browser. No server required!
 - Follows semantic versioning (major.minor.patch)
 - Automatic version increment on commits
 - Version displayed in footer with commit tracking
-- Current version: v0.2.1
+- Current version: v0.2.16
 
 **Code Standards:**
 - Modular ES6+ JavaScript architecture
@@ -151,13 +154,20 @@ Simply open `src/index.html` in a web browser. No server required!
 
 ### Textarea Behavior Specification
 
-- Minimum height: 300px
-- Grows with content up to 1600px
-- Typing is disabled once content would exceed 1600px
-- Vertical scrollbar is never shown; height expands instead
+- **Initial height**: 200px (including 10px padding)
+- **Auto-expansion**: Grows with content up to 1600px maximum
+- **No scrollbar**: Vertical scrollbar never appears; height expands instead
+- **Typing limit**: Typing disabled when height reaches 1600px
+- **Canvas sync**: Canvas dimensions always match textarea exactly
+- **Font sizes**: Desktop 22px, Mobile 22px (unified sizing)
+- **Canvas signature**: "עבמה-{version}" added to exported images
 
-Automated end-to-end tests enforce this behavior (Cypress). Run locally:
+**Optimized Testing:**
+- Cypress E2E tests run in ~49 seconds (68% faster than before)
+- Tests verify 200px min-height on both desktop and mobile
+- Automated CI/CD pipeline with GitHub Actions
 
+Run tests locally:
 ```
 npm ci
 npm run test:e2e

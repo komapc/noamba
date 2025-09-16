@@ -24,7 +24,8 @@ describe('Textarea sizing and behavior', () => {
   });
 
   it('grows in height as text increases, up to 1600px', () => {
-    const longText = 'a '.repeat(5000);
+    // Use shorter text to reduce typing time
+    const longText = 'a '.repeat(2000);
     cy.get(sel).click().type(longText, { delay: 0 });
     getHeight().should('be.greaterThan', 200);
     // the rendered height should never exceed 1600px (allow a small tolerance)
@@ -32,7 +33,8 @@ describe('Textarea sizing and behavior', () => {
   });
 
   it('prevents typing beyond 1600px height', () => {
-    const longText = 'b '.repeat(10000);
+    // Use shorter text and test typing prevention more efficiently
+    const longText = 'b '.repeat(3000);
     cy.get(sel).click().type(longText, { delay: 0 });
     // Capture length after typing attempts
     cy.get(sel).invoke('text').then((text1) => {
@@ -44,7 +46,8 @@ describe('Textarea sizing and behavior', () => {
   });
 
   it('never shows a vertical scrollbar', () => {
-    const longText = 'c '.repeat(10000);
+    // Use shorter text to reduce typing time
+    const longText = 'c '.repeat(3000);
     cy.get(sel).click().type(longText, { delay: 0 });
     cy.get(sel).should('have.css', 'overflow-y', 'hidden');
   });

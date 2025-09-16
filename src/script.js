@@ -7,7 +7,7 @@
 const CONFIG = {
     VERSION: '0.2.16',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
-    FONT_SIZES: { small: 16, normal: 20, large: 24 },
+    FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
     CANVAS_HEIGHT_MIN: 300, // Minimum canvas height
     CANVAS_HEIGHT_MAX: 1600, // Height limit for textarea
