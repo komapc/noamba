@@ -2,9 +2,9 @@ name: CI
 
 on:
   push:
-    branches: [ main, staging ]
+    branches: [ master, staging ]
   pull_request:
-    branches: [ main, staging ]
+    branches: [ master, staging ]
 
 jobs:
   e2e:
@@ -16,10 +16,16 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 18
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
       - name: Run Cypress tests
-        run: npm run test:e2e
+        uses: cypress-io/github-action@v6
+        with:
+          build: echo "no build"
+          start: npx http-server ./src -p 8080 -c-1 | cat
+          wait-on: 'http://127.0.0.1:8080'
+          browser: chrome

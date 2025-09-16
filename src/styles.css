@@ -128,8 +128,8 @@ h1 {
 .text-input {
     width: 100%;
     max-width: 1200px;
-    height: 200px;
-    min-height: 200px;
+    height: 180px; /* 200px visual incl. 10px padding top/bottom */
+    min-height: 180px;
     max-height: 1600px;
     padding: 10px;
     border: none;
@@ -281,7 +281,7 @@ body.dark .mg-logo {
 @media (min-width: 1200px) {
     .text-input {
         width: 1200px;
-        height: 200px;
+        height: 180px; /* keep 200px visual incl. padding */
         margin: 0 auto 20px auto;
     }
 }
@@ -291,8 +291,8 @@ body.dark .mg-logo {
     .text-input {
         width: 100%;
         max-width: 1200px;
-        height: calc(100vw / 6);
-        min-height: 200px;
+        height: calc(100vw / 6 - 20px); /* subtract padding for visual match */
+        min-height: 180px;
         margin: 0 auto 20px auto;
     }
 }

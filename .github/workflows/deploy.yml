@@ -15,7 +15,16 @@ jobs:
     if: github.ref == 'refs/heads/staging'
     runs-on: ubuntu-latest
     name: Deploy to Staging
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      - name: Check secrets (staging)
+        run: |
+          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ]; then
+            echo "Skipping deploy: Cloudflare secrets are missing";
+            echo "skip=true" >> $GITHUB_ENV;
+          fi
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -26,12 +35,15 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
+        if: env.skip != 'true'
         run: npm ci
 
       - name: Run tests
+        if: env.skip != 'true'
         run: npm run test:e2e
 
       - name: Deploy to Cloudflare Pages (Staging)
+        if: env.skip != 'true'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
@@ -44,7 +56,16 @@ jobs:
     if: github.ref == 'refs/heads/master'
     runs-on: ubuntu-latest
     name: Deploy to Production
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
     steps:
+      - name: Check secrets (production)
+        run: |
+          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ]; then
+            echo "Skipping deploy: Cloudflare secrets are missing";
+            echo "skip=true" >> $GITHUB_ENV;
+          fi
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -55,12 +76,15 @@ jobs:
           cache: 'npm'
 
       - name: Install dependencies
+        if: env.skip != 'true'
         run: npm ci
 
       - name: Run tests
+        if: env.skip != 'true'
         run: npm run test:e2e
 
       - name: Deploy to Cloudflare Pages (Production)
+        if: env.skip != 'true'
         uses: cloudflare/pages-action@v1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
