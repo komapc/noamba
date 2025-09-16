@@ -173,37 +173,54 @@ npm ci
 npm run test:e2e
 ```
 
-### Deploying (Free Static Hosting)
+### Deploying (Automatic CI/CD)
 
-The app is purely client-side and works on any static file host:
+The app uses **Cloudflare Pages** with automatic deployment via GitHub Actions:
 
-**Recommended Platforms:**
-- **Cloudflare Pages**: Connect repo, output directory `src`, build command `echo "no build"`
+**🚀 Automatic Deployment:**
+- **Staging**: Pushes to `staging` branch → `staging-amba.pages.dev`
+- **Production**: Pushes to `master` branch → `noamba.pages.dev`
+- **Preview**: Pull requests → staging preview environment
+
+**⚙️ Setup Required:**
+1. Add GitHub Secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
+2. Push to `staging` or `master` branch
+3. GitHub Actions handles the rest automatically
+
+**📁 Configuration Files:**
+- `wrangler.toml` - Default configuration
+- `wrangler.staging.toml` - Staging environment
+- `wrangler.production.toml` - Production environment
+- `.github/workflows/deploy.yml` - GitHub Actions workflow
+- `DEPLOYMENT.md` - Complete deployment guide
+
+**🔧 Manual Deployment:**
+```bash
+npm run deploy:staging    # Deploy to staging
+npm run deploy:production # Deploy to production
+```
+
+**Alternative Platforms:**
 - **Netlify**: Upload `src/` folder or connect repo with `src` as publish directory
 - **GitHub Pages**: Copy `src/` contents to `docs/` and enable Pages
 - **Vercel**: Connect repo, set root directory to `src`
 
-**Configuration Files:**
-- `wrangler.toml` - Staging configuration for Cloudflare Pages
-- `wrangler.staging.toml` - Staging environment configuration
-- `wrangler.production.toml` - Production environment configuration
-- `package.json` configured for static deployment
-- No build process required
-
 ### Staging Environment
 
-**Domain-Based Staging:**
-- **Production**: `noamba.pages.dev`
-- **Staging**: `staging-amba.pages.dev`
+**🌐 Domain-Based Environments:**
+- **Production**: `noamba.pages.dev` (master branch)
+- **Staging**: `staging-amba.pages.dev` (staging branch)
 
-**Environment Detection:**
+**🔍 Environment Detection:**
 - Automatically detects staging vs production based on domain
 - Staging shows orange `[STAGING]` badge in header
 - Console logging shows current environment
+- Visual indicators help distinguish environments
 
-**Deployment:**
-- Staging branch deploys to staging domain
-- Master branch deploys to production domain
+**🚀 Automatic Deployment:**
+- **Staging Branch** → `staging-amba.pages.dev` (automatic on push)
+- **Master Branch** → `noamba.pages.dev` (automatic on push)
+- **Pull Requests** → Preview environment (automatic)
 - Environment variables and visual indicators automatically configured
 
 ### Fonts and Licensing

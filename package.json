@@ -5,12 +5,16 @@
   "main": "src/script.js",
   "scripts": {
     "serve": "python3 -m http.server 8000",
-    "deploy:staging": "wrangler pages deploy src --project-name staging-amba",
-    "deploy:production": "wrangler pages deploy src --project-name noamba",
+    "deploy:staging": "wrangler pages deploy src --project-name staging-amba --config wrangler.staging.toml",
+    "deploy:production": "wrangler pages deploy src --project-name noamba --config wrangler.production.toml",
+    "deploy:staging:ci": "wrangler pages deploy src --project-name staging-amba --config wrangler.staging.toml --compatibility-date 2025-01-15",
+    "deploy:production:ci": "wrangler pages deploy src --project-name noamba --config wrangler.production.toml --compatibility-date 2025-01-15",
     "dev:serve": "npx http-server ./src -p 8080 -c-1",
     "test:e2e": "start-server-and-test dev:serve http://127.0.0.1:8080 cypress:run",
     "cypress:open": "cypress open",
-    "cypress:run": "cypress run --browser chrome --headless"
+    "cypress:run": "cypress run --browser chrome --headless",
+    "deploy:check": "echo 'Checking deployment configuration...' && wrangler pages project list",
+    "deploy:status": "echo 'Checking deployment status...' && wrangler pages deployment list --project-name staging-amba && wrangler pages deployment list --project-name noamba"
   },
   "keywords": [
     "hebrew",
@@ -30,6 +34,7 @@
   "devDependencies": {
     "cypress": "13.14.2",
     "http-server": "14.1.1",
-    "start-server-and-test": "2.0.3"
+    "start-server-and-test": "2.0.3",
+    "wrangler": "^3.78.12"
   }
 }
