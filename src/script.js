@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.14
+ * Version: 0.2.16
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.14',
+    VERSION: '0.2.16',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
@@ -302,11 +302,29 @@ async function generateCanvas() {
     const textareaHeight = textDiv.offsetHeight;
     const textareaWidth = textDiv.offsetWidth;
     
-    // Set canvas dimensions to exactly match textarea
-    canvas.width = textareaWidth * CONFIG.DPI_SCALE;
-    canvas.height = textareaHeight * CONFIG.DPI_SCALE;
+    // Export policy: fixed backing width 1200px for WhatsApp; scale capture accordingly
+    const exportWidth = CONFIG.CANVAS_WIDTH; // 1200
+    const captureScale = Math.max(1, exportWidth / Math.max(1, textareaWidth));
+    const exportHeight = Math.round(textareaHeight * captureScale);
+
+    // Backing store size is fixed 1200 x proportional
+    canvas.width = exportWidth;
+    canvas.height = exportHeight;
+    // CSS size matches on-screen textarea
     canvas.style.width = textareaWidth + 'px';
     canvas.style.height = textareaHeight + 'px';
+    try {
+        console.log('[Canvas]', {
+            cssWidthPx: textareaWidth,
+            cssHeightPx: textareaHeight,
+            devicePixelRatio: window.devicePixelRatio || 1,
+            captureScale,
+            exportWidth,
+            exportHeight,
+            backingWidth: canvas.width,
+            backingHeight: canvas.height
+        });
+    } catch (_) {}
     
     // Show canvas only in debug mode
     canvas.style.display = debugMode ? 'block' : 'none';
@@ -326,7 +344,8 @@ async function generateCanvas() {
     try {
         // Use html2canvas directly on textarea - exactly like working test file
         const canvasElement = await html2canvas(textDiv, {
-            scale: CONFIG.DPI_SCALE,
+            // Scale capture so backing store width becomes 1200 regardless of CSS width
+            scale: captureScale,
             letterRendering: true,
             useCORS: true,
             allowTaint: true,
@@ -334,7 +353,8 @@ async function generateCanvas() {
         });
         
         // Draw the captured content onto our canvas
-        ctx.drawImage(canvasElement, 0, 0);
+        // Draw the captured content onto our fixed-size export canvas
+        ctx.drawImage(canvasElement, 0, 0, exportWidth, exportHeight);
 
         // Signature (bottom-right): "עבמה-{version}"
         try {

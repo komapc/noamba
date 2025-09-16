@@ -10,6 +10,11 @@ on:
       - master
       - staging
 
+# Required so the action can create GitHub Deployments without 403
+permissions:
+  contents: read
+  deployments: write
+
 jobs:
   deploy-staging:
     if: github.ref == 'refs/heads/staging'
