@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.17
+ * Version: 0.2.10
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.17',
+    VERSION: '0.2.10',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
