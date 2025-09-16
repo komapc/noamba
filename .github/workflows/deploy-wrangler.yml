@@ -1,11 +1,7 @@
 name: Deploy with Wrangler
 
 on:
-  push:
-    branches:
-      - master
-      - staging
-  workflow_dispatch: # Allow manual triggering
+  workflow_dispatch: # Only manual triggering
 
 jobs:
   deploy-staging:
@@ -13,6 +9,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy Staging with Wrangler
     steps:
+      - name: Check for required secrets
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "❌ CLOUDFLARE_API_TOKEN secret is not set"
+            echo "Please add CLOUDFLARE_API_TOKEN to repository secrets"
+            exit 1
+          fi
+          echo "✅ Required secrets are available"
       - name: Checkout code
         uses: actions/checkout@v4
 
@@ -40,6 +44,14 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy Production with Wrangler
     steps:
+      - name: Check for required secrets
+        run: |
+          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+            echo "❌ CLOUDFLARE_API_TOKEN secret is not set"
+            echo "Please add CLOUDFLARE_API_TOKEN to repository secrets"
+            exit 1
+          fi
+          echo "✅ Required secrets are available"
       - name: Checkout code
         uses: actions/checkout@v4
 
