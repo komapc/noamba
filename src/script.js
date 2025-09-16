@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.2.14
+ * Version: 0.2.15
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.2.14',
+    VERSION: '0.2.15',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
@@ -307,6 +307,16 @@ async function generateCanvas() {
     canvas.height = textareaHeight * CONFIG.DPI_SCALE;
     canvas.style.width = textareaWidth + 'px';
     canvas.style.height = textareaHeight + 'px';
+    try {
+        console.log('[Canvas]', {
+            cssWidthPx: textareaWidth,
+            cssHeightPx: textareaHeight,
+            devicePixelRatio: window.devicePixelRatio || 1,
+            dpiScale: CONFIG.DPI_SCALE,
+            backingWidth: canvas.width,
+            backingHeight: canvas.height
+        });
+    } catch (_) {}
     
     // Show canvas only in debug mode
     canvas.style.display = debugMode ? 'block' : 'none';
