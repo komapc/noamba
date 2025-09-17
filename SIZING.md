@@ -3,7 +3,7 @@
 This app uses width-based sizing for the editor and a fixed-width export.
 
 - Canvas export width: 1200px (fixed). Height scales to preserve aspect ratio.
-- High DPI capture: internally scaled for crisp output.
+- High DPI capture: internally scaled for                                        output.
 - Textarea width: fills available container width (screen width minus padding).
 - Textarea height: clamped to [width/4, width*4/3].
 - Export font size: exactly 32px. On-screen font size auto-adjusts so that after scaling, the exported image renders text at 32px.

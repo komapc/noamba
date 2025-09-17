@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.5
+ * Version: 0.4.6
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.4.5',
+    VERSION: '0.4.6',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
@@ -21,8 +21,14 @@ let debugMode = false; // Set to true to show canvas for debugging
 
 // Mobile detection utility
 function isMobile() {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-           (window.innerWidth <= 768);
+    // Check for touch capability and screen size
+    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+    const isSmallScreen = window.innerWidth <= 768;
+    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    
+    // For testing: if screen width is <= 768, consider it mobile
+    // This ensures Cypress tests work correctly
+    return isMobileUA || (isSmallScreen) || (hasTouch && isSmallScreen);
 }
 
 // Load theme from localStorage
@@ -97,12 +103,24 @@ function updateTextAreaDimensions() {
 // Update share button text based on device type
 function updateShareButtonText() {
     const shareButton = document.getElementById('shareButton');
-    if (isMobile()) {
+    const mobile = isMobile();
+    
+    if (mobile) {
         shareButton.innerHTML = '📤 שתפו';
         shareButton.setAttribute('aria-label', 'Share');
     } else {
         shareButton.innerHTML = '📋 העתיקו';
         shareButton.setAttribute('aria-label', 'Copy to clipboard');
+    }
+    
+    // Debug logging (only when detection changes)
+    if (window.debugMobileDetection) {
+        console.log('[Mobile Detection]', {
+            isMobile: mobile,
+            hasTouch: 'ontouchstart' in window || navigator.maxTouchPoints > 0,
+            screenWidth: window.innerWidth,
+            userAgent: navigator.userAgent.substring(0, 50) + '...'
+        });
     }
 }
 
@@ -226,9 +244,13 @@ function setupEventListeners() {
     
     // Share button - different behavior for mobile vs desktop
     shareButton.addEventListener('click', () => {
-        if (isMobile()) {
+        const mobile = isMobile();
+        
+        if (mobile) {
+            // Mobile: Use Web Share API or download
             shareCanvas();
         } else {
+            // Desktop: Copy to clipboard
             copyCanvasToClipboard();
         }
     });
@@ -244,6 +266,12 @@ function setupEventListeners() {
             debugMode = !debugMode;
             const canvas = document.getElementById('canvas');
             canvas.style.display = debugMode ? 'block' : 'none';
+        }
+        if (e.key === 'm' && e.ctrlKey) {
+            e.preventDefault();
+            window.debugMobileDetection = !window.debugMobileDetection;
+            console.log('Mobile detection debugging:', window.debugMobileDetection ? 'ON' : 'OFF');
+            updateShareButtonText(); // Trigger immediate check
         }
     });
 }
