@@ -1,4 +1,4 @@
-# Sizing and Export Rules (v0.4.3)
+# Sizing and Export Rules (v0.4.5)
 
 This app uses width-based sizing for the editor and a fixed-width export.
 
@@ -6,7 +6,7 @@ This app uses width-based sizing for the editor and a fixed-width export.
 - High DPI capture: internally scaled for crisp output.
 - Textarea width: fills available container width (screen width minus padding).
 - Textarea height: clamped to [width/4, width*4/3].
-- Export font size: exactly 28px. On-screen font size auto-adjusts so that after scaling, the exported image renders text at 28px.
+- Export font size: exactly 32px. On-screen font size auto-adjusts so that after scaling, the exported image renders text at 32px.
 
 Behavior:
 - As the viewport changes, the textarea resizes, preserving the rules above.

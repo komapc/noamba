@@ -1,17 +1,17 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.4
+ * Version: 0.4.5
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.4.4',
+    VERSION: '0.4.5',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
     LINE_HEIGHT: 1.4,
     DPI_SCALE: 3, // Higher DPI for better quality
-    DESIRED_EXPORT_FONT_PX: 28
+    DESIRED_EXPORT_FONT_PX: 32
 };
 
 // Global state
