@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.3
+ * Version: 0.4.4
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.4.3',
+    VERSION: '0.4.4',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
@@ -39,6 +39,7 @@ function saveTheme() {
     localStorage.setItem('multigender-theme', isDark ? 'dark' : 'light');
 }
 let updateTimeout;
+let lastCanvasLog = null;
 
 // ----- Responsive sizing helpers (width-based height rules) -----
 
@@ -370,7 +371,7 @@ async function generateCanvas() {
     canvas.style.width = textareaWidth + 'px';
     canvas.style.height = textareaHeight + 'px';
     try {
-        console.log('[Canvas]', {
+        const currentLog = {
             cssWidthPx: textareaWidth,
             cssHeightPx: textareaHeight,
             devicePixelRatio: window.devicePixelRatio || 1,
@@ -379,7 +380,12 @@ async function generateCanvas() {
             exportHeight,
             backingWidth: canvas.width,
             backingHeight: canvas.height
-        });
+        };
+        const changed = !lastCanvasLog || Object.keys(currentLog).some((k) => currentLog[k] !== lastCanvasLog[k]);
+        if (changed) {
+            console.log('[Canvas]', currentLog);
+            lastCanvasLog = currentLog;
+        }
     } catch (_) {}
     
     // Show canvas only in debug mode
