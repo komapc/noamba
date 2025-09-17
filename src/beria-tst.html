@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Zaghawa Beria Keyboard + Live Mirror</title>
+  <style>
+    @font-face {
+      font-family: "Kedebideri";
+      src: url("fonts/Kedebideri-Regular.woff2") format("woff2"),
+           url("fonts/Kedebideri-Regular.woff") format("woff"),
+           url("fonts/Kedebideri-Regular.ttf") format("truetype");
+    }
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+    }
+    textarea {
+      width: 45%;
+      height: 200px;
+      font-size: 24px;
+      vertical-align: top;
+      margin-right: 20px;
+    }
+    #beria {
+      font-family: "Kedebideri", "Noto Sans", sans-serif;
+    }
+  </style>
+</head>
+<body>
+
+  <textarea id="beria" placeholder="Zaghawa Beria input (your mapping)"></textarea>
+
+  <script>
+    const latin = document.getElementById("latin");
+    const beria = document.getElementById("beria");
+
+    const UPPER_START = 0x16EA0; // A
+    const LOWER_START = 0x16EBB; // a
+
+    const specialMap = {
+      "v": "\u0304", // COMBINING MACRON — Stress Mark
+      "V": "\u0301", // COMBINING ACUTE ACCENT — Rising Tone
+      "`": "\u0300", // COMBINING GRAVE ACCENT — Falling Tone
+      "~": "\u0307"  // COMBINING DOT ABOVE — Advanced Tongue Root
+    };
+
+    // function to map a single character
+    function mapChar(c) {
+      if (specialMap.hasOwnProperty(c)) {
+        return specialMap[c];
+      }
+      else if (/^[A-Z]$/.test(c)) {
+        return String.fromCodePoint(UPPER_START + (c.charCodeAt(0) - 65));
+      }
+      else if (/^[a-z]$/.test(c)) {
+        return String.fromCodePoint(LOWER_START + (c.charCodeAt(0) - 97));
+      }
+      else {
+        return c;
+      }
+    }
+
+    // KEY MAPPING AREA (beria textarea)
+    beria.addEventListener("keydown", function(e) {
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+      const key = e.key;
+      let char = null;
+
+      if (specialMap.hasOwnProperty(key)) {
+        char = specialMap[key];
+      } else if (/^[A-Z]$/.test(key)) {
+        char = String.fromCodePoint(UPPER_START + (key.charCodeAt(0) - 65));
+      } else if (/^[a-z]$/.test(key)) {
+        char = String.fromCodePoint(LOWER_START + (key.charCodeAt(0) - 97));
+      } else {
+        return; // keep default
+      }
+
+      e.preventDefault();
+      insertChar(beria, char);
+    });
+
+    function insertChar(textarea, char) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      textarea.value = value.slice(0, start) + char + value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + char.length;
+    }
+  </script>
+
+</body>
+</html>

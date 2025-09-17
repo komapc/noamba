@@ -1,0 +1,57 @@
+
+<script>
+const beria = document.getElementById("beria");
+
+const UPPER_START = 0x16EA0; // A
+const LOWER_START = 0x16EBB; // a
+
+const specialMap = {
+  "v": "\u0304", // COMBINING MACRON — Stress Mark
+  "V": "\u0301", // COMBINING ACUTE ACCENT — Rising Tone
+  "`": "\u0300", // COMBINING GRAVE ACCENT — Falling Tone
+  "~": "\u0307"  // COMBINING DOT ABOVE — Advanced Tongue Root
+};
+
+function mapChar(c) {
+  if (specialMap[c]) return specialMap[c];
+  if (/^[A-Z]$/.test(c)) return String.fromCodePoint(UPPER_START + (c.charCodeAt(0) - 65));
+  if (/^[a-z]$/.test(c)) return String.fromCodePoint(LOWER_START + (c.charCodeAt(0) - 97));
+  return c;
+}
+
+function insertChar(textarea, char) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  textarea.value = value.slice(0, start) + char + value.slice(end);
+  textarea.selectionStart = textarea.selectionEnd = start + char.length;
+}
+
+/* --- Desktop: block before insert --- */
+beria.addEventListener("keydown", function (e) {
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+  const key = e.key;
+  if (specialMap[key] || /^[A-Za-z]$/.test(key)) {
+    e.preventDefault();
+    insertChar(beria, mapChar(key));
+  }
+});
+
+/* --- Mobile: fix after insert --- */
+beria.addEventListener("input", function (e) {
+  // get last typed char
+  const pos = beria.selectionStart;
+  const value = beria.value;
+
+  if (pos > 0) {
+    const lastChar = value[pos - 1];
+    const mapped = mapChar(lastChar);
+
+    if (mapped !== lastChar) {
+      beria.value = value.slice(0, pos - 1) + mapped + value.slice(pos);
+      beria.selectionStart = beria.selectionEnd = pos; // keep caret
+    }
+  }
+});
+</script>

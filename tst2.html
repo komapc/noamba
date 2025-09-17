@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Zaghawa Beria Keyboard Mapping</title>
+<style>
+  body {
+    font-family: sans-serif;
+    margin: 20px;
+  }
+  textarea {
+    width: 45%;
+    height: 200px;
+    font-size: 24px;
+    vertical-align: top;
+    margin-right: 20px;
+  }
+  #beria {
+    font-family: "Noto Sans", sans-serif; /* Replace with font that supports U+16EA0.. if available */
+  }
+</style>
+</head>
+<body>
+
+<h2>Keyboard Input Comparison</h2>
+<p>Left = Latin (normal typing). Right = Zaghawa Beria mapped typing.</p>
+
+<textarea id="latin" placeholder="Latin input (normal)"></textarea>
+<textarea id="beria" placeholder="Zaghawa Beria input"></textarea>
+
+<script>
+const beria = document.getElementById("beria");
+
+// Code point bases for Beria alphabet
+const UPPER_START = 0x16EA0; // A
+const LOWER_START = 0x16EBB; // a
+
+// Special mappings
+// v : Stress Mark
+// V : Rising Tone
+// ` : Falling Tone
+// ~ : Advanced Tongue Root
+const specialMap = {
+  "v": "\u0304", // COMBINING MACRON
+  "V": "\u0301", // COMBINING ACUTE ACCENT
+  "`": "\u0300", // COMBINING GRAVE ACCENT
+  "~": "\u0307"  // COMBINING DOT ABOVE
+};
+
+beria.addEventListener("keydown", function (e) {
+  // Allow default if Ctrl/Alt/Meta are held
+  if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+  let char = null;
+
+  if (specialMap.hasOwnProperty(e.key)) {
+    // Handle special tone mark keys
+    char = specialMap[e.key];
+  } else if (/^[A-Z]$/.test(e.key)) {
+    // Uppercase Latin → Beria uppercase
+    char = String.fromCodePoint(UPPER_START + (e.key.charCodeAt(0) - 65));
+  } else if (/^[a-z]$/.test(e.key)) {
+    // Lowercase Latin → Beria lowercase
+    char = String.fromCodePoint(LOWER_START + (e.key.charCodeAt(0) - 97));
+  } else {
+    // Any other key (digits, space, punctuation…) → keep normal
+    return;
+  }
+
+  // Insert replacement character
+  e.preventDefault();
+  insertChar(beria, char);
+});
+
+function insertChar(textarea, char) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  textarea.value = value.slice(0, start) + char + value.slice(end);
+  textarea.selectionStart = textarea.selectionEnd = start + char.length;
+}
+</script>
+
+</body>
+</html>

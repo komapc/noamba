@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Beria Keyboard Mapping</title>
+<style>
+  textarea {
+    width: 400px;
+    height: 120px;
+    font-size: 24px;
+    font-family: "Noto Sans", sans-serif; /* replace with font that supports U+16EA0.. */
+  }
+</style>
+</head>
+<body>
+
+<textarea id="beria" placeholder="Type here..."></textarea>
+
+<script>
+const textarea = document.getElementById("beria");
+
+// Base code points
+const UPPER_START = 0x16EA0; // A -> Arkab
+const LOWER_START = 0x16EBB; // a -> arkab
+
+textarea.addEventListener("keydown", function (e) {
+  // Only intercept plain letters
+  if (/^[A-Z]$/.test(e.key)) {
+    e.preventDefault();
+    const codePoint = UPPER_START + (e.key.charCodeAt(0) - 65);
+    insertChar(String.fromCodePoint(codePoint));
+  } else if (/^[a-z]$/.test(e.key)) {
+    e.preventDefault();
+    const codePoint = LOWER_START + (e.key.charCodeAt(0) - 97);
+    insertChar(String.fromCodePoint(codePoint));
+  }
+});
+
+function insertChar(char) {
+  const start = textarea.selectionStart;
+  const end = textarea.selectionEnd;
+  const value = textarea.value;
+  textarea.value = value.slice(0, start) + char + value.slice(end);
+  textarea.selectionStart = textarea.selectionEnd = start + char.length;
+}
+</script>
+
+</body>
+</html>
