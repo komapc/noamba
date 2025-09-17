@@ -4,11 +4,11 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 
 **Version:** 0.2.17 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
 
-                               
- _____     _____       _       
-|   | |___|  _  |_____| |_ ___ 
-| | | | . |     |     | . | .'|
-|_|___|___|__|__|_|_|_|___|__,|
+
+   _____       _
+3 |  _  |_____| |_ ___
+  |     |     | . | .'|
+  |__|__|_|_|_|___|__,|
 
 ### ✨ Features
 
@@ -95,7 +95,7 @@ Simply open `src/index.html` in a web browser. No server required!
 
 **Controls:**
 - **Font Size**: Select קטן / רגיל / גדול (WhatsApp-like presets)
-- **Theme Toggle**: 🌓 button for light/dark mode switching  
+- **Theme Toggle**: 🌓 button for light/dark mode switching
 - **Canvas Toggle**: 👁️ button to show/hide canvas preview
 - **Text Alignment**: Dropdown for right/center/left alignment
 - **About**: אודות link for project information
@@ -179,7 +179,7 @@ The app uses **Cloudflare Pages** with automatic deployment via GitHub Actions:
 
 **🚀 Automatic Deployment:**
 - **Staging**: Pushes to `staging` branch → `staging-amba.pages.dev`
-- **Production**: Pushes to `master` branch → `noamba.pages.dev`
+- **Production**: Pushes to `master` branch → `3amba.pages.dev`
 - **Preview**: Pull requests → staging preview environment
 
 **⚙️ Setup Required:**
@@ -208,8 +208,8 @@ npm run deploy:production # Deploy to production
 ### Staging Environment
 
 **🌐 Domain-Based Environments:**
-- **Production**: `noamba.pages.dev` (master branch)
-- **Staging**: `staging-amba.pages.dev` (staging branch)
+- **Production**: `3amba.pages.dev` (master branch)
+- **Staging**: `staging.3amba.pages.dev` (staging branch)
 
 **🔍 Environment Detection:**
 - Automatically detects staging vs production based on domain
@@ -218,8 +218,8 @@ npm run deploy:production # Deploy to production
 - Visual indicators help distinguish environments
 
 **🚀 Automatic Deployment:**
-- **Staging Branch** → `staging-amba.pages.dev` (automatic on push)
-- **Master Branch** → `noamba.pages.dev` (automatic on push)
+- **Staging Branch** → `staging.3amba.pages.dev` (automatic on push)
+- **Master Branch** → `3amba.pages.dev` (automatic on push)
 - **Pull Requests** → Preview environment (automatic)
 - Environment variables and visual indicators automatically configured
 

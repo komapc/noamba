@@ -6,8 +6,8 @@ This project uses **Cloudflare Pages** for hosting with automatic deployment via
 
 ### Environments
 
-- **Staging**: `staging-amba.pages.dev` (deploys from `staging` branch)
-- **Production**: `noamba.pages.dev` (deploys from `master` branch)
+- **Staging**: `staging.3amba.pages.dev` (deploys from `staging` branch)
+- **Production**: `3amba.pages.dev` (deploys from `master` branch)
 
 ## Automatic Deployment
 
@@ -46,9 +46,9 @@ Find your Cloudflare Account ID:
 
 | Branch | Environment | URL | Trigger |
 |--------|-------------|-----|---------|
-| `staging` | Staging | `staging-amba.pages.dev` | Push to staging |
-| `master` | Production | `noamba.pages.dev` | Push to master |
-| Any PR | Preview | `staging-amba.pages.dev` | Pull Request |
+| `staging` | Staging | `staging.3amba.pages.dev` | Push to staging |
+| `master` | Production | `3amba.pages.dev` | Push to master |
+| Any PR | Preview | `staging.3amba.pages.dev` | Pull Request |
 
 ## Manual Deployment
 
@@ -127,7 +127,7 @@ Error: Authentication required
 ```
 Error: Project 'staging-amba' not found
 ```
-**Solution**: 
+**Solution**:
 - Verify project names in `wrangler.*.toml` files
 - Check Cloudflare Pages dashboard for correct project names
 - Ensure `CLOUDFLARE_ACCOUNT_ID` is correct
@@ -233,5 +233,5 @@ For deployment issues:
 
 ---
 
-**Last Updated**: September 2025  
+**Last Updated**: September 2025
 **Version**: 1.0.1

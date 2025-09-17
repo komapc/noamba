@@ -74,11 +74,11 @@ echo "🔧 Checking Cloudflare configuration..."
 
 if [ -f "wrangler.staging.toml" ] && [ -f "wrangler.production.toml" ]; then
     echo "  ✅ Wrangler configuration files present"
-    
+
     # Extract project names
     STAGING_PROJECT=$(grep "name = " wrangler.staging.toml | cut -d'"' -f2)
     PRODUCTION_PROJECT=$(grep "name = " wrangler.production.toml | cut -d'"' -f2)
-    
+
     echo "  📍 Staging project: $STAGING_PROJECT"
     echo "  📍 Production project: $PRODUCTION_PROJECT"
 else
@@ -92,10 +92,10 @@ echo "🤖 Checking GitHub Actions..."
 
 if [ -d ".github/workflows" ]; then
     echo "  ✅ GitHub Actions directory present"
-    
+
     workflow_count=$(find .github/workflows -name "*.yml" -o -name "*.yaml" | wc -l)
     echo "  📊 Workflow files: $workflow_count"
-    
+
     for workflow in .github/workflows/*.yml .github/workflows/*.yaml; do
         if [ -f "$workflow" ]; then
             echo "    - $(basename "$workflow")"
@@ -125,7 +125,7 @@ echo "   - Create project: $PRODUCTION_PROJECT"
 echo ""
 echo "3. 🚀 Test the deployment:"
 echo "   - Push to 'staging' branch → deploys to staging-amba.pages.dev"
-echo "   - Push to 'master' branch → deploys to noamba.pages.dev"
+echo "   - Push to 'master' branch → deploys to 3amba.pages.dev"
 echo ""
 echo "4. 📚 Read the documentation:"
 echo "   - See DEPLOYMENT.md for detailed instructions"
@@ -137,10 +137,10 @@ echo "🧪 Testing setup..."
 
 if command -v npm &> /dev/null; then
     echo "  ✅ npm is available"
-    
+
     if [ -f "package-lock.json" ]; then
         echo "  ✅ Dependencies are installed"
-        
+
         echo ""
         echo "🔬 Running tests to verify everything works..."
         if npm run test:e2e; then
