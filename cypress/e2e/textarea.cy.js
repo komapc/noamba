@@ -72,7 +72,7 @@ describe('Textarea sizing and behavior (width-based)', () => {
     cy.get(sel).should('have.css', 'overflow-y', 'hidden');
   });
 
-  it('shows Copy on desktop and Share on mobile', () => {
+  it('shows Copy button on both desktop and mobile', () => {
     // Desktop
     cy.viewport(1280, 800);
     cy.visit('/');
@@ -81,6 +81,6 @@ describe('Textarea sizing and behavior (width-based)', () => {
     // Mobile
     cy.viewport(375, 667);
     cy.visit('/');
-    cy.get('#shareButton').invoke('text').should('contain', 'שתפו');
+    cy.get('#shareButton').invoke('text').should('contain', 'העתיקו');
   });
 });

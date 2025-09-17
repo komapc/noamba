@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.6
+ * Version: 0.4.7
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.4.6',
+    VERSION: '0.4.7',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
@@ -20,15 +20,8 @@ let isDark = false;
 let debugMode = false; // Set to true to show canvas for debugging
 
 // Mobile detection utility
-function isMobile() {
-    // Check for touch capability and screen size
-    const hasTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-    const isSmallScreen = window.innerWidth <= 768;
-    const isMobileUA = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-    
-    // For testing: if screen width is <= 768, consider it mobile
-    // This ensures Cypress tests work correctly
-    return isMobileUA || (isSmallScreen) || (hasTouch && isSmallScreen);
+function isMobile() {    
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 }
 
 // Load theme from localStorage
@@ -100,18 +93,14 @@ function updateTextAreaDimensions() {
     textDiv.style.height = nextHeight + 'px';
 }
 
-// Update share button text based on device type
+// Update share button text - unified for both mobile and desktop
 function updateShareButtonText() {
     const shareButton = document.getElementById('shareButton');
     const mobile = isMobile();
     
-    if (mobile) {
-        shareButton.innerHTML = '📤 שתפו';
-        shareButton.setAttribute('aria-label', 'Share');
-    } else {
-        shareButton.innerHTML = '📋 העתיקו';
-        shareButton.setAttribute('aria-label', 'Copy to clipboard');
-    }
+    // Show "Copy to clipboard" on both mobile and desktop
+    shareButton.innerHTML = '📋 העתיקו';
+    shareButton.setAttribute('aria-label', 'Copy to clipboard');
     
     // Debug logging (only when detection changes)
     if (window.debugMobileDetection) {
