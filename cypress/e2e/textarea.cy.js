@@ -1,7 +1,10 @@
 describe('Textarea sizing and behavior (width-based)', () => {
   const sel = '#textDiv';
 
-  const getRect = () => cy.get(sel).then(($el) => $el[0].getBoundingClientRect());
+  const getRect = () => cy.get(sel).then(($el) => {
+    const rect = $el[0].getBoundingClientRect();
+    return rect.width > 0 ? rect : null;
+  });
   const getWidth = () => getRect().then((r) => r.width);
   const getHeight = () => getRect().then((r) => r.height);
 
@@ -13,8 +16,10 @@ describe('Textarea sizing and behavior (width-based)', () => {
   it('initial height clamps between width/6 and width*4/3', () => {
     cy.get(sel).invoke('text', '');
     cy.wait(300);
-    cy.then(async () => {
-      const r = await getRect();
+    cy.get(sel).should('be.visible');
+    getRect().then((r) => {
+      expect(r).to.not.be.undefined;
+      expect(r.width).to.be.greaterThan(0);
       const minH = r.width / 6;
       const maxH = (4 / 3) * r.width;
       expect(r.height).to.be.gte(minH - 2);
@@ -27,8 +32,10 @@ describe('Textarea sizing and behavior (width-based)', () => {
     cy.visit('/');
     cy.get(sel).invoke('text', '');
     cy.wait(300);
-    cy.then(async () => {
-      const r = await getRect();
+    cy.get(sel).should('be.visible');
+    getRect().then((r) => {
+      expect(r).to.not.be.undefined;
+      expect(r.width).to.be.greaterThan(0);
       const minH = r.width / 6;
       const maxH = (4 / 3) * r.width;
       expect(r.height).to.be.gte(minH - 2);
