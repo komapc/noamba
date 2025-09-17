@@ -267,10 +267,19 @@ canvas {
     text-decoration: underline;
 }
 
-body.dark .version-small,
-body.dark .footer-divider,
+body.dark .version-small {
+    color: var(--text-dark);
+    opacity: 0.8;
+}
+
+body.dark .footer-divider {
+    color: var(--text-dark);
+    opacity: 0.6;
+}
+
 body.dark .mg-logo {
     color: var(--text-dark);
+    opacity: 0.8;
 }
 
 /* =============================================================================
