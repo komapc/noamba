@@ -1,17 +1,17 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.2
+ * Version: 0.4.3
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.4.2',
+    VERSION: '0.4.3',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
     LINE_HEIGHT: 1.4,
     DPI_SCALE: 3, // Higher DPI for better quality
-    DESIRED_EXPORT_FONT_PX: 24
+    DESIRED_EXPORT_FONT_PX: 28
 };
 
 // Global state
@@ -52,9 +52,9 @@ function getContainerContentWidth() {
 }
 
 function getWidthBasedHeights(widthPx) {
-    // 4) minimal textarea height is 1/6 of its width
+    // 4) minimal textarea height is 1/4 of its width
     // 5) maximal textarea height is 4/3 of its width
-    const minHeight = widthPx / 6;
+    const minHeight = widthPx / 4;
     const maxHeight = (4 / 3) * widthPx;
     return { minHeight, maxHeight };
 }

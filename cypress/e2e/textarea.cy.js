@@ -13,21 +13,21 @@ describe('Textarea sizing and behavior (width-based)', () => {
     cy.visit('/');
   });
 
-  it('initial height clamps between width/6 and width*4/3', () => {
+  it('initial height clamps between width/4 and width*4/3', () => {
     cy.get(sel).invoke('text', '');
     cy.wait(300);
     cy.get(sel).should('be.visible');
     getRect().then((r) => {
       expect(r).to.not.be.undefined;
       expect(r.width).to.be.greaterThan(0);
-      const minH = r.width / 6;
+      const minH = r.width / 4;
       const maxH = (4 / 3) * r.width;
       expect(r.height).to.be.gte(minH - 2);
       expect(r.height).to.be.lte(maxH + 2);
     });
   });
 
-  it('respects width/6..width*4/3 on mobile too', () => {
+  it('respects width/4..width*4/3 on mobile too', () => {
     cy.viewport(375, 667);
     cy.visit('/');
     cy.get(sel).invoke('text', '');
@@ -36,7 +36,7 @@ describe('Textarea sizing and behavior (width-based)', () => {
     getRect().then((r) => {
       expect(r).to.not.be.undefined;
       expect(r.width).to.be.greaterThan(0);
-      const minH = r.width / 6;
+      const minH = r.width / 4;
       const maxH = (4 / 3) * r.width;
       expect(r.height).to.be.gte(minH - 2);
       expect(r.height).to.be.lte(maxH + 2);
