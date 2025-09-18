@@ -275,17 +275,11 @@
       }
     }
 
-    // Mobile detection
-    function isMobileDevice() {
-      return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
-             ('ontouchstart' in window) ||
-             (navigator.maxTouchPoints > 0);
-             // window.ontouchstart !== null
-    }
-
     // Additional checks for soft keyboard
     function isSoftKeyboard() {
-      return isMobileDevice();
+             return ('ontouchstart' in window) ||
+             (navigator.maxTouchPoints > 0);
+             // window.ontouchstart !== null
     }
 
     // Map a single character
