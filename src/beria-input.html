@@ -179,7 +179,7 @@
   </div>
 
   <script>
-    const beria = document.getElementById("beria");
+    const beriaEl = document.getElementById("beria");
     const deviceInfo = document.getElementById("device-info");
     const virtualKeyboard = document.getElementById("virtual-keyboard");
     const themeToggle = document.getElementById("theme-toggle");
@@ -323,14 +323,16 @@
     }
 
     // Handle physical keyboard input
-    beria.addEventListener("keydown", function(e) {
+    beriaEl.addEventListener("keydown", function(e) {
       if (isSoftKeyboard()) return; // Let mobile handle via input event
+      // TODO: XXX: remove the listener then
 
       if (e.ctrlKey || e.altKey || e.metaKey) return;
 
       const key = e.key;
       let char = null;
 
+      // TODO: Refactor to use mapChar
       if (specialMap.hasOwnProperty(key)) {
         char = specialMap[key];
       } else {
@@ -338,13 +340,14 @@
       }
 
       e.preventDefault();
-      insertChar(beria, char);
+      insertChar(beriaEl, char);
     });
 
     // Handle mobile/soft keyboard input
     let lastValue = '';
-    beria.addEventListener("input", function(e) {
+    beriaEl.addEventListener("input", function(e) {
       if (!isSoftKeyboard()) return; // Physical keyboard handles via keydown
+      // TODO: XXX: remove the listener then
 
       const currentValue = e.target.value;
 
@@ -375,7 +378,7 @@
       if (e.target.classList.contains("key-button")) {
         const key = e.target.dataset.key;
         const mappedChar = mapChar(key);
-        insertChar(beria, mappedChar);
+        insertChar(beriaEl, mappedChar);
       }
     });
 
@@ -398,7 +401,7 @@
         deviceInfo.className = "info mobile-info";
 
         // Set up initial value tracking
-        lastValue = beria.value;
+        lastValue = beriaEl.value;
       } else {
         deviceInfo.innerHTML = `
           <strong>Desktop/Physical Keyboard Detected</strong><br>
