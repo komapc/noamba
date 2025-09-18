@@ -291,6 +291,7 @@
     // Map a single character
     function mapChar(c) {
       if (specialMap.hasOwnProperty(c)) {
+        console.out('has', c, ' -> ', specialMap[c]);
         return specialMap[c];
       } else {
         return c;
@@ -332,10 +333,6 @@
 
       if (specialMap.hasOwnProperty(key)) {
         char = specialMap[key];
-      } else if (/^[A-Z]$/.test(key)) {
-        char = String.fromCodePoint(UPPER_START + (key.charCodeAt(0) - 65));
-      } else if (/^[a-z]$/.test(key)) {
-        char = String.fromCodePoint(LOWER_START + (key.charCodeAt(0) - 97));
       } else {
         return; // keep default
       }
