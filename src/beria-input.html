@@ -186,6 +186,7 @@
 
     const UPPER_START = 0x16EA0; // A
     const LOWER_START = 0x16EBB; // a
+    const CASE_DISTANCE = LOWER_START - UPPER_START; // 27
 
     const specialMap = {
       "v": "\u0304", // COMBINING MACRON – Stress Mark
@@ -201,6 +202,53 @@
       "Z": "\u{16EAE}",
       "C": "\u{16EB4}",
       "Q": "\u{16ECD}",
+
+      // Phonetic Beria Mappings:
+      "a": "\u{16EBB}", // ARKAB
+      "b": "\u{16EBC}", // BASIGNA
+      "d": "\u{16EBD}", // DARBAI
+      "e": "\u{16EBE}", // EH
+      "f": "\u{16EBF}", // FITKO
+      "g": "\u{16EC0}", // GOWAY
+      "h": "\u{16EC1}", // HIRDEABO
+      "i": "\u{16EC2}", // I
+      "j": "\u{16EC3}", // DJAI
+      "k": "\u{16EC4}", // KOBO
+      "l": "\u{16EC5}", // LAKKO
+      "m": "\u{16EC6}", // MERI
+      "n": "\u{16EC7}", // NINI
+      "o": "\u{16ECA}", // OI
+      "p": "\u{16ECB}", // PI
+      "r": "\u{16ECC}", // ERIGO
+      "s": "\u{16ECE}", // SERI
+      "r": "\u{16ED0}", // TATASOUE
+      "u": "\u{16ED1}", // UI
+      "w": "\u{16ED2}", // WASSE
+      "y": "\u{16ED3}", // AY
+
+      "A": "\u{16EA0}", //ARKAB
+      "B": "\u{16EA1}", //BASIGNA
+      "D": "\u{16EA2}", //DARBAI
+      "E": "\u{16EA3}", //EH
+      "F": "\u{16EA4}", //FITKO
+      "G": "\u{16EA5}", //GOWAY
+      "H": "\u{16EA6}", //HIRDEABO
+      "I": "\u{16EA7}", //I
+      "J": "\u{16EA8}", //DJAI
+      "K": "\u{16EA9}", //KOBO
+      "L": "\u{16EAA}", //LAKKO
+      "M": "\u{16EAB}", //MERI
+      "N": "\u{16EAC}", //NINI
+      "O": "\u{16EAF}", //OI
+      "P": "\u{16EB0}", //PI
+      "R": "\u{16EB1}", //ERIGO
+      "S": "\u{16EB3}", //SERI
+      "R": "\u{16EB5}", //TATASOUE
+      "U": "\u{16EB6}", //UI
+      "W": "\u{16EB7}", //WASSE
+      "Y": "\u{16EB8}", //AY
+
+
     };
 
     // Theme management
