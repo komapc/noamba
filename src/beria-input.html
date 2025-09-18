@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zaghawa Beria Keyboard + Mobile Support</title>
+  <style>
+    @font-face {
+      font-family: "Kedebideri";
+      src: url("fonts/Kedebideri-Regular.woff2") format("woff2"),
+           url("fonts/Kedebideri-Regular.woff") format("woff"),
+           url("fonts/Kedebideri-Regular.ttf") format("truetype");
+    }
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      padding: 10px;
+      transition: background-color 0.3s, color 0.3s;
+    }
+    
+    /* Light mode (default) */
+    body {
+      background-color: #ffffff;
+      color: #333333;
+    }
+    
+    /* Dark mode */
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+    }
+    
+    textarea {
+      width: 90%;
+      max-width: 600px;
+      height: 200px;
+      font-size: 24px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    
+    .dark-mode textarea {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+    
+    #beria {
+      font-family: "Kedebideri", "Noto Sans", sans-serif;
+    }
+    .info {
+      background: #f0f8ff;
+      border: 1px solid #0066cc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+    
+    .dark-mode .info {
+      background: #1a2332;
+      border-color: #4a90e2;
+    }
+    
+    .mobile-info {
+      background: #fff0f0;
+      border: 1px solid #cc0000;
+    }
+    
+    .dark-mode .mobile-info {
+      background: #2d1a1a;
+      border-color: #e74c3c;
+    }
+    
+    .virtual-keyboard {
+      display: none;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+      max-width: 600px;
+    }
+    .key-button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 3px;
+      font-size: 18px;
+      cursor: pointer;
+      min-width: 40px;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    
+    .dark-mode .key-button {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+    
+    .key-button:hover {
+      background: #f0f0f0;
+    }
+    
+    .dark-mode .key-button:hover {
+      background: #404040;
+    }
+    
+    .key-button:active {
+      background: #e0e0e0;
+    }
+    
+    .dark-mode .key-button:active {
+      background: #505050;
+    }
+    
+    .special-key {
+      background: #e6f3ff;
+    }
+    
+    .dark-mode .special-key {
+      background: #1a2a3a;
+    }
+    
+    .theme-controls {
+      margin-top: 20px;
+    }
+    
+    .theme-button {
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+    
+    .dark-mode .theme-button {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+    
+    .theme-button:hover {
+      background: #f0f0f0;
+    }
+    
+    .dark-mode .theme-button:hover {
+      background: #404040;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="info" id="device-info">
+    Detecting input method...
+  </div>
+
+  <textarea id="beria" placeholder="Zaghawa Beria input (type in Latin, converts automatically)"></textarea>
+
+  <!-- Virtual keyboard for tone/stress marks and special characters -->
+  <div id="virtual-keyboard" class="virtual-keyboard">
+    <div class="key-button special-key" data-key="v">v (stress)</div>
+    <div class="key-button special-key" data-key="V">V (rising)</div>
+    <div class="key-button special-key" data-key="`">` (falling)</div>
+    <div class="key-button special-key" data-key="~">~ (ATR)</div>
+    <div class="key-button special-key" data-key="x">x (ɲ Gna)</div>
+    <div class="key-button special-key" data-key="z">z (ŋ Ngay)</div>
+    <div class="key-button special-key" data-key="c">c (∫ Shep)</div>
+    <div class="key-button special-key" data-key="q">q (ɾ Erigo-Tamura)</div>
+  </div>
+
+  <div class="theme-controls">
+    <button id="theme-toggle" class="theme-button">🌙 Dark Mode</button>
+  </div>
+
+  <script>
+    const beria = document.getElementById("beria");
+    const deviceInfo = document.getElementById("device-info");
+    const virtualKeyboard = document.getElementById("virtual-keyboard");
+    const themeToggle = document.getElementById("theme-toggle");
+
+    const UPPER_START = 0x16EA0; // A
+    const LOWER_START = 0x16EBB; // a
+
+    const specialMap = {
+      "v": "\u0304", // COMBINING MACRON – Stress Mark
+      "V": "\u0301", // COMBINING ACUTE ACCENT – Rising Tone
+      "`": "\u0300", // COMBINING GRAVE ACCENT – Falling Tone
+      "~": "\u0307", // COMBINING DOT ABOVE – Advanced Tongue Root
+      // Special phonetic mappings
+      "x": "\u{16EC8}", // IPA ɲ / Beria SMALL Gna
+      "z": "\u{16EC9}", // IPA ŋ / Beria SMALL Ngay
+      "c": "\u{16ECF}", // IPA ∫ / Beria SMALL Shep
+      "q": "\u{16ECD}"  // IPA ɾ / Beria SMALL Erigo-Tamura
+    };
+
+    // Theme management
+    function initializeTheme() {
+      const savedTheme = localStorage.getItem('beria-theme') || 'light';
+      if (savedTheme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️ Light Mode';
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeToggle.textContent = '🌙 Dark Mode';
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.contains('dark-mode');
+      if (isDark) {
+        document.body.classList.remove('dark-mode');
+        themeToggle.textContent = '🌙 Dark Mode';
+        localStorage.setItem('beria-theme', 'light');
+      } else {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️ Light Mode';
+        localStorage.setItem('beria-theme', 'dark');
+      }
+    }
+
+    // Mobile detection
+    function isMobileDevice() {
+      return /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) ||
+             ('ontouchstart' in window) ||
+             (navigator.maxTouchPoints > 0);
+    }
+
+    function isSoftKeyboard() {
+      // Additional checks for soft keyboard
+      return isMobileDevice() || window.screen.width < 768;
+    }
+
+    // Map a single character
+    function mapChar(c) {
+      if (specialMap.hasOwnProperty(c)) {
+        return specialMap[c];
+      }
+      else if (/^[A-Z]$/.test(c)) {
+        return String.fromCodePoint(UPPER_START + (c.charCodeAt(0) - 65));
+      }
+      else if (/^[a-z]$/.test(c)) {
+        return String.fromCodePoint(LOWER_START + (c.charCodeAt(0) - 97));
+      }
+      else {
+        return c;
+      }
+    }
+
+    function insertChar(textarea, char) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      textarea.value = value.slice(0, start) + char + value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + char.length;
+      textarea.focus();
+    }
+
+    // Convert text that's already been typed
+    function convertExistingText(textarea) {
+      const text = textarea.value;
+      let converted = '';
+      
+      for (let i = 0; i < text.length; i++) {
+        const char = text[i];
+        converted += mapChar(char);
+      }
+      
+      const cursorPos = textarea.selectionStart;
+      textarea.value = converted;
+      textarea.selectionStart = textarea.selectionEnd = Math.min(cursorPos, converted.length);
+    }
+
+    // Handle physical keyboard input
+    beria.addEventListener("keydown", function(e) {
+      if (isSoftKeyboard()) return; // Let mobile handle via input event
+      
+      if (e.ctrlKey || e.altKey || e.metaKey) return;
+
+      const key = e.key;
+      let char = null;
+
+      if (specialMap.hasOwnProperty(key)) {
+        char = specialMap[key];
+      } else if (/^[A-Z]$/.test(key)) {
+        char = String.fromCodePoint(UPPER_START + (key.charCodeAt(0) - 65));
+      } else if (/^[a-z]$/.test(key)) {
+        char = String.fromCodePoint(LOWER_START + (key.charCodeAt(0) - 97));
+      } else {
+        return; // keep default
+      }
+
+      e.preventDefault();
+      insertChar(beria, char);
+    });
+
+    // Handle mobile/soft keyboard input
+    let lastValue = '';
+    beria.addEventListener("input", function(e) {
+      if (!isSoftKeyboard()) return; // Physical keyboard handles via keydown
+      
+      const currentValue = e.target.value;
+      
+      // Find what was added
+      if (currentValue.length > lastValue.length) {
+        const addedText = currentValue.slice(lastValue.length);
+        const cursorPos = e.target.selectionStart;
+        
+        // Convert the added characters
+        let convertedText = '';
+        for (let char of addedText) {
+          convertedText += mapChar(char);
+        }
+        
+        // Replace the added text with converted version
+        const beforeCursor = currentValue.slice(0, cursorPos - addedText.length);
+        const afterCursor = currentValue.slice(cursorPos);
+        
+        e.target.value = beforeCursor + convertedText + afterCursor;
+        e.target.selectionStart = e.target.selectionEnd = cursorPos - addedText.length + convertedText.length;
+      }
+      
+      lastValue = e.target.value;
+    });
+
+    // Virtual keyboard
+    virtualKeyboard.addEventListener("click", function(e) {
+      if (e.target.classList.contains("key-button")) {
+        const key = e.target.dataset.key;
+        const mappedChar = mapChar(key);
+        insertChar(beria, mappedChar);
+      }
+    });
+
+    // Theme toggle
+    themeToggle.addEventListener("click", toggleTheme);
+
+    // Initialize based on device type
+    function initializeInterface() {
+      const mobile = isSoftKeyboard();
+      
+      // Always show virtual keyboard now
+      virtualKeyboard.style.display = "flex";
+      
+      if (mobile) {
+        deviceInfo.innerHTML = `
+          <strong>Mobile/Touch Device Detected</strong><br>
+          Using input event conversion. Special character keyboard below.
+          <br><em>Tip: Type normally, then use buttons below for tone marks and special characters.</em>
+        `;
+        deviceInfo.className = "info mobile-info";
+        
+        // Set up initial value tracking
+        lastValue = beria.value;
+      } else {
+        deviceInfo.innerHTML = `
+          <strong>Desktop/Physical Keyboard Detected</strong><br>
+          Using keydown event interception for real-time conversion.
+          <br><em>Type normally or use buttons below. Special keys: v, V, \`, ~, x, z, c, q</em>
+        `;
+        deviceInfo.className = "info";
+      }
+    }
+
+    // Handle orientation change on mobile
+    window.addEventListener("orientationchange", function() {
+      setTimeout(initializeInterface, 100);
+    });
+
+    // Initialize on load
+    window.addEventListener("load", function() {
+      initializeTheme();
+      initializeInterface();
+    });
+    
+    // Also initialize immediately in case load already fired
+    initializeTheme();
+    initializeInterface();
+  </script>
+
+</body>
+</html>
+
