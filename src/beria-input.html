@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zaghawa Beria Keyboard + Mobile Support</title>
+  <title>Zaghawa Beria Keyboard - Fixed</title>
   <style>
     @font-face {
       font-family: "Kedebideri";
@@ -16,15 +16,10 @@
       margin: 20px;
       padding: 10px;
       transition: background-color 0.3s, color 0.3s;
-    }
-
-    /* Light mode (default) */
-    body {
       background-color: #ffffff;
       color: #333333;
     }
 
-    /* Dark mode */
     body.dark-mode {
       background-color: #1a1a1a;
       color: #e0e0e0;
@@ -51,6 +46,7 @@
     #beria {
       font-family: "Kedebideri", "Noto Sans", sans-serif;
     }
+
     .info {
       background: #f0f8ff;
       border: 1px solid #0066cc;
@@ -66,23 +62,14 @@
       border-color: #4a90e2;
     }
 
-    .mobile-info {
-      background: #fff0f0;
-      border: 1px solid #cc0000;
-    }
-
-    .dark-mode .mobile-info {
-      background: #2d1a1a;
-      border-color: #e74c3c;
-    }
-
     .virtual-keyboard {
-      display: none;
+      display: flex;
       flex-wrap: wrap;
       gap: 5px;
       margin-top: 10px;
       max-width: 600px;
     }
+
     .key-button {
       padding: 10px 15px;
       border: 1px solid #ccc;
@@ -156,13 +143,14 @@
 </head>
 <body>
 
-  <div class="info" id="device-info">
-    Detecting input method...
+  <div class="info">
+    <strong>Beria-Zaghawa Input Method</strong><br>
+    Type normally in Latin characters - they will be automatically converted to Beria script.<br>
+    <em>Use the buttons below for special characters and tone marks, or type: v (stress), V (rising), ` (falling), ~ (ATR), x, z, c, q</em>
   </div>
 
-  <textarea id="beria" placeholder="Zaghawa Beria input (type in Latin, converts automatically)"></textarea>
+  <textarea id="beria" placeholder="Type in Latin characters - converts to Beria automatically"></textarea>
 
-  <!-- Virtual keyboard for tone/stress marks and special characters -->
   <div id="virtual-keyboard" class="virtual-keyboard">
     <div class="key-button special-key" data-key="v">v (stress)</div>
     <div class="key-button special-key" data-key="V">V (rising)</div>
@@ -180,30 +168,28 @@
 
   <script>
     const beriaEl = document.getElementById("beria");
-    const deviceInfo = document.getElementById("device-info");
-    const virtualKeyboard = document.getElementById("virtual-keyboard");
     const themeToggle = document.getElementById("theme-toggle");
+    const virtualKeyboard = document.getElementById("virtual-keyboard");
 
-    const UPPER_START = 0x16EA0; // A
-    const LOWER_START = 0x16EBB; // a
-    const CASE_DISTANCE = LOWER_START - UPPER_START; // 27
-
-    const specialMap = {
-      "v": "\u0304", // COMBINING MACRON – Stress Mark
-      "V": "\u0301", // COMBINING ACUTE ACCENT – Rising Tone
-      "`": "\u0300", // COMBINING GRAVE ACCENT – Falling Tone
-      "~": "\u0307", // COMBINING DOT ABOVE – Advanced Tongue Root
-      // Special phonetic mappings: 𖻈𖻉𖻏𖻍 / 𖺭𖺮𖺴𖺲
-      "x": "\u{16EC8}", // IPA ɲ / Beria SMALL Gna : 𖻈 / 𖺭
-      "z": "\u{16EC9}", // IPA ŋ / Beria SMALL Ngay : 𖻉 / 𖺮
-      "c": "\u{16ECF}", // IPA ∫ / Beria SMALL Shep : 𖻏 / 𖺴
-      "q": "\u{16ECD}", // IPA ɾ / Beria SMALL Erigo-Tamura : 𖻍 / 𖺲
-      "X": "\u{16EAD}", // Captial of the above
+    // Character mapping - simplified and corrected
+    const charMap = {
+      // Combining marks for tones/stress
+      "v": "\u0304", // COMBINING MACRON — Stress Mark
+      "V": "\u0301", // COMBINING ACUTE ACCENT — Rising Tone
+      "`": "\u0300", // COMBINING GRAVE ACCENT — Falling Tone
+      "~": "\u0307", // COMBINING DOT ABOVE — Advanced Tongue Root
+      
+      // Special consonants
+      "x": "\u{16EC8}", // Beria SMALL Gna
+      "z": "\u{16EC9}", // Beria SMALL Ngay
+      "c": "\u{16ECF}", // Beria SMALL Shep
+      "q": "\u{16ECD}", // Beria SMALL Erigo-Tamura
+      "X": "\u{16EAD}", // Capital versions
       "Z": "\u{16EAE}",
       "C": "\u{16EB4}",
       "Q": "\u{16EB2}",
 
-      // Phonetic Beria Mappings:
+      // Regular Beria letters (lowercase)
       "a": "\u{16EBB}", // ARKAB
       "b": "\u{16EBC}", // BASIGNA
       "d": "\u{16EBD}", // DARBAI
@@ -226,199 +212,92 @@
       "w": "\u{16ED2}", // WASSE
       "y": "\u{16ED3}", // AY
 
-      "A": "\u{16EA0}", //ARKAB
-      "B": "\u{16EA1}", //BASIGNA
-      "D": "\u{16EA2}", //DARBAI
-      "E": "\u{16EA3}", //EH
-      "F": "\u{16EA4}", //FITKO
-      "G": "\u{16EA5}", //GOWAY
-      "H": "\u{16EA6}", //HIRDEABO
-      "I": "\u{16EA7}", //I
-      "J": "\u{16EA8}", //DJAI
-      "K": "\u{16EA9}", //KOBO
-      "L": "\u{16EAA}", //LAKKO
-      "M": "\u{16EAB}", //MERI
-      "N": "\u{16EAC}", //NINI
-      "O": "\u{16EAF}", //OI
-      "P": "\u{16EB0}", //PI
-      "R": "\u{16EB1}", //ERIGO
-      "S": "\u{16EB3}", //SERI
-      "T": "\u{16EB5}", //TATASOUE
-      "U": "\u{16EB6}", //UI
-      "W": "\u{16EB7}", //WASSE
-      "Y": "\u{16EB8}", //AY
-
+      // Regular Beria letters (uppercase)
+      "A": "\u{16EA0}", // ARKAB
+      "B": "\u{16EA1}", // BASIGNA
+      "D": "\u{16EA2}", // DARBAI
+      "E": "\u{16EA3}", // EH
+      "F": "\u{16EA4}", // FITKO
+      "G": "\u{16EA5}", // GOWAY
+      "H": "\u{16EA6}", // HIRDEABO
+      "I": "\u{16EA7}", // I
+      "J": "\u{16EA8}", // DJAI
+      "K": "\u{16EA9}", // KOBO
+      "L": "\u{16EAA}", // LAKKO
+      "M": "\u{16EAB}", // MERI
+      "N": "\u{16EAC}", // NINI
+      "O": "\u{16EAF}", // OI
+      "P": "\u{16EB0}", // PI
+      "R": "\u{16EB1}", // ERIGO
+      "S": "\u{16EB3}", // SERI
+      "T": "\u{16EB5}", // TATASOUE
+      "U": "\u{16EB6}", // UI
+      "W": "\u{16EB7}", // WASSE
+      "Y": "\u{16EB8}", // AY
     };
 
-    // Theme management
-    function initializeTheme() {
-      const savedTheme = localStorage.getItem('beria-theme') || 'light';
-      if (savedTheme === 'dark') {
-        document.body.classList.add('dark-mode');
-        themeToggle.textContent = '☀️ Light Mode';
-      } else {
-        document.body.classList.remove('dark-mode');
-        themeToggle.textContent = '🌙 Dark Mode';
-      }
+    // Simple character conversion
+    function convertChar(char) {
+      return charMap[char] || char;
     }
 
+    // Insert character at cursor position
+    function insertAtCursor(textarea, text) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      
+      textarea.value = value.slice(0, start) + text + value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.focus();
+    }
+
+    // Single input handler - works for all devices
+    let isProcessing = false;
+    
+    beriaEl.addEventListener('beforeinput', function(e) {
+      if (isProcessing) return;
+      
+      // Only handle character insertions
+      if (e.inputType !== 'insertText' || !e.data) return;
+      
+      const char = e.data;
+      const convertedChar = convertChar(char);
+      
+      // If conversion happened, prevent default and insert converted char
+      if (convertedChar !== char) {
+        e.preventDefault();
+        isProcessing = true;
+        insertAtCursor(beriaEl, convertedChar);
+        isProcessing = false;
+      }
+    });
+
+    // Virtual keyboard handler
+    virtualKeyboard.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('key-button')) return;
+      
+      const key = e.target.dataset.key;
+      const convertedChar = convertChar(key);
+      insertAtCursor(beriaEl, convertedChar);
+    });
+
+    // Theme management
     function toggleTheme() {
       const isDark = document.body.classList.contains('dark-mode');
       if (isDark) {
         document.body.classList.remove('dark-mode');
         themeToggle.textContent = '🌙 Dark Mode';
-        localStorage.setItem('beria-theme', 'light');
       } else {
         document.body.classList.add('dark-mode');
         themeToggle.textContent = '☀️ Light Mode';
-        localStorage.setItem('beria-theme', 'dark');
       }
     }
 
-    // Additional checks for soft keyboard
-    function isSoftKeyboard() {
-             return ('ontouchstart' in window) ||
-             (navigator.maxTouchPoints > 0);
-             // window.ontouchstart !== null
-    }
+    themeToggle.addEventListener('click', toggleTheme);
 
-    // Map a single character
-    function mapChar(c) {
-      if (specialMap.hasOwnProperty(c)) {
-        return specialMap[c];
-      } else {
-        return c;
-      }
-    }
-
-    function insertChar(textarea, char) {
-      const start = textarea.selectionStart;
-      const end = textarea.selectionEnd;
-      const value = textarea.value;
-      textarea.value = value.slice(0, start) + char + value.slice(end);
-      textarea.selectionStart = textarea.selectionEnd = start + char.length;
-      textarea.focus();
-    }
-
-    // Convert text that's already been typed
-    function convertExistingText(textarea) {
-      const text = textarea.value;
-      let converted = '';
-
-      for (let i = 0; i < text.length; i++) {
-        const char = text[i];
-        converted += mapChar(char);
-      }
-
-      const cursorPos = textarea.selectionStart;
-      textarea.value = converted;
-      textarea.selectionStart = textarea.selectionEnd = Math.min(cursorPos, converted.length);
-    }
-
-    // Handle physical keyboard input
-    beriaEl.addEventListener("keydown", function(e) {
-      if (isSoftKeyboard()) return; // Let mobile handle via input event
-      // TODO: XXX: remove the listener then
-
-      if (e.ctrlKey || e.altKey || e.metaKey) return;
-
-      const key = e.key;
-      let char = null;
-
-      // TODO: Refactor to use mapChar
-      if (specialMap.hasOwnProperty(key)) {
-        char = specialMap[key];
-      } else {
-        return; // keep default
-      }
-
-      e.preventDefault();
-      insertChar(beriaEl, char);
-    });
-
-    // Handle mobile/soft keyboard input
-    let lastValue = '';
-    beriaEl.addEventListener("input", function(e) {
-      if (!isSoftKeyboard()) return; // Physical keyboard handles via keydown
-      // TODO: XXX: remove the listener then
-
-      const currentValue = e.target.value;
-
-      // Find what was added
-      if (currentValue.length > lastValue.length) {
-        const addedText = currentValue.slice(lastValue.length);
-        const cursorPos = e.target.selectionStart;
-
-        // Convert the added characters
-        let convertedText = '';
-        for (let char of addedText) {
-          convertedText += mapChar(char);
-        }
-
-        // Replace the added text with converted version
-        const beforeCursor = currentValue.slice(0, cursorPos - addedText.length);
-        const afterCursor = currentValue.slice(cursorPos);
-
-        e.target.value = beforeCursor + convertedText + afterCursor;
-        e.target.selectionStart = e.target.selectionEnd = cursorPos - addedText.length + convertedText.length;
-      }
-
-      lastValue = e.target.value;
-    });
-
-    // Virtual keyboard
-    virtualKeyboard.addEventListener("click", function(e) {
-      if (e.target.classList.contains("key-button")) {
-        const key = e.target.dataset.key;
-        const mappedChar = mapChar(key);
-        insertChar(beriaEl, mappedChar);
-      }
-    });
-
-    // Theme toggle
-    themeToggle.addEventListener("click", toggleTheme);
-
-    // Initialize based on device type
-    function initializeInterface() {
-      const mobile = isSoftKeyboard();
-
-      // Always show virtual keyboard now
-      virtualKeyboard.style.display = "flex";
-
-      if (mobile) {
-        deviceInfo.innerHTML = `
-          <strong>Mobile/Touch Device Detected</strong><br>
-          Using input event conversion. Special character keyboard below.
-          <br><em>Tip: Type normally, then use buttons below for tone marks and special characters.</em>
-        `;
-        deviceInfo.className = "info mobile-info";
-
-        // Set up initial value tracking
-        lastValue = beriaEl.value;
-      } else {
-        deviceInfo.innerHTML = `
-          <strong>Desktop/Physical Keyboard Detected</strong><br>
-          Using keydown event interception for real-time conversion.
-          <br><em>Type normally or use buttons below. Special keys: v, V, \`, ~, x, z, c, q</em>
-        `;
-        deviceInfo.className = "info";
-      }
-    }
-
-    // Handle orientation change on mobile
-    window.addEventListener("orientationchange", function() {
-      setTimeout(initializeInterface, 100);
-    });
-
-    // Initialize on load
-    window.addEventListener("load", function() {
-      initializeTheme();
-      initializeInterface();
-    });
-
-    // Also initialize immediately in case load already fired
-    initializeTheme();
-    initializeInterface();
+    // Initialize
+    beriaEl.focus();
   </script>
 
 </body>
