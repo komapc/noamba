@@ -555,7 +555,8 @@
         // Open WhatsApp web in new tab
         setTimeout(() => {
           const whatsappText = encodeURIComponent('Check out this Beria script text! 📝');
-          window.open(`https://web.whatsapp.com/send?text=${whatsappText}`, '_blank');
+          // window.open(`https://web.whatsapp.com/send?text=${whatsappText}`, '_blank');
+          window.open(`whatsapp://send?text=${whatsappText})`, '_blank');
         }, 500);
 
       } catch (error) {
