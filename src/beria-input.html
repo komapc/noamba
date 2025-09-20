@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zaghawa Beria Keyboard</title>
+  <style>
+    @font-face {
+      font-family: "Kedebideri";
+      src: url("fonts/Kedebideri-Regular.woff2") format("woff2"),
+           url("fonts/Kedebideri-Regular.woff") format("woff"),
+           url("fonts/Kedebideri-Regular.ttf") format("truetype");
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      padding: 10px;
+      transition: background-color 0.3s, color 0.3s;
+      background-color: #ffffff;
+      color: #333333;
+    }
+
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 600px;
+      height: 200px;
+      font-size: 24px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode textarea {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    .info {
+      background: #f0f8ff;
+      border: 1px solid #0066cc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode .info {
+      background: #1a2332;
+      border-color: #4a90e2;
+    }
+
+    .font-status {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .dark-mode .font-status {
+      background: #2d2416;
+      border-color: #d39e00;
+    }
+
+    .font-status.show {
+      display: block;
+    }
+
+    .virtual-keyboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+      max-width: 600px;
+    }
+
+    .key-button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 3px;
+      font-size: 18px;
+      cursor: pointer;
+      min-width: 40px;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode .key-button {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    .key-button:hover {
+      background: #f0f0f0;
+    }
+
+    .dark-mode .key-button:hover {
+      background: #404040;
+    }
+
+    .key-button:active {
+      background: #e0e0e0;
+    }
+
+    .dark-mode .key-button:active {
+      background: #505050;
+    }
+
+    .special-key {
+      background: #e6f3ff;
+    }
+
+    .dark-mode .special-key {
+      background: #1a2a3a;
+    }
+
+    .theme-controls {
+      margin-top: 20px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .theme-button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 5px;
+      font-size: 14px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+      white-space: nowrap;
+    }
+
+    .dark-mode .theme-button {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    .theme-button:hover {
+      background: #f0f0f0;
+    }
+
+    .dark-mode .theme-button:hover {
+      background: #404040;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="info">
+    <strong>Beria-Zaghawa Input Method</strong><br>
+    Type normally in Latin characters - converted to Beria script.<br>
+    <em>Use the buttons below for special characters and tone marks, or type: v (stress), V (rising), ` (falling), ~ (ATR), x, z, c, q</em>
+  </div>
+
+  <div id="font-status" class="font-status">
+    <strong>Font Status:</strong> <span id="font-message"></span>
+  </div>
+
+  <textarea id="beria" placeholder="Type in Latin characters - converts to Beria automatically"></textarea>
+
+  <div id="virtual-keyboard" class="virtual-keyboard">
+    <div class="key-button special-key" data-key="v">v (stress)</div>
+    <div class="key-button special-key" data-key="V">V (rising)</div>
+    <div class="key-button special-key" data-key="`">` (falling)</div>
+    <div class="key-button special-key" data-key="~">~ (ATR)</div>
+    <div class="key-button special-key" data-key="x">x: ɲ Gna  \u{16EC8}   </div>
+    <div class="key-button special-key" data-key="z">z: ŋ Ngay  \u{16EC9}  </div>
+    <div class="key-button special-key" data-key="c">c: ∫ Shep  \u{16ECF}" </div>
+    <div class="key-button special-key" data-key="q">q: ɾ Erigo-Tamura   \u{16ECD}  </div>
+  </div>
+
+  <div class="theme-controls">
+    <button id="theme-toggle" class="theme-button">🌙 Dark Mode</button>
+    <button id="export-png" class="theme-button">📷 Export PNG</button>
+    <button id="copy-image" class="theme-button">📋 Copy Image</button>
+    <button id="share-whatsapp" class="theme-button">💬 WhatsApp</button>
+    <button id="share-messenger" class="theme-button">💙 Messenger</button>
+  </div>
+
+  <script>
+    const beriaEl = document.getElementById("beria");
+    const themeToggle = document.getElementById("theme-toggle");
+    const exportBtn = document.getElementById("export-png");
+    const copyBtn = document.getElementById("copy-image");
+    const whatsappBtn = document.getElementById("share-whatsapp");
+    const messengerBtn = document.getElementById("share-messenger");
+    const virtualKeyboard = document.getElementById("virtual-keyboard");
+    const fontStatus = document.getElementById("font-status");
+    const fontMessage = document.getElementById("font-message");
+
+    // Character mapping - simplified and corrected
+    const charMap = {
+      // Combining marks for tones/stress
+      "v": "\u0304", // COMBINING MACRON — Stress Mark
+      "V": "\u0301", // COMBINING ACUTE ACCENT — Rising Tone
+      "`": "\u0300", // COMBINING GRAVE ACCENT — Falling Tone
+      "~": "\u0307", // COMBINING DOT ABOVE — Advanced Tongue Root
+
+      // Special consonants
+      "x": "\u{16EC8}", // Beria SMALL Gna
+      "z": "\u{16EC9}", // Beria SMALL Ngay
+      "c": "\u{16ECF}", // Beria SMALL Shep
+      "q": "\u{16ECD}", // Beria SMALL Erigo-Tamura
+      "X": "\u{16EAD}", // Capital versions
+      "Z": "\u{16EAE}",
+      "C": "\u{16EB4}",
+      "Q": "\u{16EB2}",
+
+      // Regular Beria letters (lowercase)
+      "a": "\u{16EBB}", // ARKAB
+      "b": "\u{16EBC}", // BASIGNA
+      "d": "\u{16EBD}", // DARBAI
+      "e": "\u{16EBE}", // EH
+      "f": "\u{16EBF}", // FITKO
+      "g": "\u{16EC0}", // GOWAY
+      "h": "\u{16EC1}", // HIRDEABO
+      "i": "\u{16EC2}", // I
+      "j": "\u{16EC3}", // DJAI
+      "k": "\u{16EC4}", // KOBO
+      "l": "\u{16EC5}", // LAKKO
+      "m": "\u{16EC6}", // MERI
+      "n": "\u{16EC7}", // NINI
+      "o": "\u{16ECA}", // OI
+      "p": "\u{16ECB}", // PI
+      "r": "\u{16ECC}", // ERIGO
+      "s": "\u{16ECE}", // SERI
+      "t": "\u{16ED0}", // TATASOUE
+      "u": "\u{16ED1}", // UI
+      "w": "\u{16ED2}", // WASSE
+      "y": "\u{16ED3}", // AY
+
+      // Regular Beria letters (uppercase)
+      "A": "\u{16EA0}", // ARKAB
+      "B": "\u{16EA1}", // BASIGNA
+      "D": "\u{16EA2}", // DARBAI
+      "E": "\u{16EA3}", // EH
+      "F": "\u{16EA4}", // FITKO
+      "G": "\u{16EA5}", // GOWAY
+      "H": "\u{16EA6}", // HIRDEABO
+      "I": "\u{16EA7}", // I
+      "J": "\u{16EA8}", // DJAI
+      "K": "\u{16EA9}", // KOBO
+      "L": "\u{16EAA}", // LAKKO
+      "M": "\u{16EAB}", // MERI
+      "N": "\u{16EAC}", // NINI
+      "O": "\u{16EAF}", // OI
+      "P": "\u{16EB0}", // PI
+      "R": "\u{16EB1}", // ERIGO
+      "S": "\u{16EB3}", // SERI
+      "T": "\u{16EB5}", // TATASOUE
+      "U": "\u{16EB6}", // UI
+      "W": "\u{16EB7}", // WASSE
+      "Y": "\u{16EB8}", // AY
+    };
+
+    // Theme management with localStorage
+    function getStoredTheme() {
+      try {
+        return localStorage.getItem('beria-theme');
+      } catch (e) {
+        console.warn('localStorage not available, using session storage');
+        return sessionStorage.getItem('beria-theme');
+      }
+    }
+
+    function setStoredTheme(theme) {
+      try {
+        localStorage.setItem('beria-theme', theme);
+      } catch (e) {
+        console.warn('localStorage not available, using session storage');
+        sessionStorage.setItem('beria-theme', theme);
+      }
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️ Light Mode';
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeToggle.textContent = '🌙 Dark Mode';
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.contains('dark-mode');
+      const newTheme = isDark ? 'light' : 'dark';
+      applyTheme(newTheme);
+      setStoredTheme(newTheme);
+    }
+
+    // Font detection - checks system font support first
+    async function checkFontAvailability() {
+      const testChar = '\u{16EA0}'; // Beria ARKAB (capital A)
+      const tofuChar = '\uFFFD'; // Unicode replacement character (tofu)
+
+      // System doesn't support Beria, try custom fonts
+      if ('fonts' in document) {
+        try {
+          const fontFace = new FontFace('Kedebideri-Test', 'url(fonts/Kedebideri-Regular.woff2)');
+          await fontFace.load();
+          document.fonts.add(fontFace);
+          beriaEl.style.fontFamily = '"Kedebideri-Test", "Kedebideri", serif, sans-serif';
+          updateFontStatus('Local Kedebideri font loaded successfully!', 'success');
+          return;
+        } catch (error) {
+          console.log('Local font loading failed, trying remote font...');
+        }
+
+      // Everything failed
+      updateFontStatus('No Beria font support detected. Characters will display as boxes (□). Please install a Beria-compatible font or update your system to support Unicode 17.', 'error');
+    }
+
+    function updateFontStatus(message, type) {
+      fontMessage.textContent = message;
+      fontStatus.className = `font-status show ${type}`;
+
+      // Auto-hide success messages after 3 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          fontStatus.classList.remove('show');
+        }, 3000);
+      }
+    }
+
+    // Simple character conversion
+    function convertChar(char) {
+      return charMap[char] || char;
+    }
+
+    // Insert character at cursor position
+    function insertAtCursor(textarea, text) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+
+      textarea.value = value.slice(0, start) + text + value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.focus();
+    }
+
+    // Single input handler - works for all devices
+    let isProcessing = false;
+
+    beriaEl.addEventListener('beforeinput', function(e) {
+      if (isProcessing) return;
+
+      // Only handle character insertions
+      if (e.inputType !== 'insertText' || !e.data) return;
+
+      const char = e.data;
+      const convertedChar = convertChar(char);
+
+      // If conversion happened, prevent default and insert converted char
+      if (convertedChar !== char) {
+        e.preventDefault();
+        isProcessing = true;
+        insertAtCursor(beriaEl, convertedChar);
+        isProcessing = false;
+      }
+    });
+
+    // Virtual keyboard handler
+    virtualKeyboard.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('key-button')) return;
+
+      const key = e.target.dataset.key;
+      const convertedChar = convertChar(key);
+      insertAtCursor(beriaEl, convertedChar);
+    });
+
+    // Create high-quality canvas for text rendering
+    function createTextCanvas() {
+      const text = beriaEl.value;
+      if (!text.trim()) {
+        return null;
+      }
+
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+
+      // Get textarea styles
+      const computedStyle = window.getComputedStyle(beriaEl);
+      const baseFontSize = parseInt(computedStyle.fontSize);
+      const fontFamily = computedStyle.fontFamily;
+      const isDark = document.body.classList.contains('dark-mode');
+
+      // Calculate text dimensions first with a temporary canvas
+      const tempCanvas = document.createElement('canvas');
+      const tempCtx = tempCanvas.getContext('2d');
+      tempCtx.font = `${baseFontSize}px ${fontFamily}`;
+
+      const lines = text.split('\n');
+      let maxLineWidth = 0;
+      lines.forEach(line => {
+        const lineWidth = tempCtx.measureText(line).width;
+        maxLineWidth = Math.max(maxLineWidth, lineWidth);
+      });
+
+      // Calculate optimal dimensions for social media (1200px width target)
+      const targetWidth = 1200;
+      const padding = 60; // Larger padding for better appearance
+      const minContentWidth = Math.max(400, maxLineWidth);
+      const scale = (targetWidth - padding * 2) / minContentWidth;
+
+      // Scale up font size for sharp rendering
+      const fontSize = Math.max(32, Math.round(baseFontSize * scale));
+      const lineHeight = fontSize * 1.5; // Better line spacing
+
+      // Final canvas dimensions
+      const finalWidth = targetWidth;
+      const finalHeight = Math.max(400, lines.length * lineHeight + padding * 2);
+
+      // Set canvas to exact pixel dimensions (no DPR scaling - causes blur)
+      canvas.width = finalWidth;
+      canvas.height = finalHeight;
+
+      // CRITICAL: Don't set style dimensions - let it render at native size
+      // This prevents browser scaling which causes blur
+
+      // Disable smoothing for pixel-perfect text
+      ctx.imageSmoothingEnabled = false;
+      ctx.textRenderingOptimization = 'optimizeQuality';
+
+      // Use integer positioning to avoid sub-pixel rendering blur
+      const roundedPadding = Math.round(padding);
+      const roundedLineHeight = Math.round(lineHeight);
+
+      // Draw background with clean edges
+      ctx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
+      ctx.fillRect(0, 0, finalWidth, finalHeight);
+
+      // Set text properties with explicit font rendering hints
+      ctx.fillStyle = isDark ? '#e0e0e0' : '#333333';
+      ctx.font = `${fontSize}px ${fontFamily}`;
+      ctx.textBaseline = 'top';
+      ctx.textAlign = 'left';
+
+      // Enable sub-pixel positioning for better font rendering
+      ctx.textRenderingOptimization = 'geometricPrecision';
+
+      // Draw text line by line with pixel-perfect positioning
+      lines.forEach((line, index) => {
+        const y = roundedPadding + index * roundedLineHeight;
+        ctx.fillText(line, roundedPadding, Math.round(y));
+      });
+
+      return canvas;
+    }
+
+    // Export textarea content as PNG
+    function exportAsPNG() {
+      const canvas = createTextCanvas();
+      if (!canvas) {
+        alert('Please enter some text first!');
+        return;
+      }
+
+      const link = document.createElement('a');
+      link.download = `beria-text-${new Date().toISOString().slice(0,10)}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    }
+
+    // Copy image to clipboard
+    async function copyImageToClipboard() {
+      const canvas = createTextCanvas();
+      if (!canvas) {
+        alert('Please enter some text first!');
+        return;
+      }
+
+      try {
+        // Convert canvas to blob
+        const blob = await new Promise(resolve => {
+          canvas.toBlob(resolve, 'image/png');
+        });
+
+        // Copy to clipboard using modern API
+        if (navigator.clipboard && navigator.clipboard.write) {
+          await navigator.clipboard.write([
+            new ClipboardItem({ 'image/png': blob })
+          ]);
+
+          // Show temporary success message
+          const originalText = copyBtn.textContent;
+          copyBtn.textContent = '✅ Copied!';
+          copyBtn.style.background = '#d4edda';
+          setTimeout(() => {
+            copyBtn.textContent = originalText;
+            copyBtn.style.background = '';
+          }, 2000);
+        } else {
+          throw new Error('Clipboard API not supported');
+        }
+      } catch (error) {
+        console.error('Failed to copy image:', error);
+        alert('Failed to copy image to clipboard. Try using the download option instead.');
+      }
+    }
+
+    // Share to WhatsApp (creates image and opens WhatsApp)
+    async function shareToWhatsApp() {
+      const canvas = createTextCanvas();
+      if (!canvas) {
+        alert('Please enter some text first!');
+        return;
+      }
+
+      try {
+        // For mobile devices with Web Share API
+        if (navigator.share && navigator.canShare) {
+          const blob = await new Promise(resolve => {
+            canvas.toBlob(resolve, 'image/png');
+          });
+
+          const file = new File([blob], 'beria-text.png', { type: 'image/png' });
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Beria Text',
+              text: 'Check out this text in Beria script!',
+              files: [file]
+            });
+            return;
+          }
+        }
+
+        // Fallback: download image and open WhatsApp web
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'beria-text.png';
+        link.href = dataURL;
+        link.click();
+
+        // Open WhatsApp web in new tab
+        setTimeout(() => {
+          const whatsappText = encodeURIComponent('Check out this Beria script text! 📝');
+          window.open(`https://web.whatsapp.com/send?text=${whatsappText}`, '_blank');
+        }, 500);
+
+      } catch (error) {
+        console.error('WhatsApp sharing failed:', error);
+        alert('Please download the image and share it manually in WhatsApp.');
+      }
+    }
+
+    // Share to Facebook Messenger
+    async function shareToMessenger() {
+      const canvas = createTextCanvas();
+      if (!canvas) {
+        alert('Please enter some text first!');
+        return;
+      }
+
+      try {
+        // For mobile devices with Web Share API
+        if (navigator.share && navigator.canShare) {
+          const blob = await new Promise(resolve => {
+            canvas.toBlob(resolve, 'image/png');
+          });
+
+          const file = new File([blob], 'beria-text.png', { type: 'image/png' });
+
+          if (navigator.canShare({ files: [file] })) {
+            await navigator.share({
+              title: 'Beria Text',
+              text: 'Check out this text in Beria script!',
+              files: [file]
+            });
+            return;
+          }
+        }
+
+        // Fallback: download image and open Messenger
+        const dataURL = canvas.toDataURL('image/png');
+        const link = document.createElement('a');
+        link.download = 'beria-text.png';
+        link.href = dataURL;
+        link.click();
+
+        // Open Messenger in new tab
+        setTimeout(() => {
+          window.open('https://www.messenger.com/', '_blank');
+        }, 500);
+
+      } catch (error) {
+        console.error('Messenger sharing failed:', error);
+        alert('Please download the image and share it manually in Messenger.');
+      }
+    }
+
+    // Event listeners
+    themeToggle.addEventListener('click', toggleTheme);
+    exportBtn.addEventListener('click', exportAsPNG);
+    copyBtn.addEventListener('click', copyImageToClipboard);
+    whatsappBtn.addEventListener('click', shareToWhatsApp);
+    messengerBtn.addEventListener('click', shareToMessenger);
+
+    // Initialize
+    async function initialize() {
+      // Apply stored theme
+      const storedTheme = getStoredTheme();
+      if (storedTheme) {
+        applyTheme(storedTheme);
+      }
+
+      // Check font availability
+      await checkFontAvailability();
+
+      // Focus textarea
+      beriaEl.focus();
+    }
+
+    // Start initialization when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+      initialize();
+    }
+  </script>
+
+</body>
+</html>
