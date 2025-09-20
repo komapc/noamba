@@ -191,7 +191,6 @@
     <button id="export-png" class="theme-button">📷 Export PNG</button>
     <button id="copy-image" class="theme-button">📋 Copy Image</button>
     <button id="share-whatsapp" class="theme-button">💬 WhatsApp</button>
-    <button id="share-messenger" class="theme-button">💙 Messenger</button>
   </div>
 
   <script>
@@ -565,57 +564,11 @@
       }
     }
 
-    // Share to Facebook Messenger
-    async function shareToMessenger() {
-      const canvas = createTextCanvas();
-      if (!canvas) {
-        alert('Please enter some text first!');
-        return;
-      }
-
-      try {
-        // For mobile devices with Web Share API
-        if (navigator.share && navigator.canShare) {
-          const blob = await new Promise(resolve => {
-            canvas.toBlob(resolve, 'image/png');
-          });
-
-          const file = new File([blob], 'beria-text.png', { type: 'image/png' });
-
-          if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: 'Beria Text',
-              text: 'Check out this text in Beria script!',
-              files: [file]
-            });
-            return;
-          }
-        }
-
-        // Fallback: download image and open Messenger
-        const dataURL = canvas.toDataURL('image/png');
-        const link = document.createElement('a');
-        link.download = 'beria-text.png';
-        link.href = dataURL;
-        link.click();
-
-        // Open Messenger in new tab
-        setTimeout(() => {
-          window.open('https://www.messenger.com/', '_blank');
-        }, 500);
-
-      } catch (error) {
-        console.error('Messenger sharing failed:', error);
-        alert('Please download the image and share it manually in Messenger.');
-      }
-    }
-
     // Event listeners
     themeToggle.addEventListener('click', toggleTheme);
     exportBtn.addEventListener('click', exportAsPNG);
     copyBtn.addEventListener('click', copyImageToClipboard);
     whatsappBtn.addEventListener('click', shareToWhatsApp);
-    messengerBtn.addEventListener('click', shareToMessenger);
 
     // Initialize
     async function initialize() {
