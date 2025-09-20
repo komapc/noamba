@@ -44,6 +44,10 @@
       border-color: #555;
     }
 
+    #beria {
+      font-family: "Kedebideri", "Kedebideri-Remote", "Noto Sans", sans-serif;
+    }
+
     .info {
       background: #f0f8ff;
       border: 1px solid #0066cc;
@@ -180,10 +184,10 @@
     <div class="key-button special-key" data-key="V">V (rising)</div>
     <div class="key-button special-key" data-key="`">` (falling)</div>
     <div class="key-button special-key" data-key="~">~ (ATR)</div>
-    <div class="key-button special-key" data-key="x">x: ɲ Gna  \u{16EC8}   </div>
-    <div class="key-button special-key" data-key="z">z: ŋ Ngay  \u{16EC9}  </div>
-    <div class="key-button special-key" data-key="c">c: ∫ Shep  \u{16ECF}" </div>
-    <div class="key-button special-key" data-key="q">q: ɾ Erigo-Tamura   \u{16ECD}  </div>
+    <div class="key-button special-key" data-key="x">x (ɲ Gna)  </div>
+    <div class="key-button special-key" data-key="z">z (ŋ Ngay)</div>
+    <div class="key-button special-key" data-key="c">c (∫ Shep)</div>
+    <div class="key-button special-key" data-key="q">q (ɾ Erigo-Tamura)</div>
   </div>
 
   <div class="theme-controls">
@@ -311,6 +315,14 @@
       const testChar = '\u{16EA0}'; // Beria ARKAB (capital A)
       const tofuChar = '\uFFFD'; // Unicode replacement character (tofu)
 
+      // First, check if system fonts support Beria natively
+      if (await checkSystemBeriaSupport(testChar)) {
+        // System has Beria support! Use default fonts
+        beriaEl.style.fontFamily = 'serif, sans-serif'; // Use system fonts
+        updateFontStatus('Great! Your system has native Beria Unicode 17 support. Using system fonts.', 'success');
+        return;
+      }
+
       // System doesn't support Beria, try custom fonts
       if ('fonts' in document) {
         try {
@@ -324,8 +336,82 @@
           console.log('Local font loading failed, trying remote font...');
         }
 
+        // Try remote font as fallback
+        try {
+          const remoteFontFace = new FontFace('Kedebideri-Remote-Test', 'url(https://software.sil.org/kedebideri/wp-content/uploads/sites/67/2024/11/Kedebideri-Regular.woff2)');
+          await remoteFontFace.load();
+          document.fonts.add(remoteFontFace);
+          beriaEl.style.fontFamily = '"Kedebideri-Remote-Test", "Kedebideri-Remote", serif, sans-serif';
+          updateFontStatus('Remote Kedebideri font loaded as fallback.', 'warning');
+          return;
+        } catch (error) {
+          console.log('Remote font loading also failed');
+        }
+      }
+
       // Everything failed
       updateFontStatus('No Beria font support detected. Characters will display as boxes (□). Please install a Beria-compatible font or update your system to support Unicode 17.', 'error');
+    }
+
+    // Check if system fonts can render Beria characters properly
+    async function checkSystemBeriaSupport(testChar) {
+      return new Promise((resolve) => {
+        const canvas = document.createElement('canvas');
+        const context = canvas.getContext('2d', { willReadFrequently: true });
+        canvas.width = 50;
+        canvas.height = 50;
+
+        // Test with system serif font
+        context.font = '24px serif';
+        context.fillStyle = 'black';
+        context.textBaseline = 'middle';
+        context.textAlign = 'center';
+
+        // Clear and draw test character
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillText(testChar, 25, 25);
+
+        // Get image data to check if something was actually rendered
+        const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const pixels = imageData.data;
+
+        // Check if any non-white pixels exist (meaning character was rendered)
+        let hasContent = false;
+        for (let i = 0; i < pixels.length; i += 4) {
+          const r = pixels[i];
+          const g = pixels[i + 1];
+          const b = pixels[i + 2];
+          const alpha = pixels[i + 3];
+
+          // If we find a dark pixel with alpha > 0, character was rendered
+          if (alpha > 0 && (r < 250 || g < 250 || b < 250)) {
+            hasContent = true;
+            break;
+          }
+        }
+
+        // Double-check with a known character that should always render
+        context.clearRect(0, 0, canvas.width, canvas.height);
+        context.fillText('A', 25, 25);
+        const referenceData = context.getImageData(0, 0, canvas.width, canvas.height);
+        const refPixels = referenceData.data;
+
+        let hasReference = false;
+        for (let i = 0; i < refPixels.length; i += 4) {
+          const alpha = refPixels[i + 3];
+          if (alpha > 0) {
+            hasReference = true;
+            break;
+          }
+        }
+
+        // If we can render reference 'A' but test character has no content,
+        // it's likely showing as tofu
+        const beriaSupported = hasContent && hasReference;
+
+        console.log(`System Beria support check: ${beriaSupported ? 'SUPPORTED' : 'NOT SUPPORTED'}`);
+        resolve(beriaSupported);
+      });
     }
 
     function updateFontStatus(message, type) {
