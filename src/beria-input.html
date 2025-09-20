@@ -44,10 +44,6 @@
       border-color: #555;
     }
 
-    #beria {
-      font-family: "Kedebideri", "Kedebideri-Remote", "Noto Sans", sans-serif;
-    }
-
     .info {
       background: #f0f8ff;
       border: 1px solid #0066cc;
@@ -336,17 +332,6 @@
           console.log('Local font loading failed, trying remote font...');
         }
 
-        // Try remote font as fallback
-        try {
-          const remoteFontFace = new FontFace('Kedebideri-Remote-Test', 'url(https://software.sil.org/kedebideri/wp-content/uploads/sites/67/2024/11/Kedebideri-Regular.woff2)');
-          await remoteFontFace.load();
-          document.fonts.add(remoteFontFace);
-          beriaEl.style.fontFamily = '"Kedebideri-Remote-Test", "Kedebideri-Remote", serif, sans-serif';
-          updateFontStatus('Remote Kedebideri font loaded as fallback.', 'warning');
-          return;
-        } catch (error) {
-          console.log('Remote font loading also failed');
-        }
       }
 
       // Everything failed
