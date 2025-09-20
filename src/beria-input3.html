@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Zaghawa Beria Keyboard - Enhanced</title>
+  <style>
+    @font-face {
+      font-family: "Kedebideri";
+      src: url("fonts/Kedebideri-Regular.woff2") format("woff2"),
+           url("fonts/Kedebideri-Regular.woff") format("woff"),
+           url("fonts/Kedebideri-Regular.ttf") format("truetype");
+    }
+
+    /* Fallback font from SIL (may be blocked by CORS) */
+    @font-face {
+      font-family: "Kedebideri-Remote";
+      src: url("https://software.sil.org/kedebideri/wp-content/uploads/sites/67/2024/11/Kedebideri-Regular.woff2") format("woff2");
+      font-display: swap;
+    }
+
+    body {
+      font-family: sans-serif;
+      margin: 20px;
+      padding: 10px;
+      transition: background-color 0.3s, color 0.3s;
+      background-color: #ffffff;
+      color: #333333;
+    }
+
+    body.dark-mode {
+      background-color: #1a1a1a;
+      color: #e0e0e0;
+    }
+
+    textarea {
+      width: 90%;
+      max-width: 600px;
+      height: 200px;
+      font-size: 24px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border: 2px solid #ccc;
+      border-radius: 5px;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode textarea {
+      background-color: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    #beria {
+      font-family: "Kedebideri", "Kedebideri-Remote", "Noto Sans", sans-serif;
+    }
+
+    .info {
+      background: #f0f8ff;
+      border: 1px solid #0066cc;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      transition: background-color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode .info {
+      background: #1a2332;
+      border-color: #4a90e2;
+    }
+
+    .font-status {
+      background: #fff3cd;
+      border: 1px solid #ffc107;
+      border-radius: 5px;
+      padding: 10px;
+      margin-bottom: 20px;
+      font-size: 14px;
+      display: none;
+    }
+
+    .dark-mode .font-status {
+      background: #2d2416;
+      border-color: #d39e00;
+    }
+
+    .font-status.show {
+      display: block;
+    }
+
+    .virtual-keyboard {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      margin-top: 10px;
+      max-width: 600px;
+    }
+
+    .key-button {
+      padding: 10px 15px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 3px;
+      font-size: 18px;
+      cursor: pointer;
+      min-width: 40px;
+      text-align: center;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode .key-button {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    .key-button:hover {
+      background: #f0f0f0;
+    }
+
+    .dark-mode .key-button:hover {
+      background: #404040;
+    }
+
+    .key-button:active {
+      background: #e0e0e0;
+    }
+
+    .dark-mode .key-button:active {
+      background: #505050;
+    }
+
+    .special-key {
+      background: #e6f3ff;
+    }
+
+    .dark-mode .special-key {
+      background: #1a2a3a;
+    }
+
+    .theme-controls {
+      margin-top: 20px;
+    }
+
+    .theme-button {
+      padding: 10px 20px;
+      border: 1px solid #ccc;
+      background: white;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+    }
+
+    .dark-mode .theme-button {
+      background: #2d2d2d;
+      color: #e0e0e0;
+      border-color: #555;
+    }
+
+    .theme-button:hover {
+      background: #f0f0f0;
+    }
+
+    .dark-mode .theme-button:hover {
+      background: #404040;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="info">
+    <strong>Beria-Zaghawa Input Method</strong><br>
+    Type normally in Latin characters - they will be automatically converted to Beria script.<br>
+    <em>Use the buttons below for special characters and tone marks, or type: v (stress), V (rising), ` (falling), ~ (ATR), x, z, c, q</em>
+  </div>
+
+  <div id="font-status" class="font-status">
+    <strong>Font Status:</strong> <span id="font-message"></span>
+  </div>
+
+  <textarea id="beria" placeholder="Type in Latin characters - converts to Beria automatically"></textarea>
+
+  <div id="virtual-keyboard" class="virtual-keyboard">
+    <div class="key-button special-key" data-key="v">v (stress)</div>
+    <div class="key-button special-key" data-key="V">V (rising)</div>
+    <div class="key-button special-key" data-key="`">` (falling)</div>
+    <div class="key-button special-key" data-key="~">~ (ATR)</div>
+    <div class="key-button special-key" data-key="x">x (ɲ Gna)</div>
+    <div class="key-button special-key" data-key="z">z (ŋ Ngay)</div>
+    <div class="key-button special-key" data-key="c">c (∫ Shep)</div>
+    <div class="key-button special-key" data-key="q">q (ɾ Erigo-Tamura)</div>
+  </div>
+
+  <div class="theme-controls">
+    <button id="theme-toggle" class="theme-button">🌙 Dark Mode</button>
+  </div>
+
+  <script>
+    const beriaEl = document.getElementById("beria");
+    const themeToggle = document.getElementById("theme-toggle");
+    const virtualKeyboard = document.getElementById("virtual-keyboard");
+    const fontStatus = document.getElementById("font-status");
+    const fontMessage = document.getElementById("font-message");
+
+    // Character mapping - simplified and corrected
+    const charMap = {
+      // Combining marks for tones/stress
+      "v": "\u0304", // COMBINING MACRON — Stress Mark
+      "V": "\u0301", // COMBINING ACUTE ACCENT — Rising Tone
+      "`": "\u0300", // COMBINING GRAVE ACCENT — Falling Tone
+      "~": "\u0307", // COMBINING DOT ABOVE — Advanced Tongue Root
+      
+      // Special consonants
+      "x": "\u{16EC8}", // Beria SMALL Gna
+      "z": "\u{16EC9}", // Beria SMALL Ngay
+      "c": "\u{16ECF}", // Beria SMALL Shep
+      "q": "\u{16ECD}", // Beria SMALL Erigo-Tamura
+      "X": "\u{16EAD}", // Capital versions
+      "Z": "\u{16EAE}",
+      "C": "\u{16EB4}",
+      "Q": "\u{16EB2}",
+
+      // Regular Beria letters (lowercase)
+      "a": "\u{16EBB}", // ARKAB
+      "b": "\u{16EBC}", // BASIGNA
+      "d": "\u{16EBD}", // DARBAI
+      "e": "\u{16EBE}", // EH
+      "f": "\u{16EBF}", // FITKO
+      "g": "\u{16EC0}", // GOWAY
+      "h": "\u{16EC1}", // HIRDEABO
+      "i": "\u{16EC2}", // I
+      "j": "\u{16EC3}", // DJAI
+      "k": "\u{16EC4}", // KOBO
+      "l": "\u{16EC5}", // LAKKO
+      "m": "\u{16EC6}", // MERI
+      "n": "\u{16EC7}", // NINI
+      "o": "\u{16ECA}", // OI
+      "p": "\u{16ECB}", // PI
+      "r": "\u{16ECC}", // ERIGO
+      "s": "\u{16ECE}", // SERI
+      "t": "\u{16ED0}", // TATASOUE
+      "u": "\u{16ED1}", // UI
+      "w": "\u{16ED2}", // WASSE
+      "y": "\u{16ED3}", // AY
+
+      // Regular Beria letters (uppercase)
+      "A": "\u{16EA0}", // ARKAB
+      "B": "\u{16EA1}", // BASIGNA
+      "D": "\u{16EA2}", // DARBAI
+      "E": "\u{16EA3}", // EH
+      "F": "\u{16EA4}", // FITKO
+      "G": "\u{16EA5}", // GOWAY
+      "H": "\u{16EA6}", // HIRDEABO
+      "I": "\u{16EA7}", // I
+      "J": "\u{16EA8}", // DJAI
+      "K": "\u{16EA9}", // KOBO
+      "L": "\u{16EAA}", // LAKKO
+      "M": "\u{16EAB}", // MERI
+      "N": "\u{16EAC}", // NINI
+      "O": "\u{16EAF}", // OI
+      "P": "\u{16EB0}", // PI
+      "R": "\u{16EB1}", // ERIGO
+      "S": "\u{16EB3}", // SERI
+      "T": "\u{16EB5}", // TATASOUE
+      "U": "\u{16EB6}", // UI
+      "W": "\u{16EB7}", // WASSE
+      "Y": "\u{16EB8}", // AY
+    };
+
+    // Theme management with localStorage
+    function getStoredTheme() {
+      try {
+        return localStorage.getItem('beria-theme');
+      } catch (e) {
+        console.warn('localStorage not available, using session storage');
+        return sessionStorage.getItem('beria-theme');
+      }
+    }
+
+    function setStoredTheme(theme) {
+      try {
+        localStorage.setItem('beria-theme', theme);
+      } catch (e) {
+        console.warn('localStorage not available, using session storage');
+        sessionStorage.setItem('beria-theme', theme);
+      }
+    }
+
+    function applyTheme(theme) {
+      if (theme === 'dark') {
+        document.body.classList.add('dark-mode');
+        themeToggle.textContent = '☀️ Light Mode';
+      } else {
+        document.body.classList.remove('dark-mode');
+        themeToggle.textContent = '🌙 Dark Mode';
+      }
+    }
+
+    function toggleTheme() {
+      const isDark = document.body.classList.contains('dark-mode');
+      const newTheme = isDark ? 'light' : 'dark';
+      applyTheme(newTheme);
+      setStoredTheme(newTheme);
+    }
+
+    // Font detection
+    async function checkFontAvailability() {
+      // Test if the Kedebideri font is available by checking if text renders differently
+      const testText = '\u{16EBB}'; // Beria letter Arkab
+      
+      const canvas = document.createElement('canvas');
+      const context = canvas.getContext('2d');
+      
+      // Test with fallback font
+      context.font = '20px sans-serif';
+      const fallbackWidth = context.measureText(testText).width;
+      
+      // Test with Kedebideri font
+      context.font = '20px Kedebideri, sans-serif';
+      const kedebideriWidth = context.measureText(testText).width;
+      
+      // If widths are different, the font is likely loaded
+      const fontAvailable = fallbackWidth !== kedebideriWidth;
+      
+      // Also use FontFace API if available
+      if ('fonts' in document) {
+        try {
+          const fontFace = new FontFace('Kedebideri-Test', 'url(fonts/Kedebideri-Regular.woff2)');
+          await fontFace.load();
+          document.fonts.add(fontFace);
+          updateFontStatus('Local Kedebideri font loaded successfully!', 'success');
+          return;
+        } catch (error) {
+          console.log('Local font loading failed, trying remote font...');
+        }
+        
+        // Try remote font as fallback
+        try {
+          const remoteFontFace = new FontFace('Kedebideri-Remote-Test', 'url(https://software.sil.org/kedebideri/wp-content/uploads/sites/67/2024/11/Kedebideri-Regular.woff2)');
+          await remoteFontFace.load();
+          document.fonts.add(remoteFontFace);
+          updateFontStatus('Remote Kedebideri font loaded as fallback.', 'warning');
+          return;
+        } catch (error) {
+          console.log('Remote font loading also failed');
+        }
+      }
+      
+      if (fontAvailable) {
+        updateFontStatus('Kedebideri font detected and ready.', 'success');
+      } else {
+        updateFontStatus('Kedebideri font not available. Beria characters may not display correctly. Consider installing the font locally.', 'error');
+      }
+    }
+
+    function updateFontStatus(message, type) {
+      fontMessage.textContent = message;
+      fontStatus.className = `font-status show ${type}`;
+      
+      // Auto-hide success messages after 3 seconds
+      if (type === 'success') {
+        setTimeout(() => {
+          fontStatus.classList.remove('show');
+        }, 3000);
+      }
+    }
+
+    // Simple character conversion
+    function convertChar(char) {
+      return charMap[char] || char;
+    }
+
+    // Insert character at cursor position
+    function insertAtCursor(textarea, text) {
+      const start = textarea.selectionStart;
+      const end = textarea.selectionEnd;
+      const value = textarea.value;
+      
+      textarea.value = value.slice(0, start) + text + value.slice(end);
+      textarea.selectionStart = textarea.selectionEnd = start + text.length;
+      textarea.focus();
+    }
+
+    // Single input handler - works for all devices
+    let isProcessing = false;
+    
+    beriaEl.addEventListener('beforeinput', function(e) {
+      if (isProcessing) return;
+      
+      // Only handle character insertions
+      if (e.inputType !== 'insertText' || !e.data) return;
+      
+      const char = e.data;
+      const convertedChar = convertChar(char);
+      
+      // If conversion happened, prevent default and insert converted char
+      if (convertedChar !== char) {
+        e.preventDefault();
+        isProcessing = true;
+        insertAtCursor(beriaEl, convertedChar);
+        isProcessing = false;
+      }
+    });
+
+    // Virtual keyboard handler
+    virtualKeyboard.addEventListener('click', function(e) {
+      if (!e.target.classList.contains('key-button')) return;
+      
+      const key = e.target.dataset.key;
+      const convertedChar = convertChar(key);
+      insertAtCursor(beriaEl, convertedChar);
+    });
+
+    // Event listeners
+    themeToggle.addEventListener('click', toggleTheme);
+
+    // Initialize
+    async function initialize() {
+      // Apply stored theme
+      const storedTheme = getStoredTheme();
+      if (storedTheme) {
+        applyTheme(storedTheme);
+      }
+      
+      // Check font availability
+      await checkFontAvailability();
+      
+      // Focus textarea
+      beriaEl.focus();
+    }
+
+    // Start initialization when page loads
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initialize);
+    } else {
+      initialize();
+    }
+  </script>
+
+</body>
+</html>
