@@ -2,6 +2,7 @@
 https://github.com/silnrsi/font-zaghawa-beria
 
 https://software.sil.org/kedebideri/
+https://software.sil.org/kedebideri/charset/
 
 
 https://software.sil.org/kedebideri/sample/ - all relevant chars
@@ -19,6 +20,12 @@ https://www.shareaholic.com/website-tools/social-share-buttons/facebook-messenge
 
 https://developers.facebook.com/docs/plugins/share-button/
 
+
+
+SIL PUA:
+https://github.com/silnrsi/unicode-resources/blob/main/sil-pua/docs/pua-assignments.md
+
+https://github.com/silnrsi/unicode-resources/blob/main/sil-pua/docs/pua-deprecation-strategy.md
 
 
 
