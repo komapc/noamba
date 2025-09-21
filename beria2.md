@@ -19,3 +19,16 @@ The Zaghawa or Beria script, Beria Giray Erfe (𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌
 http://scriptum.bplaced.net/africa/beria.html
 
 
+https://www.rogerblench.info/Language/Nilo-Saharan/Saharan/
+https://www.rogerblench.info/Language/Nilo-Saharan/Saharan/Beria%20dictionary.pdf
+
+
+https://independent.academia.edu/IsabelCompes
+
+
+https://www.academia.edu/93334896/Zaghawa_Wagi_Towards_documenting_the_Sudanese_dialectal_variant_of_Zaghawa
+
+
+https://www.academia.edu/83334035/Zaghawa_Fieldmethods_Corpus_2014_2016
+
+

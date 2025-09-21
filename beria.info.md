@@ -1,4 +1,7 @@
 
+http://scriptum.bplaced.net/africa/beria.html
+
+
 https://github.com/silnrsi/font-zaghawa-beria
 
 https://software.sil.org/kedebideri/
@@ -26,6 +29,16 @@ SIL PUA:
 https://github.com/silnrsi/unicode-resources/blob/main/sil-pua/docs/pua-assignments.md
 
 https://github.com/silnrsi/unicode-resources/blob/main/sil-pua/docs/pua-deprecation-strategy.md
+
+
+---------
+
+
+developers
+𞗐𞗕𞗑𞗧 𞗸𞗑𞗡𞗟𞗳
+𞗴𞗟𞗕𞗕𞗟𞗣𞗣 𞗐𞗕𞗑𞗧 𞗞𞗵𞗵𞗑
+
+Adam Tajir / Siddick Adam Issa
 
 
 
