@@ -164,7 +164,8 @@
 <body>
 
   <div class="info">
-    <strong>Beria-Zaghawa Input Method</strong> -> Image<br>
+    <strong>𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! </strong><br>
+    <strong>Beria-Zaghawa</strong> -> Image<br>
     لغة الزغاوة<br>
     For example, type 'Beria Giray Erfee' to get '𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓 𖺣𖻌𖺿𖺾𖺾'.<br>
   </div>
@@ -173,7 +174,7 @@
     <strong>Font Status:</strong> <span id="font-message"></span>
   </div>
 
-  <textarea id="beria" placeholder="𖺡𖺾𖻌𖻂𖺻: Type in Latin characters - &#x16EC8; converts to Beria automatically"></textarea>
+  <textarea id="beria" placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
 
   <div id="virtual-keyboard" class="virtual-keyboard">
     <div class="key-button special-key" data-key="v">v (stress)</div>
@@ -317,10 +318,11 @@
           await fontFace.load();
           document.fonts.add(fontFace);
           beriaEl.style.fontFamily = '"Kedebideri-Test", "Kedebideri", serif, sans-serif';
-          updateFontStatus('Local Kedebideri font loaded successfully!', 'success');
+          // updateFontStatus('Local Kedebideri font loaded successfully!', 'success');
           return;
         } catch (error) {
           console.log('Local font loading failed, trying remote font...');
+          console.error(error);
         }
 
       }
