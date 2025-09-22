@@ -318,6 +318,7 @@
           await fontFace.load();
           document.fonts.add(fontFace);
           beriaEl.style.fontFamily = '"Kedebideri-Test", "Kedebideri", serif, sans-serif';
+          // Debugging message to webapge:
           // updateFontStatus('Local Kedebideri font loaded successfully!', 'success');
           return;
         } catch (error) {
