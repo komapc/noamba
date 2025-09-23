@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zaghawa Beria Keyboard</title>
-	<link rel="stylesheet" href="fonts/Kedebideri-webfont-example.css" type="text/css">
+  <link rel="stylesheet" href="fonts/Kedebideri-webfont-example.css" type="text/css">
 
   <style>
     /* @font-face {
@@ -155,6 +156,7 @@
     }
   </style>
 </head>
+
 <body>
 
   <div class="info">
@@ -164,7 +166,8 @@
     For example, type 'Beria Giray Erfee' to get '𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓 𖺣𖻌𖺿𖺾𖺾'.<br>
   </div>
 
-  <textarea id="beria" placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
+  <textarea id="beria"
+    placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
 
 
   <div class="theme-controls">
@@ -187,12 +190,12 @@
     <div class="key-button special-key" data-key="q">q: &#x16ECD/&#x16EB2 (ɾ Erigo-Tamura)</div>
   </div>
   <hr>
-<div id="etc" >
-<ol>
-<li> <a href="https://en.wikipedia.org/wiki/Zaghawa_script">Zaghawa_script</a> (WP) </li>
-<li> <a href="https://ar.wikipedia.org/wiki/أبجدية_الزغاوة">أبجدية_الزغاوة</a> (WP) </li>
-</ol>
-</div>
+  <div id="etc">
+    <ol>
+      <li> <a href="https://en.wikipedia.org/wiki/Zaghawa_script">Zaghawa_script</a> (WP) </li>
+      <li> <a href="https://ar.wikipedia.org/wiki/أبجدية_الزغاوة">أبجدية_الزغاوة</a> (WP) </li>
+    </ol>
+  </div>
 
   <script>
     const beriaEl = document.getElementById("beria");
@@ -323,7 +326,7 @@
     // Single input handler - works for all devices
     let isProcessing = false;
 
-    beriaEl.addEventListener('beforeinput', function(e) {
+    beriaEl.addEventListener('beforeinput', function (e) {
       if (isProcessing) return;
 
       // Only handle character insertions
@@ -342,7 +345,7 @@
     });
 
     // Virtual keyboard handler
-    virtualKeyboard.addEventListener('click', function(e) {
+    virtualKeyboard.addEventListener('click', function (e) {
       if (!e.target.classList.contains('key-button')) return;
 
       const key = e.target.dataset.key;
@@ -441,7 +444,7 @@
       }
 
       const link = document.createElement('a');
-      link.download = `beria-text-${new Date().toISOString().slice(0,10)}.png`;
+      link.download = `beria-text-${new Date().toISOString().slice(0, 10)}.png`;
       link.href = canvas.toDataURL('image/png');
       link.click();
     }
@@ -559,4 +562,5 @@
   </script>
 
 </body>
+
 </html>
