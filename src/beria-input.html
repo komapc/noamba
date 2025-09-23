@@ -4,22 +4,24 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Zaghawa Beria Keyboard</title>
+	<link rel="stylesheet" href="fonts/Kedebideri-webfont-example.css" type="text/css">
+
   <style>
-    @font-face {
+    /* @font-face {
       font-family: "Kedebideri";
       src: url("fonts/Kedebideri-Regular.woff2") format("woff2"),
            url("fonts/Kedebideri-Regular.woff") format("woff"),
            url("fonts/Kedebideri-Regular.ttf") format("truetype");
-    }
+    } */
 
-    body {
+    /* body {
       font-family: Kedebideri, serif, sans-serif;
       margin: 20px;
       padding: 10px;
       transition: background-color 0.3s, color 0.3s;
       background-color: #ffffff;
       color: #333333;
-    }
+    } */
 
     body.dark-mode {
       background-color: #1a1a1a;
@@ -306,45 +308,6 @@
       setStoredTheme(newTheme);
     }
 
-    // Font detection - checks system font support first
-    async function checkFontAvailability() {
-      const testChar = '\u{16EA0}'; // Beria ARKAB (capital A)
-      const tofuChar = '\uFFFD'; // Unicode replacement character (tofu)
-
-      // System doesn't support Beria, try custom fonts
-      if ('fonts' in document) {
-        try {
-          const fontFace = new FontFace('Kedebideri-Test', 'url(fonts/Kedebideri-Regular.woff2)');
-          await fontFace.load();
-          document.fonts.add(fontFace);
-          beriaEl.style.fontFamily = '"Kedebideri-Test", "Kedebideri", serif, sans-serif';
-          // Debugging message to webapge:
-          // updateFontStatus('Local Kedebideri font loaded successfully!', 'success');
-          console.log('Success: Local Kedebideri font loaded successfully!');
-          return;
-        } catch (error) {
-          console.log('Local font loading failed, trying remote font...');
-          console.error(error);
-        }
-
-      }
-
-      // Everything failed
-      updateFontStatus('No Beria font support detected. Characters will display as boxes (□). Please install a Beria-compatible font or update your system to support Unicode 17.', 'error');
-    }
-
-    function updateFontStatus(message, type) {
-      fontMessage.textContent = message;
-      fontStatus.className = `font-status show ${type}`;
-
-      // Auto-hide success messages after 3 seconds
-      if (type === 'success') {
-        setTimeout(() => {
-          fontStatus.classList.remove('show');
-        }, 3000);
-      }
-    }
-
     // Simple character conversion
     function convertChar(char) {
       return charMap[char] || char;
@@ -581,9 +544,6 @@
       if (storedTheme) {
         applyTheme(storedTheme);
       }
-
-      // Check font availability
-      await checkFontAvailability();
 
       // Focus textarea
       beriaEl.focus();
