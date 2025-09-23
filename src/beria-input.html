@@ -379,7 +379,9 @@
       // const lineHeight = fontSize * 1.5; // Better line spacing
 
       // Final canvas dimensions
-      const finalWidth = targetWidth;
+      const finalWidth = computedStyle.width;
+      const finalHeight = computedStyle.height;
+
       // const minHeight = 400;
       // const finalHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
 
