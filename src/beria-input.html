@@ -197,6 +197,10 @@
     </ol>
   </div>
 
+  <script src="vendor/static/html2canvas/html2canvas.1.4.1.min.js"></script>
+
+  <!-- https://html2canvas.hertzen.com/configuration -->
+
   <script>
     const beriaEl = document.getElementById("beria");
     const themeToggle = document.getElementById("theme-toggle");
@@ -353,96 +357,45 @@
       insertAtCursor(beriaEl, convertedChar);
     });
 
-    // Create high-quality canvas for text rendering
-    function createTextCanvas() {
-      const text = beriaEl.value;
-      if (!text.trim()) {
+    // Replace manual canvas creation with html2canvas-based async function
+    async function createTextCanvas() {
+      // Ensure html2canvas is available
+      if (typeof html2canvas !== 'function') {
+        console.error('html2canvas not found. Make sure the script is loaded.');
         return null;
       }
 
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
+      const text = beriaEl.value;
+      if (!text || !text.trim()) return null;
 
-      // Get textarea styles
-      const computedStyle = window.getComputedStyle(beriaEl);
-      const baseFontSize = parseInt(computedStyle.fontSize);
-      const fontFamily = computedStyle.fontFamily;
       const isDark = document.body.classList.contains('dark-mode');
+      const backgroundColor = isDark ? '#1a1a1a' : '#ffffff';
 
-      // Calculate text dimensions first with a temporary canvas
-      const tempCanvas = document.createElement('canvas');
-      const tempCtx = tempCanvas.getContext('2d');
-      tempCtx.font = `${baseFontSize}px ${fontFamily}`;
+      // html2canvas will rasterize the element. Adjust scale for quality.
+      const scale = Math.min(2, window.devicePixelRatio || 1);
 
-      // const lines = text.split('\n');
-      // let maxLineWidth = 0;
-      // lines.forEach(line => {
-      //   const lineWidth = tempCtx.measureText(line).width;
-      //   maxLineWidth = Math.max(maxLineWidth, lineWidth);
-      // });
-
-      // Calculate optimal dimensions for social media (1200px width target)
-      const targetWidth = 1200;
-      const padding = 60; // Larger padding for better appearance
-      // const minContentWidth = Math.max(400, maxLineWidth);
-      // const scale = (targetWidth - padding * 2) / minContentWidth;
-
-      // Scale up font size for sharp rendering
-      // const fontSize = Math.max(32, Math.round(baseFontSize * scale));
-      // const lineHeight = fontSize * 1.5; // Better line spacing
-
-      // Final canvas dimensions
-      const finalWidth = computedStyle.width;
-      const finalHeight = computedStyle.height;
-      const fontSize = computedStyle.font.size;
-
-      // const minHeight = 400;
-      // const finalHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
-
-      // Set canvas to exact pixel dimensions (no DPR scaling - causes blur)
-      // canvas.width = finalWidth;
-      // canvas.height = finalHeight;
-
-      // CRITICAL: Don't set style dimensions - let it render at native size
-      // This prevents browser scaling which causes blur
-
-      // Disable smoothing for pixel-perfect text
-      ctx.imageSmoothingEnabled = false;
-      ctx.textRenderingOptimization = 'optimizeQuality';
-
-      // Use integer positioning to avoid sub-pixel rendering blur
-      // const roundedPadding = Math.round(padding);
-      // const roundedLineHeight = Math.round(lineHeight);
-
-      // Draw background with clean edges
-      ctx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
-      ctx.fillRect(0, 0, finalWidth, finalHeight);
-
-      ctx.fillStyle = isDark ? '#e0e0e0' : '#333333';
-      ctx.font = `${fontSize}px ${fontFamily}`;
-      ctx.textBaseline = 'top';
-      ctx.textAlign = 'left';
-
-      // Enable sub-pixel positioning for better font rendering
-      ctx.textRenderingOptimization = 'geometricPrecision';
-
-      // Draw text line by line with pixel-perfect positioning
-      lines.forEach((line, index) => {
-        const y = roundedPadding + index * roundedLineHeight;
-        ctx.fillText(line, roundedPadding, Math.round(y));
-      });
-
-      return canvas;
+      try {
+        const canvas = await html2canvas(beriaEl, {
+          scale,
+          useCORS: true,
+          backgroundColor,
+          logging: false,
+          // allowTaint: false // keep defaults; adjust if you have tainted images
+        });
+        return canvas;
+      } catch (err) {
+        console.error('html2canvas failed:', err);
+        return null;
+      }
     }
 
     // Export textarea content as PNG
-    function exportAsPNG() {
-      const canvas = createTextCanvas();
+    async function exportAsPNG() {
+      const canvas = await createTextCanvas();
       if (!canvas) {
         alert('Please enter some text first!');
         return;
       }
-
       const link = document.createElement('a');
       link.download = `beria-text-${new Date().toISOString().slice(0, 10)}.png`;
       link.href = canvas.toDataURL('image/png');
@@ -451,27 +404,18 @@
 
     // Copy image to clipboard
     async function copyImageToClipboard() {
-      const canvas = createTextCanvas();
+      const canvas = await createTextCanvas();
       if (!canvas) {
         alert('Refusing to create empty image. Please enter some text first.');
         return;
       }
 
       try {
-        // Convert canvas to blob
-        const blob = await new Promise(resolve => {
-          canvas.toBlob(resolve, 'image/png');
-        });
-
-        // Copy to clipboard using modern API
+        const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
         if (navigator.clipboard && navigator.clipboard.write) {
-          await navigator.clipboard.write([
-            new ClipboardItem({ 'image/png': blob })
-          ]);
-
-          // Show temporary success message
+          await navigator.clipboard.write([ new ClipboardItem({ 'image/png': blob }) ]);
           const originalText = copyBtn.textContent;
-          copyBtn.textContent = '✅ Copied to Clipboard:      Paste in Whatsapp or FB messenger   💬';
+          copyBtn.textContent = '✅ Copied to Clipboard: Paste in Whatsapp or FB messenger';
           copyBtn.style.background = '#d4edda';
           copyBtn.style.color = '#040d0a';
           setTimeout(() => {
@@ -490,45 +434,35 @@
 
     // Share to WhatsApp (creates image and opens WhatsApp)
     async function shareToWhatsApp() {
-      const canvas = createTextCanvas();
+      const canvas = await createTextCanvas();
       if (!canvas) {
         alert('Please enter some text first!');
         return;
       }
 
       try {
-        // For mobile devices with Web Share API
+        // Web Share API path
         if (navigator.share && navigator.canShare) {
-          const blob = await new Promise(resolve => {
-            canvas.toBlob(resolve, 'image/png');
-          });
-
+          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
           const file = new File([blob], 'beria-text.png', { type: 'image/png' });
-
           if (navigator.canShare({ files: [file] })) {
-            await navigator.share({
-              title: 'Beria Text',
-              text: 'Check out this text in Beria script!',
-              files: [file]
-            });
+            await navigator.share({ title: 'Beria Text', text: 'Check out this text in Beria script!', files: [file] });
             return;
           }
         }
 
-        // Fallback: download image and open WhatsApp web
+        // Fallback: download image and open WhatsApp scheme/web
         const dataURL = canvas.toDataURL('image/png');
         const link = document.createElement('a');
         link.download = 'beria-text.png';
         link.href = dataURL;
         link.click();
 
-        // Open WhatsApp web in new tab
         setTimeout(() => {
           const whatsappText = encodeURIComponent('Check out this Beria script text! 📝');
-          // window.open(`https://web.whatsapp.com/send?text=${whatsappText}`, '_blank');
-          window.open(`whatsapp://send?text=${whatsappText})`, '_blank');
+          // mobile: whatsapp://, desktop fallback can use web.whatsapp.com
+          window.open(`whatsapp://send?text=${whatsappText}`, '_blank');
         }, 500);
-
       } catch (error) {
         console.error('WhatsApp sharing failed:', error);
         alert('Please download the image and share it manually in WhatsApp.');
