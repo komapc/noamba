@@ -456,11 +456,13 @@
 
           // Show temporary success message
           const originalText = copyBtn.textContent;
-          copyBtn.textContent = '✅ Copied to Clipboard     (paste in Whatsapp or FB messenger)';
+          copyBtn.textContent = '✅ Copied to Clipboard:      Paste in Whatsapp or FB messenger   💬';
           copyBtn.style.background = '#d4edda';
+          copyBtn.style.color = '#040d0a';
           setTimeout(() => {
             copyBtn.textContent = originalText;
             copyBtn.style.background = '';
+            copyBtn.style.color = '';
           }, 2000);
         } else {
           throw new Error('Clipboard API not supported');
