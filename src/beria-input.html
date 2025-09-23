@@ -166,6 +166,16 @@
 
   <textarea id="beria" placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
 
+
+  <div class="theme-controls">
+    <button id="theme-toggle" class="theme-button">🌙 Dark Mode</button>
+    <button id="export-png" class="theme-button">📷 Export PNG</button>
+    <button id="copy-image" class="theme-button">📋 Copy Image to Copyboard (paste in Whatsapp or FB messenger)</button>
+    <button id="share-whatsapp" class="theme-button">💬 WhatsApp (mobile only) </button>
+  </div>
+
+  <hr>
+
   <div id="virtual-keyboard" class="virtual-keyboard">
     <div class="key-button special-key" data-key="v">v (stress)</div>
     <div class="key-button special-key" data-key="V">V (rising)</div>
@@ -176,13 +186,13 @@
     <div class="key-button special-key" data-key="c">c: &#x16ECF/&#x16EB4 (∫ Shep)</div>
     <div class="key-button special-key" data-key="q">q: &#x16ECD/&#x16EB2 (ɾ Erigo-Tamura)</div>
   </div>
-
-  <div class="theme-controls">
-    <button id="theme-toggle" class="theme-button">🌙 Dark Mode</button>
-    <button id="export-png" class="theme-button">📷 Export PNG</button>
-    <button id="copy-image" class="theme-button">📋 Copy Image to Copyboard (paste in Whatsapp or FB messenger)</button>
-    <button id="share-whatsapp" class="theme-button">💬 WhatsApp (mobile only) </button>
-  </div>
+  <hr>
+<div id="etc" >
+<ol>
+<li> <a href="https://en.wikipedia.org/wiki/Zaghawa_script">Zaghawa_script</a> (WP) </li>
+<li> <a href="https://ar.wikipedia.org/wiki/أبجدية_الزغاوة">أبجدية_الزغاوة</a> (WP) </li>
+</ol>
+</div>
 
   <script>
     const beriaEl = document.getElementById("beria");
@@ -381,6 +391,7 @@
       // Final canvas dimensions
       const finalWidth = computedStyle.width;
       const finalHeight = computedStyle.height;
+      const fontSize = computedStyle.font.size;
 
       // const minHeight = 400;
       // const finalHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
@@ -547,9 +558,5 @@
     }
   </script>
 
-<ol>
-<li> <a href="https://en.wikipedia.org/wiki/Zaghawa_script">Zaghawa_script</a> (WP) </li>
-<li> <a href="https://ar.wikipedia.org/wiki/أبجدية_الزغاوة">أبجدية_الزغاوة</a> (WP) </li>
-</ol>
 </body>
 </html>
