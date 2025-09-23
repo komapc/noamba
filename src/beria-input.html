@@ -30,9 +30,18 @@
       color: #e0e0e0;
     }
 
+    .beria-textarea-wrapper {
+      width: 1200px;
+      max-width: 100vw;
+      margin: 0 auto;
+      /* For scaling below 1200px */
+      transform-origin: top left;
+      transition: transform 0.2s;
+    }
+
     textarea {
-      width: 100%;
-      max-width: 1200px;
+      width: 1200px;
+      max-width: 100%;
       height: 300px;
       font-family: KedebideriSB, serif, sans-serif;
       /* font-size: 24px; */
@@ -166,8 +175,10 @@
     For example, type 'Beria Giray Erfee' to get '𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓 𖺣𖻌𖺿𖺾𖺾'.<br>
   </div>
 
-  <textarea id="beria"
-    placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
+  <div class="beria-textarea-wrapper" id="beria-textarea-wrapper">
+    <textarea id="beria"
+      placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
+  </div>
 
 
   <div class="theme-controls">
@@ -357,6 +368,45 @@
       insertAtCursor(beriaEl, convertedChar);
     });
 
+    // Responsive scaling for textarea wrapper
+    function scaleTextareaWrapper() {
+      const wrapper = document.getElementById('beria-textarea-wrapper');
+      const baseWidth = 1200;
+      const winWidth = window.innerWidth;
+      if (winWidth < baseWidth) {
+        const scale = winWidth / baseWidth;
+        wrapper.style.transform = `scale(${scale})`;
+      } else {
+        wrapper.style.transform = '';
+      }
+    }
+    window.addEventListener('resize', scaleTextareaWrapper);
+    scaleTextareaWrapper();
+
+    // Helper: create off-screen textarea for accurate line break rendering
+    function createOffscreenTextarea() {
+      const orig = beriaEl;
+      const offscreen = document.createElement('textarea');
+      offscreen.value = orig.value;
+      offscreen.style.position = 'absolute';
+      offscreen.style.left = '-9999px';
+      offscreen.style.top = '0';
+      offscreen.style.width = '1200px';
+      offscreen.style.height = orig.offsetHeight + 'px';
+      offscreen.style.fontFamily = window.getComputedStyle(orig).fontFamily;
+      offscreen.style.fontSize = window.getComputedStyle(orig).fontSize;
+      offscreen.style.lineHeight = window.getComputedStyle(orig).lineHeight;
+      offscreen.style.padding = window.getComputedStyle(orig).padding;
+      offscreen.style.border = window.getComputedStyle(orig).border;
+      offscreen.style.background = window.getComputedStyle(orig).background;
+      offscreen.style.color = window.getComputedStyle(orig).color;
+      offscreen.style.whiteSpace = 'pre-wrap';
+      offscreen.style.overflowWrap = 'break-word';
+      offscreen.setAttribute('readonly', 'readonly');
+      document.body.appendChild(offscreen);
+      return offscreen;
+    }
+
     // Replace manual canvas creation with html2canvas-based async function
     async function createTextCanvas() {
       // Ensure html2canvas is available
@@ -371,20 +421,23 @@
       const isDark = document.body.classList.contains('dark-mode');
       const backgroundColor = isDark ? '#1a1a1a' : '#ffffff';
 
-      // html2canvas will rasterize the element. Adjust scale for quality.
-      // const scale = Math.min(2, window.devicePixelRatio || 1);
-      const scale = 16;
+      // Use off-screen textarea for correct line breaks
+      const offscreen = createOffscreenTextarea();
+
+      // Use high scale for sharpness
+      const scale = Math.max(4, window.devicePixelRatio * 2);
 
       try {
-        const canvas = await html2canvas(beriaEl, {
+        const canvas = await html2canvas(offscreen, {
           scale,
           useCORS: true,
           backgroundColor,
           logging: false,
-          // allowTaint: false // keep defaults; adjust if you have tainted images
         });
+        document.body.removeChild(offscreen);
         return canvas;
       } catch (err) {
+        document.body.removeChild(offscreen);
         console.error('html2canvas failed:', err);
         return null;
       }
@@ -405,6 +458,10 @@
 
     // Copy image to clipboard
     async function copyImageToClipboard() {
+      // Ensure window and textarea are focused before copying
+      window.focus();
+      beriaEl.focus();
+
       const canvas = await createTextCanvas();
       if (!canvas) {
         alert('Refusing to create empty image. Please enter some text first.');
