@@ -372,7 +372,8 @@
       const backgroundColor = isDark ? '#1a1a1a' : '#ffffff';
 
       // html2canvas will rasterize the element. Adjust scale for quality.
-      const scale = Math.min(2, window.devicePixelRatio || 1);
+      // const scale = Math.min(2, window.devicePixelRatio || 1);
+      const scale = 16;
 
       try {
         const canvas = await html2canvas(beriaEl, {
