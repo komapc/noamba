@@ -361,31 +361,31 @@
       const tempCtx = tempCanvas.getContext('2d');
       tempCtx.font = `${baseFontSize}px ${fontFamily}`;
 
-      const lines = text.split('\n');
-      let maxLineWidth = 0;
-      lines.forEach(line => {
-        const lineWidth = tempCtx.measureText(line).width;
-        maxLineWidth = Math.max(maxLineWidth, lineWidth);
-      });
+      // const lines = text.split('\n');
+      // let maxLineWidth = 0;
+      // lines.forEach(line => {
+      //   const lineWidth = tempCtx.measureText(line).width;
+      //   maxLineWidth = Math.max(maxLineWidth, lineWidth);
+      // });
 
       // Calculate optimal dimensions for social media (1200px width target)
       const targetWidth = 1200;
       const padding = 60; // Larger padding for better appearance
-      const minContentWidth = Math.max(400, maxLineWidth);
-      const scale = (targetWidth - padding * 2) / minContentWidth;
+      // const minContentWidth = Math.max(400, maxLineWidth);
+      // const scale = (targetWidth - padding * 2) / minContentWidth;
 
       // Scale up font size for sharp rendering
-      const fontSize = Math.max(32, Math.round(baseFontSize * scale));
-      const lineHeight = fontSize * 1.5; // Better line spacing
+      // const fontSize = Math.max(32, Math.round(baseFontSize * scale));
+      // const lineHeight = fontSize * 1.5; // Better line spacing
 
       // Final canvas dimensions
       const finalWidth = targetWidth;
-      const minHeight = 400;
-      const finalHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
+      // const minHeight = 400;
+      // const finalHeight = Math.max(minHeight, lines.length * lineHeight + padding * 2);
 
       // Set canvas to exact pixel dimensions (no DPR scaling - causes blur)
-      canvas.width = finalWidth;
-      canvas.height = finalHeight;
+      // canvas.width = finalWidth;
+      // canvas.height = finalHeight;
 
       // CRITICAL: Don't set style dimensions - let it render at native size
       // This prevents browser scaling which causes blur
@@ -395,14 +395,13 @@
       ctx.textRenderingOptimization = 'optimizeQuality';
 
       // Use integer positioning to avoid sub-pixel rendering blur
-      const roundedPadding = Math.round(padding);
-      const roundedLineHeight = Math.round(lineHeight);
+      // const roundedPadding = Math.round(padding);
+      // const roundedLineHeight = Math.round(lineHeight);
 
       // Draw background with clean edges
       ctx.fillStyle = isDark ? '#1a1a1a' : '#ffffff';
       ctx.fillRect(0, 0, finalWidth, finalHeight);
 
-      // Set text properties with explicit font rendering hints
       ctx.fillStyle = isDark ? '#e0e0e0' : '#333333';
       ctx.font = `${fontSize}px ${fontFamily}`;
       ctx.textBaseline = 'top';
