@@ -180,7 +180,7 @@
   <div class="theme-controls">
     <button id="theme-toggle" class="theme-button">🌙 Dark Mode</button>
     <button id="export-png" class="theme-button">📷 Export PNG</button>
-    <button id="copy-image" class="theme-button">📋 Copy Image (paste in Whatsapp or FB messenger) </button>
+    <button id="copy-image" class="theme-button">📋 Copy Image to Copyboard (paste in Whatsapp or FB messenger)</button>
     <button id="share-whatsapp" class="theme-button">💬 WhatsApp (mobile only) </button>
   </div>
 
@@ -438,7 +438,7 @@
     async function copyImageToClipboard() {
       const canvas = createTextCanvas();
       if (!canvas) {
-        alert('Please enter some text first!');
+        alert('Refusing to create empty image. Please enter some text first.');
         return;
       }
 
@@ -456,7 +456,7 @@
 
           // Show temporary success message
           const originalText = copyBtn.textContent;
-          copyBtn.textContent = '✅ Copied!';
+          copyBtn.textContent = '✅ Copied to Clipboard     (paste in Whatsapp or FB messenger)';
           copyBtn.style.background = '#d4edda';
           setTimeout(() => {
             copyBtn.textContent = originalText;
