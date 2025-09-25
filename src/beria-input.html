@@ -36,7 +36,10 @@
     .beria-textarea-wrapper {
       width: 1200px;
       /* max-width: 100vw; */
-      margin: 0 auto;
+      /* margin: 0 auto; */
+      margin: 0;
+      border: 0;
+      padding: 0;
       transform-origin: top left;
       transition: transform 0.2s;
     }
@@ -47,6 +50,9 @@
       height: 300px;
       font-family: KedebideriM, serif, sans-serif;
       font-size: 24px;
+      margin: 0;
+      border: 0;
+      padding: 0;
       /* margin-bottom: 20px; */
       /* padding: 4px;
       border: 2px solid #ccc; */
@@ -424,6 +430,7 @@
           // width: beriaEl.offsetWidth,
           // height: beriaEl.offsetHeight,
           imageTimeout: 0, // No timeout for images
+          removeContainer: false,
           // letterRendering: true,
           allowTaint: true,
           useCORS: true,
@@ -434,10 +441,10 @@
         return canvas;
       } catch (err) {
         console.error('html2canvas failed:', err);
-        q.remove();
+        q.hidden = true;
         return null;
       }
-      q.remove();
+      q.hidden = true;
     }
 
     // Export textarea content as PNG
