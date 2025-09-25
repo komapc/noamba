@@ -4,7 +4,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Zaghawa Beria Keyboard</title>
+  <title>Zaghawa/Beria Giray Erfee - to message image</title>
+  <meta property="og:description" content="Keyboard mapping and image rendering" />
+  <meta property="og:url" content="https://beria.vip/" />
+
+  <meta property="og:image"content="https://beria.vip/im/test_1200x300.png"/>
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="300" />
+
   <link rel="stylesheet" href="fonts/Kedebideri-webfont-example.css" type="text/css">
 
   <style>
@@ -425,14 +432,18 @@
       const offscreen = createOffscreenTextarea();
 
       // Use high scale for sharpness
-      const scale = Math.max(4, window.devicePixelRatio * 2);
+      // const captureScale = Math.max(4, window.devicePixelRatio * 2);
+      const captureScale = Math.max(4, window.devicePixelRatio * 8);
 
       try {
         const canvas = await html2canvas(offscreen, {
-          scale,
+          scale: captureScale,
+          letterRendering: true,
           useCORS: true,
-          backgroundColor,
-          logging: false,
+          allowTaint: true,
+          useCORS: true,
+          backgroundColor: backgroundColor,
+          logging: true,
         });
         document.body.removeChild(offscreen);
         return canvas;
