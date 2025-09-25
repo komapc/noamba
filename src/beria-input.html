@@ -17,7 +17,7 @@
   <style>
 
     body {
-      font-family: KedebideriM, serif, sans-serif;
+      font-family: KedebideriR, serif, sans-serif;
       /* font-family: KedebideriSB, serif, sans-serif; */
       font-size: 125%;
       /* margin: 20px;
@@ -48,7 +48,7 @@
       width: 1200px;
       /* max-width: 100%; */
       height: 300px;
-      font-family: KedebideriM, serif, sans-serif;
+      font-family: KedebideriR, serif, sans-serif;
       font-size: 24px;
       margin: 0;
       border: 0;
@@ -177,8 +177,8 @@
 <body>
 
   <div class="info">
-    <strong>𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! </strong><br>
-    <strong>Beria-Zaghawa</strong> -> Image<br>
+    𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! <br>
+    Beria-Zaghawa -> Image<br>
     لغة الزغاوة<br>
     For example, type 'Beria Giray Erfee' to get '𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓 𖺣𖻌𖺿𖺾𖺾'.<br>
   </div>
@@ -191,7 +191,7 @@
 
   <div class="theme-controls">
     <button id="theme-toggle" class="theme-button">'☀️ -> 🌙</button>
-    <button id="export-png" class="theme-button">📷 Export PNG</button>
+    <button id="export-png" class="theme-button">📷 download PNG</button>
     <button id="copy-image" class="theme-button">📋 Copy Image to Copyboard (paste in Whatsapp or FB messenger)</button>
     <button id="share-whatsapp" class="theme-button">💬 WhatsApp (mobile only) </button>
   </div>
@@ -412,7 +412,7 @@
 // https://html2canvas.hertzen.com/configuration
 
       // const wrapperTextarea = document.getElementById('beria-textarea-wrapper');
-      let q = beriaEl.cloneNode(true);
+      let q = beriaEl.cloneNode();
       document.body.appendChild(q);
 
       try {
