@@ -434,8 +434,10 @@
         return canvas;
       } catch (err) {
         console.error('html2canvas failed:', err);
+        q.remove();
         return null;
       }
+      q.remove();
     }
 
     // Export textarea content as PNG
