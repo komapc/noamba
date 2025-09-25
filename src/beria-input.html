@@ -178,7 +178,7 @@
   </div>
 
   <div class="beria-textarea-wrapper" id="beria-textarea-wrapper">
-    <textarea id="beria"
+    <textarea id="beriaEl"
       placeholder="𖺩𖺾𖺽𖺾𖺼𖻂𖺽𖺾𖻍𖻂! 𖺡𖺾𖻌𖻂𖺻 𖺥𖻂𖻌𖺻𖻓: Type in Latin characters - converts to Beria Giray"></textarea>
   </div>
 
@@ -213,7 +213,7 @@
   <script src="vendor/static/html2canvas/html2canvas.1.4.1.min.js"></script>
 
   <script>
-    const beriaEl = document.getElementById("beria");
+    const beriaEl = document.getElementById("beriaEl");
     const themeToggle = document.getElementById("theme-toggle");
     const exportBtn = document.getElementById("export-png");
     const copyBtn = document.getElementById("copy-image");
@@ -369,7 +369,7 @@
     });
 
     // Responsive scaling for textarea wrapper
-    function scaleTextareaWrapper() {
+    function resizeTextareaWrapper() {
       const wrapper = document.getElementById('beria-textarea-wrapper');
       const baseWidth = 1200;
       const winWidth = window.innerWidth;
@@ -381,8 +381,8 @@
         wrapper.style.transform = '';
       }
     }
-    window.addEventListener('resize', scaleTextareaWrapper);
-    scaleTextareaWrapper();
+    window.addEventListener('resize', resizeTextareaWrapper);
+    resizeTextareaWrapper();
 
     // Replace manual canvas creation with html2canvas-based async function
     async function createTextCanvas() {
@@ -411,13 +411,15 @@
       const wrapperTextarea = document.getElementById('beria-textarea-wrapper');
 
       try {
+        beriaEl.style.border = 'none'; // Remove border for cleaner image
+        beriaEl.style.transform = ''; // Remove scaling for image capture
         const canvas = await html2canvas(beriaEl, {
         //const canvas = await html2canvas(wrapperTextarea, {
           // scale:	WARNING - default: window.devicePixelRatio, we want fixed: 1
           scale: 1,
           removeContainer: true,
-          width: 1200,
-          height: 300,
+          // width: 1200,
+          // height: 300,
           // width: beriaEl.offsetWidth,
           // height: beriaEl.offsetHeight,
           imageTimeout: 0, // No timeout for images
@@ -439,7 +441,7 @@
     async function exportAsPNG() {
       const canvas = await createTextCanvas();
       if (!canvas) {
-        alert('Please enter some text first!');
+        alert('Nothing to export. Please enter some text first.');
         return;
       }
       const link = document.createElement('a');
