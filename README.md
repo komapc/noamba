@@ -2,7 +2,7 @@
 
 A modern, client-side text-to-image generator specifically designed for MultiGender Hebrew typography. Features real-time WYSIWYG editing, comprehensive character support, and professional-grade canvas rendering with perfect mobile responsiveness.
 
-**Version:** 0.2.17 | **Live Demo:** [staging-amba.pages.dev](https://staging-amba.pages.dev)
+**Version:** 0.2.17 | **Live Demo:** [noamba.lipu.dev](https://noamba.lipu.dev)
 
 
    _____       _
