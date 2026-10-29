@@ -227,16 +227,97 @@ canvas {
 
 
 /* =============================================================================
+   EXPLAINER (static, crawlable content below the tool)
+   ============================================================================= */
+.explainer {
+    max-width: 600px;
+    margin: 8px auto 0;
+    padding: 0 20px 24px;
+    text-align: start;
+    font-size: 17px;
+    line-height: 1.65;
+}
+
+.explainer h2 {
+    font-size: 1.3rem;
+    font-weight: 600;
+    margin: 32px 0 10px;
+    padding-top: 16px;
+    border-top: 1px solid var(--border-light);
+}
+
+.explainer h2:first-child {
+    margin-top: 16px;
+}
+
+.explainer p,
+.explainer ol,
+.explainer ul {
+    margin: 0 0 12px;
+}
+
+.explainer ol,
+.explainer ul {
+    padding-inline-start: 22px;
+}
+
+.explainer li {
+    margin-bottom: 6px;
+}
+
+.explainer a {
+    color: #047857;
+}
+
+.table-wrap {
+    overflow-x: auto;
+    margin: 0 0 12px;
+}
+
+.char-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+}
+
+.char-table th,
+.char-table td {
+    text-align: start;
+    padding: 6px 8px;
+    border-bottom: 1px solid var(--border-light);
+    vertical-align: top;
+}
+
+.char-table .glyph {
+    font-size: 24px;
+    text-align: center;
+    width: 2.5em;
+}
+
+.examples .mg {
+    font-size: 19px;
+}
+
+body.dark .explainer h2,
+body.dark .char-table th,
+body.dark .char-table td {
+    border-color: var(--border-dark);
+}
+
+body.dark .explainer a {
+    color: #34d399;
+}
+
+/* =============================================================================
    FOOTER
    ============================================================================= */
 .footer-info {
-    position: fixed;
-    bottom: 10px;
-    left: 20px;
-    z-index: 50;
     display: flex;
     align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
     gap: 8px;
+    padding: 12px 20px 20px;
 }
 
 .version-small {
@@ -312,6 +393,11 @@ body.dark .mg-logo {
 @media (max-width: 768px) {
     .container {
         padding: 60px 12px 32px;
+    }
+
+    .explainer {
+        padding: 0 12px 24px;
+        font-size: 16px;
     }
     
     .char-keyboard {
