@@ -3,16 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>עברית רב-מגדרית — כלי כתיבה והמרה לעברית מכלילה</title>
-    <meta name="description" content="עברית רב-מגדרית: כלי להקלדה והמרה של טקסט עברי לעברית מכלילת מגדר, עם תווים מיוחדים לכתיבה שפונה לכולם. Gender-inclusive Hebrew editor and text converter.">
-    <meta name="keywords" content="עברית רב-מגדרית, עברית מכלילה, לשון מכלילה, כתיבה מכלילת מגדר, עברית א-בינארית, ממיר טקסט, gender-inclusive Hebrew, nonbinary Hebrew, Hebrew gender neutral">
-    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"noamba","alternateName":"עברית רב-מגדרית","url":"https://noamba.lipu.dev/","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","inLanguage":"he","description":"Gender-inclusive Hebrew: an editor and converter with extra letters so a text can address everyone.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+    <title>עברית רב-מגדרית — כתיבה אונליין ושיתוף כתמונה</title>
+    <meta name="description" content="כתבו בעברית רב־מגדרית ישירות בדפדפן: 12 התווים החדשים בלחיצת כפתור, והטקסט הופך לתמונה שאפשר להדביק בוואטסאפ, במייל וברשתות. בחינם ובלי התקנה.">
+    <meta name="keywords" content="עברית רב-מגדרית, עברית רב־מגדרית, לשון מכלילה, כתיבה מכלילת מגדר, עברית א-בינארית, Alef MultiGndr, gender-inclusive Hebrew, nonbinary Hebrew, Multi-Gender Hebrew">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"noamba","alternateName":"עברית רב-מגדרית","url":"https://noamba.lipu.dev/","image":"https://noamba.lipu.dev/og.png","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","inLanguage":"he","isAccessibleForFree":true,"description":"כתבו בעברית רב־מגדרית ישירות בדפדפן: 12 התווים החדשים בלחיצת כפתור, והטקסט הופך לתמונה שאפשר להדביק בוואטסאפ, במייל וברשתות. בחינם ובלי התקנה.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
     <link rel="canonical" href="https://noamba.lipu.dev/">
     <meta name="msvalidate.01" content="CAFA7BE0D5D83695993D635831499022">
     <meta property="og:type" content="website">
-    <meta property="og:title" content="עברית רב-מגדרית — כלי כתיבה והמרה לעברית מכלילה">
-    <meta property="og:description" content="עברית רב-מגדרית: כלי להקלדה והמרה של טקסט עברי לעברית מכלילת מגדר, עם תווים מיוחדים לכתיבה שפונה לכולם. Gender-inclusive Hebrew editor and text converter.">
+    <meta property="og:locale" content="he_IL">
+    <meta property="og:site_name" content="noamba">
+    <meta property="og:title" content="עברית רב-מגדרית — כתיבה אונליין ושיתוף כתמונה">
+    <meta property="og:description" content="כתבו בעברית רב־מגדרית ישירות בדפדפן: 12 התווים החדשים בלחיצת כפתור, והטקסט הופך לתמונה שאפשר להדביק בוואטסאפ, במייל וברשתות. בחינם ובלי התקנה.">
     <meta property="og:url" content="https://noamba.lipu.dev/">
+    <meta property="og:image" content="https://noamba.lipu.dev/og.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="עברית רב־מגדרית: 12 התווים החדשים ושם האתר noamba.lipu.dev">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="עברית רב-מגדרית — כתיבה אונליין ושיתוף כתמונה">
+    <meta name="twitter:description" content="כתבו בעברית רב־מגדרית ישירות בדפדפן: 12 התווים החדשים בלחיצת כפתור, והטקסט הופך לתמונה שאפשר להדביק בוואטסאפ, במייל וברשתות. בחינם ובלי התקנה.">
+    <meta name="twitter:image" content="https://noamba.lipu.dev/og.png">
     <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3e%3crect width='32' height='32' fill='%231f2937'/%3e%3ctext x='16' y='24' font-family='serif' font-size='18' fill='%2310b981' text-anchor='middle' font-weight='bold'%3e׋%3c/text%3e%3c/svg%3e" />
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -45,8 +56,61 @@
         <canvas id="canvas" width="1200" height="400"></canvas>
     </div>
 
+    <section class="explainer" aria-label="הסבר על עברית רב־מגדרית ועל הכלי">
+        <h2>על עברית רב־מגדרית</h2>
+        <p>עברית רב־מגדרית היא מערכת של אותיות עבריות חדשות, שיצרה ועיצבה מיכל שומר. כל אות חדשה מבטאת במקום אחד במילה את ההבדל בין לשון זכר ללשון נקבה, כך שאותה מילה פונה לנשים, לגברים ולאנשים א־בינאריים. למשל, במקום „לומד/ת” כותבים לומד׍, ובמקום „תלמידים ותלמידות” כותבים תלמיד׊׉.</p>
+        <p>המערכת כוללת 12 תווים: 11 אותיות וסימן ניקוד אחד. הם קיימים בגופן Alef MultiGndr, ובמכשיר שהגופן לא מותקן בו מופיעים במקומם ריבועים ריקים. הכלי בעמוד הזה עוקף את הבעיה: כותבים כאן, והטקסט הופך לתמונה שאפשר לקרוא בכל מכשיר.</p>
+
+        <h2>שימוש בכלי</h2>
+        <ol>
+            <li>כתבו או הדביקו טקסט בתיבה שלמעלה.</li>
+            <li>כדי להוסיף אות רב־מגדרית, הציבו את הסמן במקום הרצוי ולחצו על אחד מ־12 הכפתורים שמתחת לתיבה. התו נכנס במקום הסמן.</li>
+            <li>לחצו על „העתיקו”. במחשב התמונה מועתקת ללוח, ואפשר להדביק אותה (Ctrl+V) בצ׳אט, במייל או במסמך. בטלפון נפתח חלון השיתוף של המכשיר. אם העתקה או שיתוף לא זמינים, התמונה יורדת כקובץ PNG.</li>
+        </ol>
+        <p>התמונה נוצרת ברוחב 1200 פיקסלים, והגובה שלה תלוי באורך הטקסט. לתיבה יש גובה מרבי, וכשמגיעים אליו אי־אפשר להוסיף עוד טקסט. הכפתור 🌓 מחליף בין רקע בהיר לכהה, והתמונה נוצרת בצבעים שנבחרו. בפינת התמונה מופיעה חתימה קטנה עם מספר הגרסה של הכלי. הכול קורה בדפדפן, והטקסט לא נשלח לשום שרת.</p>
+
+        <h2>12 התווים</h2>
+        <div class="table-wrap">
+        <table class="char-table">
+            <thead>
+                <tr><th scope="col">תו</th><th scope="col">מה הוא מאחד</th><th scope="col">דוגמה</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="glyph">׭</td><td>א׳ שקיימת רק בצורת הזכר</td><td>׭נשים (אנשים / נשים)</td></tr>
+                <tr><td class="glyph">׬</td><td>ד׳ / ת׳</td><td>אח׬ (אחד / אחת)</td></tr>
+                <tr><td class="glyph">׌</td><td>ה׳ שקיימת רק באחת הצורות</td><td>את׌ (אתה / את), יכול׌ (יכול / יכולה)</td></tr>
+                <tr><td class="glyph">׎</td><td>ו׳ / ה׳ בסיומת השייכות</td><td>של׎ (שלו / שלה), עצמ׎</td></tr>
+                <tr><td class="glyph">׫</td><td>ה׳ / ת׳ בסמיכות</td><td>מור׫ הכיתה (מורה / מורת)</td></tr>
+                <tr><td class="glyph">׊</td><td>ו׳ / י׳</td><td>ה׊א (הוא / היא), וגם ברבים: רב׊׉</td></tr>
+                <tr><td class="glyph">׏</td><td>ת׳ / י׳ בפעלים בעתיד, או ־ית שמתווספת בצורת הנקבה</td><td>׏למד (ילמד / תלמד), אזרח׏ (אזרח / אזרחית)</td></tr>
+                <tr><td class="glyph">׋</td><td>ם / ן סופיות</td><td>את׋ (אתם / אתן), כול׋</td></tr>
+                <tr><td class="glyph">׉</td><td>ם / ת בסוף צורת הרבים</td><td>תלמיד׊׉ (תלמידים / תלמידות)</td></tr>
+                <tr><td class="glyph">׮</td><td>נ׳ / ת׳</td><td>ש׮יים (שניים / שתיים), ב׮אדם</td></tr>
+                <tr><td class="glyph">׍</td><td>ת׳ שקיימת רק בצורת הנקבה</td><td>לומד׍ (לומד / לומדת), תלמיד׊׍ הכיתה</td></tr>
+                <tr><td class="glyph">׈</td><td>סימן ניקוד רב־מגדרי (רֵב), לא חובה</td><td>את׈׋. מסמן שהמילה נקראת באופן רב־מגדרי</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <p>בצורות הרבים משתמשים בשתי אותיות יחד: ׊׉ במקום ־ים / ־ות (תלמיד׊׉), ו־׊׍ בסמיכות (תלמיד׊׍ הכיתה). את סימן הרֵב מוסיפים אחרי האות הרב־מגדרית; לפי האתר הרשמי, בדפדפנים התמיכה המלאה בו היא ב־Firefox וב־Safari, ובדפדפנים אחרים מיקומו עשוי להיות לא מדויק. במילים שמסתיימות באות סופית, כמו הולך / הולכת, מומלץ לכתוב את האות הרגילה: הולכ׍, מבינ׌.</p>
+
+        <h2>דוגמאות</h2>
+        <ul class="examples">
+            <li><span class="mg">ברוכ׊׉ הבא׊׉!</span> — ברוכים הבאים וברוכות הבאות</li>
+            <li><span class="mg">את׌ מוזמנ׍ לנסות.</span> — אתה מוזמן / את מוזמנת</li>
+            <li><span class="mg">כל התלמיד׊׉ מוזמנ׊׉ לטיול.</span> — כל התלמידים והתלמידות מוזמנים ומוזמנות</li>
+            <li><span class="mg">ה׊א אמר׌ שהספר של׎.</span> — הוא אמר שהספר שלו / היא אמרה שהספר שלה</li>
+            <li><span class="mg">ה׊א ׏גיע מחר.</span> — הוא יגיע / היא תגיע</li>
+        </ul>
+
+        <h2>תמונה במקום טקסט</h2>
+        <p>האותיות החדשות יושבות בתווים פנויים של הטווח העברי ביוניקוד, ולכן רוב המכשירים לא יודעים להציג אותן בלי הגופן המתאים. תמונה נראית אותו דבר אצל כולם: בוואטסאפ, בטלגרם, במייל, ברשתות החברתיות ובמסמכים. כדי לכתוב בעברית רב־מגדרית ישירות במחשב, אפשר להתקין את הגופן ואת המקלדת מהאתר הרשמי.</p>
+
+        <h2>קרדיט ומקורות</h2>
+        <p>עיצוב טיפוגרפי „עברית רב־מגדרית”: מיכל שומר. הגופן Alef MultiGndr מבוסס על הגופן הפתוח „אלף” ומופץ ברישיון SIL Open Font License, בכפוף לתנאי היוצרת. להורדת הגופן והמקלדת, להוראות התקנה ולהסברים לשוניים מפורטים: <a href="https://multigenderhebrew.com/">multigenderhebrew.com</a>.</p>
+    </section>
+
     <div class="footer-info">
-        <span class="version-small">v0.4.8</span>
+        <span class="version-small">v0.4.9</span>
         <span class="footer-divider">•</span>
         <a href="https://lipu.dev/">lipu.dev</a>
         <span class="footer-divider">•</span>
