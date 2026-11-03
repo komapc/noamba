@@ -7,7 +7,7 @@ This project uses **Cloudflare Pages** for hosting with automatic deployment via
 ### Environments
 
 - **Staging**: `staging.3amba.pages.dev` (deploys from `staging` branch)
-- **Production**: `3amba.pages.dev` (deploys from `master` branch)
+- **Production**: `noamba.lipu.dev` (deploys from `master` branch)
 
 ## Automatic Deployment
 
@@ -47,7 +47,7 @@ Find your Cloudflare Account ID:
 | Branch | Environment | URL | Trigger |
 |--------|-------------|-----|---------|
 | `staging` | Staging | `staging.3amba.pages.dev` | Push to staging |
-| `master` | Production | `3amba.pages.dev` | Push to master |
+| `master` | Production | `noamba.lipu.dev` | Push to master |
 | Any PR | Preview | `staging.3amba.pages.dev` | Pull Request |
 
 ## Manual Deployment

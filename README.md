@@ -179,7 +179,7 @@ The app uses **Cloudflare Pages** with automatic deployment via GitHub Actions:
 
 **🚀 Automatic Deployment:**
 - **Staging**: Pushes to `staging` branch → `staging-amba.pages.dev`
-- **Production**: Pushes to `master` branch → `3amba.pages.dev`
+- **Production**: Pushes to `master` branch → `noamba.lipu.dev`
 - **Preview**: Pull requests → staging preview environment
 
 **⚙️ Setup Required:**
@@ -208,7 +208,7 @@ npm run deploy:production # Deploy to production
 ### Staging Environment
 
 **🌐 Domain-Based Environments:**
-- **Production**: `3amba.pages.dev` (master branch)
+- **Production**: `noamba.lipu.dev` (master branch)
 - **Staging**: `staging.3amba.pages.dev` (staging branch)
 
 **🔍 Environment Detection:**
@@ -219,7 +219,7 @@ npm run deploy:production # Deploy to production
 
 **🚀 Automatic Deployment:**
 - **Staging Branch** → `staging.3amba.pages.dev` (automatic on push)
-- **Master Branch** → `3amba.pages.dev` (automatic on push)
+- **Master Branch** → `noamba.lipu.dev` (automatic on push)
 - **Pull Requests** → Preview environment (automatic)
 - Environment variables and visual indicators automatically configured
 
