@@ -68,9 +68,6 @@ A modern, client-side text-to-image generator specifically designed for MultiGen
 ```
 render-text/
   .gitignore                 # Git ignore rules (protects API tokens)
-  wrangler.toml              # Cloudflare Pages staging configuration
-  wrangler.staging.toml      # Cloudflare Pages staging configuration
-  wrangler.production.toml   # Cloudflare Pages production configuration
   package.json               # Project dependencies and scripts
   package-lock.json          # Dependency lock file
   README.md                  # This file
@@ -173,55 +170,11 @@ npm ci
 npm run test:e2e
 ```
 
-### Deploying (Automatic CI/CD)
+### Deploying
 
-The app uses **Cloudflare Pages** with automatic deployment via GitHub Actions:
+Every push to `master` publishes the `src/` folder to GitHub Pages through `.github/workflows/deploy-pages.yml`. The site is served at [noamba.lipu.dev](https://noamba.lipu.dev) (see `src/CNAME`). There is no build step and no separate staging site.
 
-**🚀 Automatic Deployment:**
-- **Staging**: Pushes to `staging` branch → `staging-amba.pages.dev`
-- **Production**: Pushes to `master` branch → `noamba.lipu.dev`
-- **Preview**: Pull requests → staging preview environment
-
-**⚙️ Setup Required:**
-1. Add GitHub Secrets: `CLOUDFLARE_API_TOKEN` and `CLOUDFLARE_ACCOUNT_ID`
-2. Push to `staging` or `master` branch
-3. GitHub Actions handles the rest automatically
-
-**📁 Configuration Files:**
-- `wrangler.toml` - Default configuration
-- `wrangler.staging.toml` - Staging environment
-- `wrangler.production.toml` - Production environment
-- `.github/workflows/deploy.yml` - GitHub Actions workflow
-- `DEPLOYMENT.md` - Complete deployment guide
-
-**🔧 Manual Deployment:**
-```bash
-npm run deploy:staging    # Deploy to staging
-npm run deploy:production # Deploy to production
-```
-
-**Alternative Platforms:**
-- **Netlify**: Upload `src/` folder or connect repo with `src` as publish directory
-- **GitHub Pages**: Copy `src/` contents to `docs/` and enable Pages
-- **Vercel**: Connect repo, set root directory to `src`
-
-### Staging Environment
-
-**🌐 Domain-Based Environments:**
-- **Production**: `noamba.lipu.dev` (master branch)
-- **Staging**: `staging.3amba.pages.dev` (staging branch)
-
-**🔍 Environment Detection:**
-- Automatically detects staging vs production based on domain
-- Staging shows orange `[STAGING]` badge in header
-- Console logging shows current environment
-- Visual indicators help distinguish environments
-
-**🚀 Automatic Deployment:**
-- **Staging Branch** → `staging.3amba.pages.dev` (automatic on push)
-- **Master Branch** → `noamba.lipu.dev` (automatic on push)
-- **Pull Requests** → Preview environment (automatic)
-- Environment variables and visual indicators automatically configured
+To redeploy without a code change, run the workflow from the Actions tab.
 
 ### Fonts and Licensing
 - `AlefMultiGndr-Regular.ttf/.woff` included with license in `src/fonts/`
