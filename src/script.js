@@ -1,11 +1,11 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.9
+ * Version: 0.4.10
  */
 
 // Configuration
 const CONFIG = {
-    VERSION: '0.4.9',
+    VERSION: '0.4.10',
     FONT_FAMILY: 'AlefMultiGenderHebrew, sans-serif',
     FONT_SIZES: { small: 20, normal: 24, large: 28 },
     CANVAS_WIDTH: 1200,
@@ -13,6 +13,11 @@ const CONFIG = {
     DPI_SCALE: 3, // Higher DPI for better quality
     DESIRED_EXPORT_FONT_PX: 32
 };
+
+// Interface strings, by the page language (/ is Hebrew, /en/ is English)
+const UI = document.documentElement.lang === 'en'
+    ? { copy: '📋 Copy', copied: '✅ Copied!', shareTitle: 'Gender-inclusive Hebrew', shareText: 'An image made with the gender-inclusive Hebrew writer' }
+    : { copy: '📋 העתיקו', copied: '✅ הועתק!', shareTitle: 'עברית רב-מגדרית', shareText: 'תמונה שנוצרה עם כלי העברית הרב-מגדרית' };
 
 // Global state
 let currentFontSize = CONFIG.FONT_SIZES.normal;
@@ -99,7 +104,7 @@ function updateShareButtonText() {
     const mobile = isMobile();
     
     // Show "Copy to clipboard" on both mobile and desktop
-    shareButton.innerHTML = '📋 העתיקו';
+    shareButton.innerHTML = UI.copy;
     shareButton.setAttribute('aria-label', 'Copy to clipboard');
     
     // Debug logging (only when detection changes)
@@ -488,8 +493,8 @@ function shareCanvas() {
         if (navigator.share && navigator.canShare && navigator.canShare({ files: [file] })) {
             navigator.share({
                 files: [file],
-                title: 'עברית רב-מגדרית',
-                text: 'תמונה שנוצרה עם כלי העברית הרב-מגדרית'
+                title: UI.shareTitle,
+                text: UI.shareText
             }).catch((error) => {
                 // Fallback to download
                 downloadCanvas();
@@ -525,7 +530,7 @@ function copyCanvasToClipboard() {
 function showCopySuccess() {
     const shareButton = document.getElementById('shareButton');
     const originalText = shareButton.innerHTML;
-    shareButton.innerHTML = '✅ הועתק!';
+    shareButton.innerHTML = UI.copied;
     shareButton.style.background = '#10b981';
     
     setTimeout(() => {

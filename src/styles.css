@@ -311,6 +311,12 @@ body.dark .explainer a {
 /* =============================================================================
    FOOTER
    ============================================================================= */
+.lead {
+    margin: -10px 0 18px;
+    font-size: 1.05rem;
+    opacity: .8;
+}
+
 .footer-info {
     display: flex;
     align-items: center;
