@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gender-inclusive (Nonbinary) Hebrew — Write Online and Share as an Image</title>
+    <meta name="description" content="Write gender-inclusive Hebrew in your browser: the 12 new multi-gender letters are one click away, and your text becomes an image you can paste into WhatsApp, email or social media. Free, nothing to install.">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"noamba","alternateName":"Gender-inclusive Hebrew writer","url":"https://noamba.lipu.dev/en/","image":"https://noamba.lipu.dev/og.png","applicationCategory":"UtilitiesApplication","operatingSystem":"Any","inLanguage":"en","isAccessibleForFree":true,"description":"Write gender-inclusive Hebrew in your browser: the 12 new multi-gender letters are one click away, and your text becomes an image you can paste into WhatsApp, email or social media. Free, nothing to install.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+    <link rel="canonical" href="https://noamba.lipu.dev/en/">
+    <link rel="alternate" hreflang="he" href="https://noamba.lipu.dev/">
+    <link rel="alternate" hreflang="en" href="https://noamba.lipu.dev/en/">
+    <link rel="alternate" hreflang="x-default" href="https://noamba.lipu.dev/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="en_US">
+    <meta property="og:locale:alternate" content="he_IL">
+    <meta property="og:site_name" content="noamba">
+    <meta property="og:title" content="Gender-inclusive (Nonbinary) Hebrew — Write Online and Share as an Image">
+    <meta property="og:description" content="Write gender-inclusive Hebrew in your browser: the 12 new multi-gender letters are one click away, and your text becomes an image you can paste into WhatsApp, email or social media. Free, nothing to install.">
+    <meta property="og:url" content="https://noamba.lipu.dev/en/">
+    <meta property="og:image" content="https://noamba.lipu.dev/og.png">
+    <meta property="og:image:type" content="image/png">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="og:image:alt" content="Multi-gender Hebrew: the 12 new letters and the site name noamba.lipu.dev">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Gender-inclusive (Nonbinary) Hebrew — Write Online and Share as an Image">
+    <meta name="twitter:description" content="Write gender-inclusive Hebrew in your browser: the 12 new multi-gender letters are one click away, and your text becomes an image you can paste into WhatsApp, email or social media. Free, nothing to install.">
+    <meta name="twitter:image" content="https://noamba.lipu.dev/og.png">
+    <link rel="icon" href="data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3e%3crect width='32' height='32' fill='%231f2937'/%3e%3ctext x='16' y='24' font-family='serif' font-size='18' fill='%2310b981' text-anchor='middle' font-weight='bold'%3e׋%3c/text%3e%3c/svg%3e" />
+    <link rel="stylesheet" href="/styles.css">
+  <script defer src="https://static.cloudflareinsights.com/beacon.min.js" data-cf-beacon='{"token": "3e386e9e25c54d05984bc21dd7ef854d"}'></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header-controls">
+            <button id="themeToggle" class="theme-toggle" aria-label="Toggle theme">🌓</button>
+            <button id="shareButton" class="share-button" aria-label="Copy to clipboard">📋 Copy</button>
+        </div>
+
+        <h1>Gender-inclusive Hebrew</h1>
+        <p class="lead">Write nonbinary, multi-gender Hebrew online and share it as an image.</p>
+
+        <div id="textDiv" class="text-input" contenteditable="true" lang="he" dir="rtl" placeholder="ברוכ׊׉ הבא׊׉!"></div>
+
+        <div class="char-keyboard" lang="he">
+            <button class="char-button" data-char="׭">׭</button>
+            <button class="char-button" data-char="׬">׬</button>
+            <button class="char-button" data-char="׌">׌</button>
+            <button class="char-button" data-char="׎">׎</button>
+            <button class="char-button" data-char="׫">׫</button>
+            <button class="char-button" data-char="׊">׊</button>
+            <button class="char-button" data-char="׏">׏</button>
+            <button class="char-button" data-char="׋">׋</button>
+            <button class="char-button" data-char="׉">׉</button>
+            <button class="char-button" data-char="׮">׮</button>
+            <button class="char-button" data-char="׍">׍</button>
+            <button class="char-button" data-char="׈">׈</button>
+        </div>
+
+        <canvas id="canvas" width="1200" height="400"></canvas>
+    </div>
+
+    <section class="explainer" aria-label="About gender-inclusive Hebrew and this tool">
+        <h2>What is multi-gender Hebrew?</h2>
+        <p>Hebrew marks gender almost everywhere: in verbs, adjectives, pronouns and plurals. Saying “you are invited” means choosing between a masculine and a feminine form, and the usual workarounds, such as slashes (<span lang="he" dir="rtl">לומד/ת</span>) or listing both forms, are long and still leave out nonbinary people.</p>
+        <p>Multi-Gender Hebrew (<span lang="he" dir="rtl">עברית רב־מגדרית</span>), designed by Michal Shomer, solves this with new letters. Each one stands in a single spot of a word for the difference between the masculine and the feminine form, so one word speaks to women, men and nonbinary people alike. For example, <span lang="he" dir="rtl">לומד׍</span> replaces “<span lang="he" dir="rtl">לומד/ת</span>” (learning), and <span lang="he" dir="rtl">תלמיד׊׉</span> replaces “<span lang="he" dir="rtl">תלמידים ותלמידות</span>” (male and female students).</p>
+        <p>The system has 12 characters: 11 letters and one vowel mark. They exist in the Alef MultiGndr font, and on a device without that font they show up as empty boxes. This tool gets around that: you write here, and the text becomes an image that looks the same on every device.</p>
+
+        <h2>How to use the tool</h2>
+        <ol>
+            <li>Type or paste Hebrew text into the box above.</li>
+            <li>To add a multi-gender letter, put the cursor where you want it and click one of the 12 buttons under the box. The character goes in at the cursor.</li>
+            <li>Click “Copy”. On a computer the image is copied to the clipboard, ready to paste (Ctrl+V) into a chat, an email or a document. On a phone, the device’s share sheet opens. Where copying or sharing is not available, the image downloads as a PNG file.</li>
+        </ol>
+        <p>The image is 1200 pixels wide, and its height depends on the length of the text. The box has a maximum height, and once you reach it no more text can be added. The 🌓 button switches between a light and a dark background, and the image uses the colours you chose. A small signature with the tool’s version number appears in the corner of the image. Everything happens in your browser; the text is never sent to a server.</p>
+
+        <h2>The 12 characters</h2>
+        <div class="table-wrap">
+        <table class="char-table">
+            <thead>
+                <tr><th scope="col">Letter</th><th scope="col">What it combines</th><th scope="col">Example</th></tr>
+            </thead>
+            <tbody>
+                <tr><td class="glyph" lang="he">׭</td><td>an alef found only in the masculine form</td><td><span lang="he" dir="rtl">׭נשים</span> (<span lang="he" dir="rtl">אנשים / נשים</span>, men / women)</td></tr>
+                <tr><td class="glyph" lang="he">׬</td><td>dalet / tav</td><td><span lang="he" dir="rtl">אח׬</span> (<span lang="he" dir="rtl">אחד / אחת</span>, one)</td></tr>
+                <tr><td class="glyph" lang="he">׌</td><td>a he found in only one of the forms</td><td><span lang="he" dir="rtl">את׌</span> (<span lang="he" dir="rtl">אתה / את</span>, you), <span lang="he" dir="rtl">יכול׌</span> (<span lang="he" dir="rtl">יכול / יכולה</span>, can)</td></tr>
+                <tr><td class="glyph" lang="he">׎</td><td>vav / he in the possessive ending</td><td><span lang="he" dir="rtl">של׎</span> (<span lang="he" dir="rtl">שלו / שלה</span>, his / hers), <span lang="he" dir="rtl">עצמ׎</span> (himself / herself)</td></tr>
+                <tr><td class="glyph" lang="he">׫</td><td>he / tav in the construct form</td><td><span lang="he" dir="rtl">מור׫ הכיתה</span> (<span lang="he" dir="rtl">מורה / מורת</span>, the class teacher)</td></tr>
+                <tr><td class="glyph" lang="he">׊</td><td>vav / yod</td><td><span lang="he" dir="rtl">ה׊א</span> (<span lang="he" dir="rtl">הוא / היא</span>, he / she), also in plurals: <span lang="he" dir="rtl">רב׊׉</span> (many)</td></tr>
+                <tr><td class="glyph" lang="he">׏</td><td>tav / yod in future-tense verbs, or the ending <span lang="he" dir="rtl">־ית</span> added in the feminine</td><td><span lang="he" dir="rtl">׏למד</span> (<span lang="he" dir="rtl">ילמד / תלמד</span>, will learn), <span lang="he" dir="rtl">אזרח׏</span> (<span lang="he" dir="rtl">אזרח / אזרחית</span>, citizen)</td></tr>
+                <tr><td class="glyph" lang="he">׋</td><td>final mem / final nun</td><td><span lang="he" dir="rtl">את׋</span> (<span lang="he" dir="rtl">אתם / אתן</span>, you, plural), <span lang="he" dir="rtl">כול׋</span> (all of you)</td></tr>
+                <tr><td class="glyph" lang="he">׉</td><td>mem / tav at the end of a plural</td><td><span lang="he" dir="rtl">תלמיד׊׉</span> (<span lang="he" dir="rtl">תלמידים / תלמידות</span>, students)</td></tr>
+                <tr><td class="glyph" lang="he">׮</td><td>nun / tav</td><td><span lang="he" dir="rtl">ש׮יים</span> (<span lang="he" dir="rtl">שניים / שתיים</span>, two), <span lang="he" dir="rtl">ב׮אדם</span> (a person)</td></tr>
+                <tr><td class="glyph" lang="he">׍</td><td>a tav found only in the feminine form</td><td><span lang="he" dir="rtl">לומד׍</span> (<span lang="he" dir="rtl">לומד / לומדת</span>, learning), <span lang="he" dir="rtl">תלמיד׊׍ הכיתה</span> (the students of the class)</td></tr>
+                <tr><td class="glyph" lang="he">׈</td><td>the multi-gender vowel mark (rev), optional</td><td><span lang="he" dir="rtl">את׈׋</span>: marks the word to be read the multi-gender way</td></tr>
+            </tbody>
+        </table>
+        </div>
+        <p>Plurals use two letters together: <span lang="he" dir="rtl">׊׉</span> instead of <span lang="he" dir="rtl">־ים / ־ות</span> (<span lang="he" dir="rtl">תלמיד׊׉</span>), and <span lang="he" dir="rtl">׊׍</span> in the construct form (<span lang="he" dir="rtl">תלמיד׊׍ הכיתה</span>). The rev mark goes after the multi-gender letter; according to the official site, Firefox and Safari support it fully, and in other browsers its position may be slightly off. In words that end in a final letter, such as <span lang="he" dir="rtl">הולך / הולכת</span>, the recommendation is to write the regular letter: <span lang="he" dir="rtl">הולכ׍</span>, <span lang="he" dir="rtl">מבינ׌</span>.</p>
+
+        <h2>Examples</h2>
+        <ul class="examples">
+            <li><span class="mg" lang="he" dir="rtl">ברוכ׊׉ הבא׊׉!</span> — welcome (to everyone)</li>
+            <li><span class="mg" lang="he" dir="rtl">את׌ מוזמנ׍ לנסות.</span> — you are invited to try</li>
+            <li><span class="mg" lang="he" dir="rtl">כל התלמיד׊׉ מוזמנ׊׉ לטיול.</span> — all the students are invited on the trip</li>
+            <li><span class="mg" lang="he" dir="rtl">ה׊א אמר׌ שהספר של׎.</span> — he/she said the book is his/hers</li>
+            <li><span class="mg" lang="he" dir="rtl">ה׊א ׏גיע מחר.</span> — he/she will arrive tomorrow</li>
+        </ul>
+
+        <h2>Why an image instead of text</h2>
+        <p>The new letters sit in unused code points of the Hebrew block of Unicode, so most devices cannot display them without the matching font. An image looks the same for everyone: in WhatsApp, Telegram, email, social media and documents. To type multi-gender Hebrew directly on your computer, install the font and the keyboard from the official site.</p>
+
+        <h2>Credits and sources</h2>
+        <p>Typographic design of Multi-Gender Hebrew: Michal Shomer. The Alef MultiGndr font is based on the open-source Alef font and is released under the SIL Open Font License, subject to the creator’s terms. For the font, the keyboard, installation instructions and detailed linguistic explanations, see <a href="https://multigenderhebrew.com/">multigenderhebrew.com</a>.</p>
+    </section>
+
+    <div class="footer-info">
+        <span class="version-small">v0.4.10</span>
+        <span class="footer-divider">•</span>
+        <a href="/" hreflang="he" lang="he">עברית</a>
+        <span class="footer-divider">•</span>
+        <a href="https://lipu.dev/">lipu.dev</a>
+        <span class="footer-divider">•</span>
+        <a href="https://multigenderhebrew.com/" target="_blank" class="mg-logo" lang="he">עברית רב־מגדרית</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <script src="/script.js"></script>
+</body>
+</html>

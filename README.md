@@ -172,6 +172,8 @@ npm run test:e2e
 
 ### Deploying
 
+The site has a Hebrew page at `/` (x-default) and an English page at `/en/` (`src/en/index.html`), linked with `hreflang`; both load the same `script.js`, which picks its button labels from the page language.
+
 Every push to `master` publishes the `src/` folder to GitHub Pages through `.github/workflows/deploy-pages.yml`. The site is served at [noamba.lipu.dev](https://noamba.lipu.dev) (see `src/CNAME`). There is no build step and no separate staging site.
 
 To redeploy without a code change, run the workflow from the Actions tab.
