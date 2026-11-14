@@ -209,3 +209,7 @@ This project follows specific development guidelines:
 Created by **Kobi** and **Mark** to support inclusive Hebrew writing.
 
 Learn more about MultiGender Hebrew at [multigenderhebrew.com](https://multigenderhebrew.com/)
+
+## License
+
+Code: MIT ([`LICENSE`](LICENSE)). The Alef MultiGndr font in `src/fonts/` keeps its own licence (SIL Open Font License with the creator's additional terms, see `src/fonts/Alef-MultiGndr-MultiGenderHebrew-license.txt`).
