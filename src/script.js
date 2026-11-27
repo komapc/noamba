@@ -1,6 +1,6 @@
 /**
  * MultiGender Hebrew Text Designer - Clean Production Version
- * Version: 0.4.10
+ * Version: 0.4.11
  */
 
 // Configuration
