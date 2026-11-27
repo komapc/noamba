@@ -12,3 +12,7 @@ CLOUDFLARE_API_TOKEN
 set-token.sh
 *secret*
 *key*
+
+# Playwright
+test-results/
+playwright-report/

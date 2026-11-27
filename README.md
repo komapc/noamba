@@ -159,14 +159,14 @@ Simply open `src/index.html` in a web browser. No server required!
 - **Font sizes**: Desktop 22px, Mobile 22px (unified sizing)
 - **Canvas signature**: "עבמה-{version}" added to exported images
 
-**Optimized Testing:**
-- Cypress E2E tests run in ~49 seconds (68% faster than before)
-- Tests verify 200px min-height on both desktop and mobile
-- Automated CI/CD pipeline with GitHub Actions
+**Testing:**
+- End-to-end tests with Playwright (`e2e/`, `playwright.config.js`): the English page, and the editor's width-based height limits on desktop and mobile
+- They run on every push and pull request (`.github/workflows/ci.yml`), in about a minute
 
-Run tests locally:
+Run tests locally (the config starts the static server on port 8080):
 ```
 npm ci
+npx playwright install chromium
 npm run test:e2e
 ```
 

@@ -16,26 +16,25 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 22
           cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
 
-      # Started here rather than via the action's start/wait-on, whose wait-on
-      # aborts on the first refused connection instead of retrying.
-      - name: Start static server
-        run: |
-          npx http-server ./src -p 8080 -c-1 > /tmp/http-server.log 2>&1 &
-          for i in $(seq 1 60); do
-            curl -sf -o /dev/null http://127.0.0.1:8080/ && exit 0
-            sleep 1
-          done
-          cat /tmp/http-server.log
-          exit 1
+      # Playwright's own Chromium build, pinned by its version: a Chrome update on
+      # the runner cannot break the tests (it broke the Cypress ones).
+      - name: Install Playwright Chromium
+        run: npx playwright install --with-deps chromium
 
-      - name: Run Cypress tests
-        uses: cypress-io/github-action@v6
+      # playwright.config.js starts the static server (http-server on :8080).
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - name: Upload report on failure
+        if: failure()
+        uses: actions/upload-artifact@v4
         with:
-          install: false
-          browser: chrome
+          name: playwright-report
+          path: test-results/
+          retention-days: 7
